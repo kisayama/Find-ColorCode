@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Find ColorCode</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="ColorSaveDialog_form_create1">色の名前を入力してください</string>
+    <string name="ColorSaveDialog_form_create2">この色についてのメモを入力してください</string>
+    <string name="ColorSaveDialog_form_edite1">変更後の名前を入力してください</string>
+    <string name="ColorSaveDialog_form_edite2">変更後のメモを入力してください</string>
+</resources>

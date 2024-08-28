@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:padding="@dimen/default_padding"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/favoritecolorMyName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="色の名前をつけてください"
+        />
+    <EditText
+        android:id="@+id/favoriteColorMemo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="この色についてのメモ"/>
+    <TextView
+        android:id="@+id/toUserMessage"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/default_margin"
+        android:layout_height="wrap_content"
+        android:textColor="@color/red"/>
+
+</LinearLayout>
