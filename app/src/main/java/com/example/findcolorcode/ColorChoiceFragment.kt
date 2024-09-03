@@ -78,7 +78,6 @@ class ColorChoiceFragment : Fragment(){
 
         //色の初期状態をセット
         setInitialColorSelection()
-        //git用コメント
 
         // SeekBarChangedListener
         val colorSeekBarChangedListener = object : SeekBar.OnSeekBarChangeListener {

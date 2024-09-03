@@ -1,26 +1,34 @@
 package com.example.findcolorcode
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
-import android.view.MotionEvent
-import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
-import com.example.findcolorcode.databinding.ActivityMainBinding
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import android.os.PersistableBundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 
-class MainActivity : AppCompatActivity(),
+
+class MainActivity : ComponentActivity(){
+    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+        super.onCreate(savedInstanceState, persistentState)
+        setContent {
+            FindColor
+        }
+    }
+}
+
+    /*
+    //各リスナーはMainActivityに実装している
     ColorSaveDialog.ColorSaveListener,
     ColorEditDialog.ColorEditListener,
     FavoriteColorAdapter.baseOnColorClickListener{
+
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var colorChoiceFragment: ColorChoiceFragment
     private lateinit var favoriteColorFragment: FavoriteColorFragment
     private lateinit var buttons: List<ImageView>
 
+
+    //Moshiをコンパニオンオブジェクトにする　
     companion object {
         lateinit var moshi: Moshi
             private set
@@ -119,3 +127,4 @@ class MainActivity : AppCompatActivity(),
         }
     }
 }
+*/
