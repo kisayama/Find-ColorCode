@@ -42,11 +42,13 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.runtime.saved.instance.state)
     ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
+    implementation ("androidx.fragment:fragment-ktx:1.7.0")
     implementation(libs.androidx.constraintlayout)
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation("com.squareup.moshi:moshi:1.15.1")
@@ -55,6 +57,9 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
     implementation("androidx.cardview:cardview:1.0.0")
+    val lifecycle_version = "2.8.4"
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity(),
             private set
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

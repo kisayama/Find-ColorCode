@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.ActionMode
-import android.view.ActionMode.Callback
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,11 +16,11 @@ import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.text.set
+import androidx.compose.runtime.savedinstancestate.savedInstanceState
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.viewModels
 import com.example.findcolorcode.databinding.FragmentColorChoiceBinding
+
 class ColorChoiceFragment : Fragment(){
 
     private lateinit var seekBarRed: SeekBar
@@ -33,12 +31,13 @@ class ColorChoiceFragment : Fragment(){
 
     private var _binding: FragmentColorChoiceBinding? = null
     private val binding get() = _binding!!
-    private var lastSelectedColorCode: TextView? = null
     private var redPoint = 255
     private var bluePoint = 255
     private var greenPoint = 255
     private val TAG = "ColorChoiceFragment"
-    private var lastColorCode ="#FFFFFFFF"
+
+    private var selectedSquare = 1
+    private var lastSelectedColorCode: TextView? = null
 
     // 再起的ループを防ぐためのフラグ
     private var isUpdating = false
@@ -47,13 +46,26 @@ class ColorChoiceFragment : Fragment(){
         fun newInstance() = ColorChoiceFragment()
     }
 
+
+    //ColorviewModelをインスタンス化
+    private val viewModel: ColorViewModel by viewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentColorChoiceBinding.inflate(inflater, container, false)
+
+        viewModel.colorSquare1.observe(viewLifecycleOwner) { color ->
+            binding.colorSquare1.setBackgroundColor(Color.parseColor(color))
+        }
+        viewModel.colorSquare2.observe(viewLifecycleOwner) { color ->
+            binding.colorSquare2.setBackgroundColor(Color.parseColor(color))
+        }
+
         return binding.root
     }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,6 +78,7 @@ class ColorChoiceFragment : Fragment(){
 
         //色の初期状態をセット
         setInitialColorSelection()
+        //git用コメント
 
         // SeekBarChangedListener
         val colorSeekBarChangedListener = object : SeekBar.OnSeekBarChangeListener {
@@ -112,42 +125,36 @@ class ColorChoiceFragment : Fragment(){
         setEditTextSettings(binding.colorSquare2Code, binding.colorSquare2Block)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString("lastColorCode",selectedColorCode.text.toString())
-        Log.d(TAG,"onSaveInstance:$selectedColorCode")
-    }
 
+    //画面の中断時にViewModelの値が初期化されるのでviewModel再現
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         Log.d(TAG,"onViewRestored")
         super.onViewStateRestored(savedInstanceState)
         savedInstanceState?.let {
-            lastColorCode = it.getString("lastColorCode","#FFFFFFF")
-            selectedColorCode.text = lastColorCode
-            updateColorFromCode(lastColorCode)
-        }?:run {
-            if(arguments?.containsKey("colorCode")==true) {
-                val colorCode = arguments?.getString("colorCode")
-                if(colorCode != null){
-                    lastColorCode = colorCode
-                    selectedColorCode.text = lastColorCode
-                    updateColorFromCode(lastColorCode)
-                }
-            }
+            val restoredColor1 = it.getString("colorSquare1", "#FFFFFF")
+            val restoredColor2 = it.getString("colorSquare2", "#FFFFFF")
+            viewModel.colorSquare1.value = restoredColor1
+            viewModel.colorSquare2.value = restoredColor2
         }
+    }
+
+    //画面の再会時にviewModelを保存する
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+            outState?.putString("colorSquare1", viewModel.colorSquare1.value)
+            outState?.putString("colorSquare2", viewModel.colorSquare2.value)
     }
 
     override fun onPause() {
         super.onPause()
-        isUpdating =true
-       lastColorCode = selectedColorCode.text.toString()
-        Log.d(TAG,"3:$lastColorCode")
+        Log.d(TAG,referColorViewModel())
         Log.d(TAG,"OnPause")
     }
 
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "Resume")
+       Log.d(TAG, "a:${referColorViewModel()}")
     }
 
     private fun setEditTextSettings(editText: EditText, parentView: LinearLayout) {
@@ -176,6 +183,7 @@ class ColorChoiceFragment : Fragment(){
                     val color = Color.parseColor(colorCode)
                     selectedColorSquare.setBackgroundColor(color)
                     selectedColorCode.text = String.format("#%06X", color)
+                    changeColorViewModel(selectedSquare,colorCode)
                     changeColorPoint(seekBarRed, seekBarBlue, seekBarGreen)
                 } else {
                     Log.d("ColorChoiceFragment", "Color Code Error")
@@ -188,8 +196,6 @@ class ColorChoiceFragment : Fragment(){
 
                 isUpdating = false
             }
-
-
         })
 
     }
@@ -215,32 +221,40 @@ class ColorChoiceFragment : Fragment(){
     }
 
     private fun setInitialColorSelection() {
-        // 初期状態
-        //初期のSquareを指定
+        //初期のSquareを指定　初期色はビューモデルで指定済み
         selectedColorSquare = binding.colorSquare1
         selectedColorCode = binding.colorSquare1Code
 
-        //初期背景色の指定
-        val initialColor = Color.parseColor("white")
         //初期色で塗りつぶす際に枠線ごと塗りつぶされないよう色と共に枠も指定しておく
-        selectedColorSquare.setBackgroundColor(Color.parseColor(lastColorCode))
+        selectedColorSquare.setBackgroundColor(Color.parseColor(referColorViewModel()))
         selectedColorSquare.setBackgroundResource(R.drawable.square1)
-        selectedColorCode.text = String.format("#%06X",initialColor)
+        selectedColorCode.text = viewModel.colorSquare1.value
         selectedColorCode.setBackgroundResource(R.drawable.selected_square)
     }
 
     private fun updateColor() {
+        //色の選択をした時に呼び出される
         val color = Color.rgb(redPoint, greenPoint, bluePoint)
-        // 背景色を変更
+        val colorHex = String.format("#%06X", color)
         selectedColorSquare.setBackgroundColor(color)
-        selectedColorCode.text = String.format("#%06X", color)
+
+        // 背景色を変更
+        changeColorViewModel(selectedSquare,colorHex)
+        selectedColorCode.text = referColorViewModel()
+        viewModel.colorSquare1.value?.let { Log.d(TAG, it) }
     }
 
     private fun updateColorFromCode(colorCode: String){
         if (isValidColorCode(colorCode)){
+            //カラーコードを入力した時に呼び出される
             val color = Color.parseColor(colorCode)
+
+            if(selectedSquare == 1){
+                viewModel.colorSquare1.value =colorCode
+            }else{
+                viewModel.colorSquare2.value = colorCode
+            }
             selectedColorSquare.setBackgroundColor(color)
-            selectedColorCode.text = String.format("#%06X", color)
             changeColorPoint(seekBarRed,seekBarBlue,seekBarGreen)
         }
     }
@@ -250,14 +264,20 @@ class ColorChoiceFragment : Fragment(){
         selectedColorSquare = square
         selectedColorCode = code
 
+        if (square == binding.colorSquare1){
+            selectedSquare = 1
+        }else selectedSquare =2
+
+        //選択枠の設定
         lastSelectedColorCode?.setBackgroundResource(android.R.color.transparent)
         selectedColorCode.setBackgroundResource(R.drawable.selected_square)
 
+        //シークバーを動かす
         changeColorPoint(seekBarRed, seekBarBlue, seekBarGreen)
     }
 
     private fun changeColorPoint(seekBarRed: SeekBar, seekBarBlue: SeekBar, seekBarGreen: SeekBar) {
-        val color = (selectedColorSquare.background as? ColorDrawable)?.color ?: Color.WHITE
+        val color = Color.parseColor(referColorViewModel())
         Log.d("ColorChoiceFragment", color.toString())
         redPoint = Color.red(color)
         bluePoint = Color.blue(color)
@@ -265,6 +285,22 @@ class ColorChoiceFragment : Fragment(){
         seekBarRed.progress = redPoint
         seekBarBlue.progress = bluePoint
         seekBarGreen.progress = greenPoint
+    }
+
+    private fun referColorViewModel(): String {
+        if (selectedSquare == 1) {
+            return  viewModel.colorSquare1.value ?: "#FFFFFF"
+        } else {
+            return  viewModel.colorSquare2.value ?: "#FFFFFF"
+        }
+    }
+    fun changeColorViewModel(selectedSquare: Int,colorCode:String){
+        if(selectedSquare == 1){
+            viewModel.colorSquare1.value =colorCode
+        }else{
+            viewModel.colorSquare2.value = colorCode
+        }
+
     }
 
     override fun onDestroyView() {
