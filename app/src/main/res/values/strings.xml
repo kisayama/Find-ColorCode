@@ -6,4 +6,5 @@
     <string name="ColorSaveDialog_form_create2">この色についてのメモを入力してください</string>
     <string name="ColorSaveDialog_form_edite1">変更後の名前を入力してください</string>
     <string name="ColorSaveDialog_form_edite2">変更後のメモを入力してください</string>
+    <string name="title_activity_theme">Theme</string>
 </resources>

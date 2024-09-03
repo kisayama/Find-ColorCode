@@ -16,7 +16,7 @@ import com.example.findcolorcode.databinding.FragmentFavoriteColorBinding
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
-class FavoriteColorFragment : Fragment(){
+class FavoriteListFragment : Fragment(){
 
     private lateinit var recyclerView: RecyclerView
     private var _binding: FragmentFavoriteColorBinding? = null
@@ -26,7 +26,7 @@ class FavoriteColorFragment : Fragment(){
 
     companion object {
         @JvmStatic
-        fun newInstance() = FavoriteColorFragment()
+        fun newInstance() = FavoriteListFragment()
     }
     //色の追加
     fun addNewColor(newColorIndex: Int,newColor: FavoriteColorDataClass?) {

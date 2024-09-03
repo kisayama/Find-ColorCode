@@ -4,16 +4,58 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.findcolorcode.ViewModel.MainViewModel
+import com.example.findcolorcode.ui.theme.FindColorCodeTheme
+import okhttp3.Route
 
 
+
+//エントリーポイント
 class MainActivity : ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onCreate(savedInstanceState, persistentState)
         setContent {
-            FindColor
+            FindColorCodeTheme {
+                //ViewModelのインスタンスを取得
+                val viewModel: MainViewModel = viewModel()
+
+                //navController（ナビゲーションの操作を管理する）を取得
+                val navController = rememberNavController()
+
+                //MainScreenを呼び出し
+                MainScreen(navController, viewModel)
+               }
+            }
         }
     }
-}
+
+@Composable
+fun MainScreen(navController: NavController, viewModel: MainViewModel) {
+    Scaffold(
+        bottomBar = { //TODO
+        }
+    ) {padding ->
+    NavHost(
+        navController = NavController,
+        startDestination =  Route.colorChoice.route,//最初に表示する画面
+        Modifier.padding(padding)
+    ){
+        //MainActivityに表示するのは以下のフラグメント
+        composable("colorChoice"){ColorChoiScreen(navController,viewModel) }
+        composable("favoriteColor"){FavoriteListScreen(navController,viewModel)}}
+    }
+    }
+
+    }
 
     /*
     //各リスナーはMainActivityに実装している

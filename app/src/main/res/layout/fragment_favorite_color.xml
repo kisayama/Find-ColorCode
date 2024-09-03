@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FavoriteColorFragment"
+    tools:context=".FavoriteListFragment"
     android:background="@color/gray02"
     android:padding="@dimen/default_padding"
     android:orientation="vertical">
