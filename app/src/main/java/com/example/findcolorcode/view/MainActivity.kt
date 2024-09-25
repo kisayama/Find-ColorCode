@@ -7,29 +7,45 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.findcolorcode.ViewModel.MainViewModel
+import com.example.findcolorcode.components.BottomBar
+import com.example.findcolorcode.components.BottomBarTab
 import com.example.findcolorcode.ui.theme.FindColorCodeTheme
+import com.squareup.moshi.Moshi
 import okhttp3.Route
-
 
 
 //エントリーポイント
 class MainActivity : ComponentActivity(){
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+
+    //MoshiをコンパニオンオブジェクトにするTODO　消す予定
+    companion object {
+        lateinit var moshi: Moshi
+            private set
+    }
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContent {
             FindColorCodeTheme {
                 //ViewModelのインスタンスを取得
                 val viewModel: MainViewModel = viewModel()
 
                 //navController（ナビゲーションの操作を管理する）を取得
-                val navController = rememberNavController()
+                val navController:NavHostController = rememberNavController()
 
                 //MainScreenを呼び出し
                 MainScreen(navController, viewModel)
@@ -38,24 +54,39 @@ class MainActivity : ComponentActivity(){
         }
     }
 
+
 @Composable
-fun MainScreen(navController: NavController, viewModel: MainViewModel) {
+fun MainScreen(navController: NavHostController, viewModel: MainViewModel) {
+    //初期選択アイテムを指定する
+    var selectedItem by remember { mutableIntStateOf(0) }
     Scaffold(
-        bottomBar = { //TODO
+        bottomBar = { BottomBar(navController = navController,selectedItem)
         }
+        //paddingはbottombarとかさならないようにscalffoldから提供される
     ) {padding ->
-    NavHost(
-        navController = NavController,
-        startDestination =  Route.colorChoice.route,//最初に表示する画面
+    NavHost( //ルートに基づいて他のコンポーサブルのデスティネーション（フラグメント）を表示する
+        navController = navController,
+        startDestination =  BottomBarTab.ColorChoice.route,//初期画面はcolorChoiceFragment
         Modifier.padding(padding)
     ){
         //MainActivityに表示するのは以下のフラグメント
-        composable("colorChoice"){ColorChoiScreen(navController,viewModel) }
-        composable("favoriteColor"){FavoriteListScreen(navController,viewModel)}}
-    }
-    }
+        //RouteはenumClassのBottomBarTabから取得
+        composable(BottomBarTab.ColorChoice.route){MainViewModel.Colorc(navController,viewModel) }
+        composable(BottomBarTab.FavoriteList.route){FavoriteListScreen(navController,viewModel)}}
+    } 
+}
 
+@Preview(showBackground = true)
+@Composable
+fun MainScreenPreview(){
+    FindColorCodeTheme {
+        val navController = rememberNavController() // NavControllerのスタブ
+        val viewModel: MainViewModel = viewModel() // ViewModelのスタブ
+        MainScreen(navController,viewModel)
     }
+}
+
+
 
     /*
     //各リスナーはMainActivityに実装している
@@ -70,11 +101,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
     private lateinit var buttons: List<ImageView>
 
 
-    //Moshiをコンパニオンオブジェクトにする　
-    companion object {
-        lateinit var moshi: Moshi
-            private set
-    }
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

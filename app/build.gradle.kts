@@ -43,7 +43,7 @@ android {
         jvmTarget = "1.8"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
+        kotlinCompilerExtensionVersion = "1.6.0"
     }
     packaging {
         resources {
@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation("androidx.compose.ui:ui:1.6.8")
     implementation(libs.androidx.material3)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
@@ -87,6 +88,8 @@ dependencies {
     //JetPackCompose
     //NavigationCompose
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    //Compose作成のためのmaterial3
+    implementation("androidx.compose.material3:material3:1.2.1")
 
 
     androidTestImplementation(libs.androidx.junit)
