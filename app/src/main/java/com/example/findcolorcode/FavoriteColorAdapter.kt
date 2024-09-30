@@ -15,8 +15,9 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.findcolorcode.MainActivity.Companion.moshi
+import com.example.findcolorcode.view.MainActivity.Companion.moshi
 import com.example.findcolorcode.databinding.FavoriteColorListViewBinding
+import com.example.findcolorcode.model.FavoriteColorDataClass
 
 class FavoriteColorAdapter(
     private var context: Context,

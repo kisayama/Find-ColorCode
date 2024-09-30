@@ -22,7 +22,7 @@ import androidx.fragment.app.viewModels
 import com.example.findcolorcode.databinding.FragmentColorChoiceBinding
 
 class ColorChoiceFragment : Fragment(){
-
+//ColorChoiceScreenを実装する
     private lateinit var seekBarRed: SeekBar
     private lateinit var seekBarBlue: SeekBar
     private lateinit var seekBarGreen: SeekBar

@@ -3,6 +3,7 @@ package com.example.findcolorcode
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import java.lang.reflect.Type
@@ -11,7 +12,7 @@ fun Context.getPreferences():SharedPreferences = this.getSharedPreferences("favo
 
 fun SharedPreferences.saveFavoriteColors(moshi: Moshi,colors: List<FavoriteColorDataClass>) {
     // List<FavoriteColorDataClass> の型を指定
-    val type: Type = Types.newParameterizedType(List::class.java,FavoriteColorDataClass::class.java)
+    val type: Type = Types.newParameterizedType(List::class.java, FavoriteColorDataClass::class.java)
     val jsonAdapter = moshi.adapter<List<FavoriteColorDataClass>>(type)
     val json = jsonAdapter.toJson(colors)
     this.edit().putString("Colors",json).apply()
@@ -19,7 +20,7 @@ fun SharedPreferences.saveFavoriteColors(moshi: Moshi,colors: List<FavoriteColor
 
 fun SharedPreferences.loadFavoriteColors(moshi: Moshi):List<FavoriteColorDataClass>{
     val json = this.getString("Colors","[]")
-    val type:Type = Types.newParameterizedType(List::class.java,FavoriteColorDataClass::class.java)
+    val type:Type = Types.newParameterizedType(List::class.java, FavoriteColorDataClass::class.java)
     val jsonAdapter= moshi.adapter<List<FavoriteColorDataClass>>(type)
     //変換に失敗した時はemptyListを返す
    val data = jsonAdapter.fromJson(json) ?: emptyList()

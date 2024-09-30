@@ -1,4 +1,4 @@
-package com.example.findcolorcode.ViewModel
+package com.example.findcolorcode.viewmodel
 
 import androidx.lifecycle.ViewModel
 

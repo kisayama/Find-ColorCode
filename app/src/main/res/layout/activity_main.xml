@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/bg_white"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".view.MainActivity">
 
     <!--NavigationBar と　ViewPagerの間の線-->
     <FrameLayout

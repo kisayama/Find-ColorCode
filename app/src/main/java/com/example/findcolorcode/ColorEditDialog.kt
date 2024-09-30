@@ -7,16 +7,14 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.text.set
 import androidx.fragment.app.DialogFragment
 import com.example.findcolorcode.databinding.FavoritecolorDialogBinding
+import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import java.lang.RuntimeException
 import java.time.LocalDateTime
-import java.util.UUID
 
 class ColorEditDialog: DialogFragment() {
     interface ColorEditListener {

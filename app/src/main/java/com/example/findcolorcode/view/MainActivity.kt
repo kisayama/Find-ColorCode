@@ -1,7 +1,6 @@
-package com.example.findcolorcode
+package com.example.findcolorcode.view
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
@@ -14,17 +13,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.findcolorcode.ViewModel.MainViewModel
+import com.example.findcolorcode.viewmodel.MainViewModel
 import com.example.findcolorcode.components.BottomBar
 import com.example.findcolorcode.components.BottomBarTab
 import com.example.findcolorcode.ui.theme.FindColorCodeTheme
+import com.example.findcolorcode.viewmodel.ColorViewModel
 import com.squareup.moshi.Moshi
-import okhttp3.Route
 
 
 //エントリーポイント
@@ -60,31 +58,46 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel) {
     //初期選択アイテムを指定する
     var selectedItem by remember { mutableIntStateOf(0) }
     Scaffold(
-        bottomBar = { BottomBar(navController = navController,selectedItem)
+        bottomBar = { BottomBar(navController = navController,selectedItem = selectedItem,
+            onItemSelected = {newIndex -> selectedItem = newIndex})
         }
         //paddingはbottombarとかさならないようにscalffoldから提供される
-    ) {padding ->
-    NavHost( //ルートに基づいて他のコンポーサブルのデスティネーション（フラグメント）を表示する
-        navController = navController,
-        startDestination =  BottomBarTab.ColorChoice.route,//初期画面はcolorChoiceFragment
-        Modifier.padding(padding)
-    ){
-        //MainActivityに表示するのは以下のフラグメント
-        //RouteはenumClassのBottomBarTabから取得
-        composable(BottomBarTab.ColorChoice.route){MainViewModel.Colorc(navController,viewModel) }
-        composable(BottomBarTab.FavoriteList.route){FavoriteListScreen(navController,viewModel)}}
-    } 
-}
+    ) { padding ->
+        NavHost( //ルートに基づいて他のコンポーサブルのデスティネーション（フラグメント）を表示する
+            navController = navController,
+            startDestination = BottomBarTab.ColorChoice.route,//初期画面はcolorChoiceFragment
+            Modifier.padding(padding)
+        ) {
+            //MainActivityに表示するのは以下のフラグメント
+            //RouteはenumClassのBottomBarTabから取得
+            composable(BottomBarTab.ColorChoice.route) {
+                ColorChoiceScreen(
+                    navController,
+                    ColorViewModel()
+                )
+            }
+            composable(BottomBarTab.FavoriteList.route) {
+                FavoriteListScreen(
+                    navController,
+                    viewModel
+                )
+            }
 
-@Preview(showBackground = true)
+        }
+    }
+    }
+
 @Composable
-fun MainScreenPreview(){
+fun MainScreenPreview() {
     FindColorCodeTheme {
         val navController = rememberNavController() // NavControllerのスタブ
         val viewModel: MainViewModel = viewModel() // ViewModelのスタブ
-        MainScreen(navController,viewModel)
+        MainScreen(navController, viewModel)
     }
 }
+
+
+
 
 
 
