@@ -1,7 +1,5 @@
 package com.example.findcolorcode.view
 
-import android.widget.SeekBar
-import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,20 +17,21 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.viewmodel.ColorViewModel
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.findcolorcode.ui.theme.JetnewsTheme
+import androidx.compose.ui.graphics.Color as ComposeColor
 
-
+//TODO 背景色と　シークバーの色 枠線の色
 @Composable
 fun ColorChoiceScreen(navController: NavController, viewModel: ColorViewModel) {
     //rememberはデバイスの回転などのアクティビティの破棄をされると状態が保存されないことに注意
@@ -42,16 +41,15 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorViewModel) {
         val blue = remember { mutableStateOf(255) }
 
         //LiveDataが更新された時に自動的にComposableを再描写するためにobserveAsStateを使用する
-        val color1 = viewModel.colorSquare1.observeAsState("#FFFFFFF").value
-        val color2 = viewModel.colorSquare2.observeAsState("#FFFFFFF").value
+        val color1Code = viewModel.colorSquare1.observeAsState("#FFFFFFF").value
+        val color2Code = viewModel.colorSquare2.observeAsState("#FFFFFFF").value
 
-    val currentColor = Color(red.value,green.value,blue.value)//シークバーの位置によって色を計算する
+    val currentColor = ComposeColor(red.value,green.value,blue.value)//シークバーの位置によって色を計算する
 
         //Boxを横一列に2つ並べる
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(currentColor)
                 .padding(top = 60.dp),
             verticalArrangement = Arrangement.Top,//全体を中央揃え
             horizontalAlignment = Alignment.CenterHorizontally
@@ -62,13 +60,26 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorViewModel) {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ColorSquare(color = color1, onColorselected = { selectedColor ->
-                    viewModel.updateColorSquare1(selectedColor)
-                })
-                Spacer(modifier = Modifier.width(20.dp))//間にスペース
-                ColorSquare(color = color2, onColorselected = { selectedColor ->
-                    viewModel.updateColorSquare2(selectedColor)
-                })
+                //Square2
+                Column {
+                    ColorSquare(color = color1Code,onColorselected = { selectedColor ->
+                        viewModel.updateColorSquare1(selectedColor)
+                    })
+                    ColorCodeText(colorCode = color1Code, onValueChanged = {new ->
+                        viewModel.updateColorSquare1(new)
+                    })
+                }
+                //Square1とSquare2　の間のスペース
+                Spacer(modifier = Modifier.width(40.dp))//間にスペース
+
+                //Square2
+                Column {
+                    ColorSquare(color = color2Code, onColorselected = { selectedColor ->
+                        viewModel.updateColorSquare2(selectedColor)
+                    })
+                    ColorCodeText(colorCode = color2Code, onValueChanged = {new ->
+                        viewModel.updateColorSquare2(new)})
+                }
             }
             Spacer(modifier = Modifier.height(20.dp))//四角とシークバーの間のスペース
             //シークバーを三つ縦に並べるためのColumn
@@ -77,33 +88,35 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorViewModel) {
                 verticalArrangement = Arrangement.spacedBy(15.dp)//シークバー間に15dpのスペースを入れる
             ) {
                 Slider(
-                    value = red.value.toFloat(), onValueChange = {
+                    value = red.value.toFloat(),
+                    onValueChange = {
                         red.value = it.toInt() //カラー変更の設定,
                     },
+                    valueRange = 0f..255f,
                     colors = SliderDefaults.colors(
-                        thumbColor = Color.Gray,
-                        activeTickColor = Color.Gray,//バーの動作中の色
-                        inactiveTickColor = Color.LightGray//バーの静止中の色
+                        activeTickColor = AppColors.Red,
+                        inactiveTickColor = AppColors.Red,
+                        thumbColor = AppColors.Red, //バーの動作中の色
                     )
                 )
                 Slider(
-                    value = blue.value.toFloat(), onValueChange = {
-                        blue.value = it.toInt()
+                    value = blue.value.toFloat(),
+                    onValueChange = { blue.value = it.toInt()
                     },
+                    valueRange = 0f..255f,
                     colors = SliderDefaults.colors(
-                        thumbColor = Color.Gray,
-                        activeTickColor = Color.Gray,//バーの動作中の色
-                        inactiveTickColor = Color.LightGray//バーの静止中の色
+                        thumbColor = AppColors.Green,
+                        activeTickColor = AppColors.Green,//バーの動作中の色
                     )
                 )
                 Slider(
-                    value = green.value.toFloat(), onValueChange = {
-                        green.value = it.toInt()
+                    value = green.value.toFloat(),
+                    onValueChange = { green.value = it.toInt()
                     },
+                    valueRange = 0f..255f,
                     colors = SliderDefaults.colors(
-                        thumbColor = Color.Gray,
-                        activeTickColor = Color.Gray,//バーの動作中の色
-                        inactiveTickColor = Color.LightGray//バーの静止中の色
+                        thumbColor = AppColors.Blue,
+                        activeTickColor = AppColors.Blue,//バーの動作中の色
                     )
                 )
             }
@@ -118,20 +131,24 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorViewModel) {
         Box (
             modifier = Modifier
                 .size(150.dp)
-                .background(Color(android.graphics.Color.parseColor(color)))//背景の色を設定
                 .clickable { onColorselected(color) }//clickableでクリック時の挙動を設定する
+                .background(Color(android.graphics.Color.parseColor(color)))//背景の色を設定
         )
     }
 
     @Composable
     fun ColorCodeText(colorCode:String,onValueChanged:(String)-> Unit) {
         TextField(value = colorCode,
-            onValueChange = {newColorCode -> onValueChanged(newColorCode)},
+            onValueChange = {new -> onValueChanged(new)},
             label = { Text("カラーコードを入力")},
-            Modifier = Modifier
+            modifier = Modifier
                 .padding(top = 16.dp)
-                .fillMaxWidth()
-        )
+                .width(150.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = AppColors.White,//フォーカス時の色
+                unfocusedContainerColor = AppColors.White,
+                focusedIndicatorColor = AppColors.Gray02
+        ))
     }
 
 //色を作るためのRGBのシークバー
