@@ -8,9 +8,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 
 private val LightColorPalette = lightColorScheme(
-primary = Color(0xFFE3E3E3),//MainColor
+primary = Color.White,//MainColor
     onPrimary = Color.White,//プライマリ色に重ねて表示する色（文字とかアイコン）
-    secondary = Color(0xFF2196F3),//Mainに対するSubColor
+    secondary = Color.White,//Mainに対するSubColor
     onSecondary = Color.Black,
     background = Color.White,//背景色
     onBackground = Color.Black,

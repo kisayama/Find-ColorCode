@@ -1,6 +1,7 @@
 package com.example.findcolorcode.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,7 +32,8 @@ import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.viewmodel.ColorViewModel
 import androidx.compose.ui.graphics.Color as ComposeColor
 
-//TODO 背景色と　シークバーの色 枠線の色
+//TODO MaterialDesignでテーマカラーの色を調整する
+//TODO 時間があればSLiderのthumbを調整するためにカスタムに変更するか検討する
 @Composable
 fun ColorChoiceScreen(navController: NavController, viewModel: ColorViewModel) {
     //rememberはデバイスの回転などのアクティビティの破棄をされると状態が保存されないことに注意
@@ -93,9 +95,10 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorViewModel) {
                         red.value = it.toInt() //カラー変更の設定,
                     },
                     valueRange = 0f..255f,
+                    modifier = Modifier.fillMaxWidth(0.9f),
                     colors = SliderDefaults.colors(
                         activeTickColor = AppColors.Red,
-                        inactiveTickColor = AppColors.Red,
+                        activeTrackColor = AppColors.Red,
                         thumbColor = AppColors.Red, //バーの動作中の色
                     )
                 )
@@ -104,9 +107,11 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorViewModel) {
                     onValueChange = { blue.value = it.toInt()
                     },
                     valueRange = 0f..255f,
+                    modifier = Modifier.fillMaxWidth(0.9f),
                     colors = SliderDefaults.colors(
                         thumbColor = AppColors.Green,
-                        activeTickColor = AppColors.Green,//バーの動作中の色
+                        activeTrackColor = AppColors.Green,
+                        activeTickColor = AppColors.Green//バーの動作中の色
                     )
                 )
                 Slider(
@@ -114,10 +119,12 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorViewModel) {
                     onValueChange = { green.value = it.toInt()
                     },
                     valueRange = 0f..255f,
+                    modifier = Modifier.fillMaxWidth(0.9f),//スライダーの横幅は最大値の75%
                     colors = SliderDefaults.colors(
                         thumbColor = AppColors.Blue,
-                        activeTickColor = AppColors.Blue,//バーの動作中の色
-                    )
+                        activeTrackColor = AppColors.Blue,
+                        activeTickColor = AppColors.Blue//バーの動作中の色
+                    ),
                 )
             }
 
@@ -133,6 +140,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorViewModel) {
                 .size(150.dp)
                 .clickable { onColorselected(color) }//clickableでクリック時の挙動を設定する
                 .background(Color(android.graphics.Color.parseColor(color)))//背景の色を設定
+                .border(2.dp,AppColors.Gray03)
         )
     }
 
@@ -147,7 +155,9 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorViewModel) {
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = AppColors.White,//フォーカス時の色
                 unfocusedContainerColor = AppColors.White,
-                focusedIndicatorColor = AppColors.Gray02
+                focusedIndicatorColor = AppColors.Black,
+                focusedLabelColor = AppColors.Gray03,
+                unfocusedLabelColor = AppColors.Gray03
         ))
     }
 
