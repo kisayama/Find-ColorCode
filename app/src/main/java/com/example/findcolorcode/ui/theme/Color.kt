@@ -8,8 +8,7 @@ object AppColors {
     val Red = Color(0xFFFF0000)
     val Green = Color(0xFF00FF00)
     val Blue = Color(0xFF0000FF)
-    val Gray = Color(0xFFC5C5C5)
-    val Gray02 = Color(0xFFF6F5F5)
-    val Blue02 = Color(0xFF2196F3)
-    val Gray03 = Color(0xFFC5C5C5)
+    val Gray = Color(0xFFB0B0B0)
+    val lightGray = Color(0xFFE7E7E7)
+
 }

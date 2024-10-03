@@ -19,21 +19,27 @@ import androidx.core.view.WindowCompat
 import com.example.app.ui.theme.AppColors
 
 private val DarkColorScheme = darkColorScheme(
-    onPrimary = Color.White,//プライマリ色に重ねて表示する色（文字とかアイコン）
-    secondary = Color.White,//Mainに対するSubColor
-    onSecondary = Color.Black,
-    background = Color.White,//背景色
-    onBackground = Color.Black,
-    surface = Color.White,
-    onSurface = Color.Black
+    primary = AppColors.Gray,//MainColor
+    onPrimary = AppColors.Black,//文字は黒
+    secondary = AppColors.lightGray,//Mainに対するSubColor
+    onSecondary = AppColors.Black,
+    background = AppColors.BgWhite,//背景色
+    onBackground = AppColors.Black,
+    surface = AppColors.lightGray,
+    onSurface = AppColors.Black
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color.White,
-    secondary = AppColors.Gray,
-    tertiary = Color.Gray,
-    background = Color.White
+    primary = AppColors.Gray,//MainColor
+    onPrimary = AppColors.Black,//文字は黒
+    secondary = AppColors.lightGray,//Mainに対するSubColor
+    onSecondary = AppColors.Black,
+    background = AppColors.BgWhite,//背景色
+    onBackground = AppColors.Black,
+    surface = AppColors.lightGray,
+    onSurface = AppColors.Black
 )
+
 
 @Composable
 fun FindColorCodeTheme(

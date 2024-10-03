@@ -3,17 +3,22 @@ package com.example.findcolorcode.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -26,9 +31,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.app.ui.theme.AppColors
+import com.example.findcolorcode.R
 import com.example.findcolorcode.viewmodel.ColorViewModel
 import androidx.compose.ui.graphics.Color as ComposeColor
 
@@ -51,126 +58,179 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorViewModel) {
         //Boxを横一列に2つ並べる
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 60.dp),
+                .fillMaxWidth()
+                .padding(top = 40.dp, start = 16.dp, end = 16.dp),
             verticalArrangement = Arrangement.Top,//全体を中央揃え
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            //四角を横に二つ並べるためのRow
+            //四角を横に二つ並べTextFieldとButtonをその下に2：1の比率で配置
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.Top
             ) {
                 //Square2
-                Column {
-                    ColorSquare(color = color1Code,onColorselected = { selectedColor ->
+                Column (
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.Start,
+                    ){
+                    ColorSquare(color = color1Code,
+                        onColorselected = { selectedColor ->
                         viewModel.updateColorSquare1(selectedColor)
-                    })
-                    ColorCodeText(colorCode = color1Code, onValueChanged = {new ->
-                        viewModel.updateColorSquare1(new)
-                    })
+                    }
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        ColorCodeText(
+                            modifier = Modifier.weight(2f),
+                            colorCode = color1Code,
+                            onValueChanged = { new ->
+                                viewModel.updateColorSquare1(new)
+                            }
+                        )
+                        ColorSaveBtn(
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
                 //Square1とSquare2　の間のスペース
                 Spacer(modifier = Modifier.width(40.dp))//間にスペース
 
                 //Square2
-                Column {
+                Column (
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.Start
+                ){
                     ColorSquare(color = color2Code, onColorselected = { selectedColor ->
                         viewModel.updateColorSquare2(selectedColor)
                     })
-                    ColorCodeText(colorCode = color2Code, onValueChanged = {new ->
-                        viewModel.updateColorSquare2(new)})
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        ColorCodeText(
+                            modifier = Modifier.weight(2f),
+                            colorCode = color2Code,
+                            onValueChanged = { new ->
+                                viewModel.updateColorSquare2(new)
+                            }
+                        )
+                        ColorSaveBtn(
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
             }
-            Spacer(modifier = Modifier.height(20.dp))//四角とシークバーの間のスペース
-            //シークバーを三つ縦に並べるためのColumn
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(15.dp)//シークバー間に15dpのスペースを入れる
-            ) {
-                Slider(
-                    value = red.value.toFloat(),
-                    onValueChange = {
-                        red.value = it.toInt() //カラー変更の設定,
-                    },
-                    valueRange = 0f..255f,
-                    modifier = Modifier.fillMaxWidth(0.9f),
-                    colors = SliderDefaults.colors(
-                        activeTickColor = AppColors.Red,
-                        activeTrackColor = AppColors.Red,
-                        thumbColor = AppColors.Red, //バーの動作中の色
-                    )
-                )
-                Slider(
-                    value = blue.value.toFloat(),
-                    onValueChange = { blue.value = it.toInt()
-                    },
-                    valueRange = 0f..255f,
-                    modifier = Modifier.fillMaxWidth(0.9f),
-                    colors = SliderDefaults.colors(
-                        thumbColor = AppColors.Green,
-                        activeTrackColor = AppColors.Green,
-                        activeTickColor = AppColors.Green//バーの動作中の色
-                    )
-                )
-                Slider(
-                    value = green.value.toFloat(),
-                    onValueChange = { green.value = it.toInt()
-                    },
-                    valueRange = 0f..255f,
-                    modifier = Modifier.fillMaxWidth(0.9f),//スライダーの横幅は最大値の75%
-                    colors = SliderDefaults.colors(
-                        thumbColor = AppColors.Blue,
-                        activeTrackColor = AppColors.Blue,
-                        activeTickColor = AppColors.Blue//バーの動作中の色
-                    ),
-                )
+                    Spacer(modifier = Modifier.height(20.dp))//四角とシークバーの間のスペース
+                    //シークバーを三つ縦に並べるためのColumn
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(15.dp)//シークバー間に15dpのスペースを入れる
+                    ) {
+                        Slider(
+                            value = red.value.toFloat(),
+                            onValueChange = {
+                                red.value = it.toInt() //カラー変更の設定,
+                            },
+                            valueRange = 0f..255f,
+                            modifier = Modifier.fillMaxWidth(0.9f),
+                            colors = SliderDefaults.colors(
+                                activeTickColor = AppColors.Red,
+                                activeTrackColor = AppColors.Red,
+                                thumbColor = AppColors.Red, //バーの動作中の色
+                            )
+                        )
+                        Slider(
+                            value = blue.value.toFloat(),
+                            onValueChange = {
+                                blue.value = it.toInt()
+                            },
+                            valueRange = 0f..255f,
+                            modifier = Modifier.fillMaxWidth(0.9f),
+                            colors = SliderDefaults.colors(
+                                thumbColor = AppColors.Green,
+                                activeTrackColor = AppColors.Green,
+                                activeTickColor = AppColors.Green//バーの動作中の色
+                            )
+                        )
+                        Slider(
+                            value = green.value.toFloat(),
+                            onValueChange = {
+                                green.value = it.toInt()
+                            },
+                            valueRange = 0f..255f,
+                            modifier = Modifier.fillMaxWidth(0.9f),//スライダーの横幅は最大値の75%
+                            colors = SliderDefaults.colors(
+                                thumbColor = AppColors.Blue,
+                                activeTrackColor = AppColors.Blue,
+                                activeTickColor = AppColors.Blue//バーの動作中の色
+                            ),
+                        )
+                    }
+
+
+                }
             }
-
-
-        }
-    }
 
     @Composable
     //シークバーで作成した色を表示するBox
     fun ColorSquare(color:String,onColorselected:(String)-> Unit) {
         Box (
             modifier = Modifier
-                .size(150.dp)
+                .size(160.dp)
                 .clickable { onColorselected(color) }//clickableでクリック時の挙動を設定する
                 .background(Color(android.graphics.Color.parseColor(color)))//背景の色を設定
-                .border(2.dp,AppColors.Gray03)
+                .border(2.dp, AppColors.lightGray)
         )
     }
 
     @Composable
-    fun ColorCodeText(colorCode:String,onValueChanged:(String)-> Unit) {
+    fun ColorCodeText(modifier: Modifier = Modifier,colorCode:String,onValueChanged:(String)-> Unit) {
         TextField(value = colorCode,
             onValueChange = {new -> onValueChanged(new)},
-            label = { Text("カラーコードを入力")},
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .width(150.dp),
+            label = { Text("カラーコード")},
+            modifier = modifier
+            ,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = AppColors.White,//フォーカス時の色
                 unfocusedContainerColor = AppColors.White,
                 focusedIndicatorColor = AppColors.Black,
-                focusedLabelColor = AppColors.Gray03,
-                unfocusedLabelColor = AppColors.Gray03
+                focusedLabelColor = AppColors.Gray,
+                unfocusedLabelColor = AppColors.Gray
         ))
     }
 
-//色を作るためのRGBのシークバー
-@Composable
-fun SeekBar(value:Int,onValueChange: (Int)-> Unit) {
-    Slider(
-        value = value.toFloat(),//スライダーを滑らかに動かすためにfloatを指定
-        onValueChange = { onValueChange(it.toInt()) },//スライダーの値Float型をIntに変換する
-        valueRange = 0f..255f,
-        modifier = Modifier.fillMaxWidth(0.75f)//スライダーの横幅は最大値の75%
-    )
-}
+    @Composable
+    //色を保存するためのボタン
+    fun ColorSaveBtn(modifier: Modifier = Modifier) {
+        IconButton(
+            onClick = {
+                //TODO SaveColorDialogを表示する
+            }, modifier = modifier
+        ) {
+            Icon(
+                painter = painterResource(
+                    id = R.drawable.ic_save_btn
+                ),
+                contentDescription = "Save Color",
+                modifier = Modifier
+            )
+        }
+    }
+
+        //色を作るためのRGBのシークバー
+        @Composable
+        fun SeekBar(value: Int, onValueChange: (Int) -> Unit) {
+            Slider(
+                value = value.toFloat(),//スライダーを滑らかに動かすためにfloatを指定
+                onValueChange = { onValueChange(it.toInt()) },//スライダーの値Float型をIntに変換する
+                valueRange = 0f..255f,
+                modifier = Modifier.fillMaxWidth(0.75f)//スライダーの横幅は最大値の75%
+            )
+        }
+
 
 
 
