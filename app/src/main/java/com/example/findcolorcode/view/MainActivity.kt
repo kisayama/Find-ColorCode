@@ -21,7 +21,7 @@ import com.example.findcolorcode.viewmodel.MainViewModel
 import com.example.findcolorcode.components.BottomBar
 import com.example.findcolorcode.components.BottomBarTab
 import com.example.findcolorcode.ui.theme.FindColorCodeTheme
-import com.example.findcolorcode.viewmodel.ColorViewModel
+import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 import com.squareup.moshi.Moshi
 
 
@@ -73,7 +73,7 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel) {
             composable(BottomBarTab.ColorChoice.route) {
                 ColorChoiceScreen(
                     navController,
-                    ColorViewModel()
+                    ColorChoiceViewModel()
                 )
             }
             composable(BottomBarTab.FavoriteList.route) {
