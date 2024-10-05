@@ -23,14 +23,12 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
 import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.R
@@ -46,6 +44,9 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     //選択されたsquareのインデックスを取得
     val selectedSquare by viewModel.selectedSquare.observeAsState(1)
 
+    val square1Index = 1
+    val square2Index = 2
+
     // square1のRGB値を取得
     val red1 by viewModel.red1.observeAsState(255)
     val green1 by viewModel.green1.observeAsState(255)
@@ -57,14 +58,14 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     val blue2 by viewModel.blue2.observeAsState(255)
 
     //現在選択されているRGBの値を取得
-    val currentRed = if (selectedSquare == 1)red1 else red2
-    val currentGreen = if (selectedSquare == 1)green1 else green2
-    val currentBlue = if (selectedSquare == 1)blue1 else blue2
+    val currentRed = if (selectedSquare == square1Index)red1 else red2
+    val currentGreen = if (selectedSquare == square1Index)green1 else green2
+    val currentBlue = if (selectedSquare == square1Index)blue1 else blue2
 
     //square1のカラーコードを取得
-    val color1Code = viewModel.colorSquare1.observeAsState("#FFFFFFF").value
+    val square1ColorCode = viewModel.colorSquare1.observeAsState("#FFFFFFF").value
     //square2のカラーコードを取得
-    val color2Code = viewModel.colorSquare2.observeAsState("#FFFFFFF").value
+    val square2ColorCode = viewModel.colorSquare2.observeAsState("#FFFFFFF").value
 
 
         //Boxを横一列に2つ並べる
@@ -81,15 +82,15 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.Top
             ) {
-                //Square2
+                //Square1
                 Column (
                     modifier = Modifier.weight(1f),
                     horizontalAlignment = Alignment.Start,
                     ){
-                    ColorSquare(color = color1Code,
+                    ColorSquare(color = square1ColorCode,
                         isSelected = selectedSquare == 1,
-                        onColorSelected = { selectedColor ->
-                        viewModel.updateColorSquare1(selectedColor)
+                        onSquareSelected = { selectedSquare ->
+                        viewModel.changeSelectedSquare(1)
                     }
                     )
                     Row(
@@ -99,7 +100,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                     ) {
                         ColorCodeText(
                             modifier = Modifier.weight(2f),
-                            colorCode = color1Code,
+                            colorCode = square1ColorCode,
                             onValueChanged = { new ->
                                 viewModel.updateColorSquare1(new)
                             }
@@ -117,10 +118,10 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                     modifier = Modifier.weight(1f),
                     horizontalAlignment = Alignment.Start
                 ){
-                    ColorSquare(color = color2Code,
+                    ColorSquare(color = square2ColorCode,
                         isSelected = selectedSquare == 2
-                        ,onColorSelected = { selectedColor ->
-                        viewModel.updateColorSquare2(selectedColor)
+                        ,onSquareSelected = { selectedColor ->
+                        viewModel.changeSelectedSquare(2)
                     })
                     Row(
                         modifier = Modifier
@@ -129,7 +130,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                     ) {
                         ColorCodeText(
                             modifier = Modifier.weight(2f),
-                            colorCode = color2Code,
+                            colorCode = square2ColorCode,
                             onValueChanged = { new ->
                                 viewModel.updateColorSquare2(new)
                             }
@@ -177,26 +178,57 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
 
                 }
 
+data class ColorData(val colorCode: String,val red:Int,val blue :Int,val green: Int)
+
+@Composable
+fun ColorColumn(viewModel: ColorChoiceViewModel,
+                selectedSquare:Int,//現在選択中のsquareのIndex
+                colorData:ColorData,
+                squareIndex:Int//各squareのIndex
+){
+    val isSelected:Boolean = squareIndex == selectedSquare
+
+    //squareを表示
+    ColorSquare(color = colorData.colorCode,
+                isSelected = isSelected,
+                onSquareSelected = {
+                    viewModel.changeSelectedSquare(squareIndex)
+                }
+    )
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.Bottom
+    ){
+        ColorCodeText(
+            modifier = Modifier,
+            colorCode = colorData.colorCode,
+            onValueChanged = {newvalue -> colorData.colorCode})
+        ColorSaveBtn(
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
     @Composable
     //シークバーで作成した色を表示するBox
-    fun ColorSquare(color:String,isSelected :Boolean ,onColorSelected:(String)-> Unit) {
+    fun ColorSquare(color:String,isSelected :Boolean ,onSquareSelected:()-> Unit) {
         val borderColor = if (isSelected) Color.Black else Color.Gray
         Box (
             modifier = Modifier
                 .size(160.dp)
-                .clickable { }//clickableでクリック時の挙動を設定する
+                //クリック時にisSelectedをチェックしtrueなら1、falseなら2をonSquareSelectedにセットする
+                .clickable { onSquareSelected() }
                 .background(Color(android.graphics.Color.parseColor(color)))//背景の色を設定
                 .border(2.dp, borderColor)
         )
     }
 
-    @Composable
+@Composable
     fun ColorCodeText(modifier: Modifier = Modifier,colorCode:String,onValueChanged:(String)-> Unit) {
         TextField(value = colorCode,
             onValueChange = {new -> onValueChanged(new)},
             label = { Text("カラーコード")},
-            modifier = modifier
-            ,
+            modifier = modifier,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = AppColors.White,//フォーカス時の色
                 unfocusedContainerColor = AppColors.White,
