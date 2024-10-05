@@ -25,16 +25,32 @@ class ColorChoiceViewModel :ViewModel(){
     private val _colorSquare2 = MutableLiveData("#FFFFFF")//デフォルトのカラーコード
     val colorSquare2 : LiveData<String> get() =_colorSquare2
 
+    //====シークバーのRGB値を保存する変数square1,square2====
     //rememberはデバイスの回転などのアクティビティの破棄をされると状態が保存されないことに注意
-    //square1の各シークバーの値保存する変数とその初期値
-    val red1 = MutableLiveData(255)
+    val red1 = MutableLiveData(255)//square1の各シークバーの値を保存する変数とその初期値
     val green1 = MutableLiveData(255)
     val blue1= MutableLiveData(255)
 
-    //square2の各シークバーの値保存する変数とその初期値
-    val red2 = MutableLiveData(255)
+    val red2 = MutableLiveData(255)//square2の各シークバーの値を保存する変数とその初期値
     val green2 = MutableLiveData(255)
     val blue2 = MutableLiveData(255)
+
+    /*可読性を高めるためにDataClassにまとめてもいいかも。
+     データクラス内のデータに一つでも変更があるとデータクラス内を全て再描写しないといけないから注意（RGBならいいかも）
+     //square1の各シークバーの値とその初期値
+    val square1ColorDataValues = MutableLiveData(ColorRGBValues(255,255,255))
+
+    //square2の各シークバーの値とその初期値
+    val square2ColorDataValues = MutableLiveData(ColorRGBValues(255,255,255))
+
+    data class ColorRGBValues(
+    val red:Int,
+    val green :Int,
+    val blue :Int
+)
+    */
+
+
 
     //カラーを更新する関数
     fun updateColorSquare1(color: String){
