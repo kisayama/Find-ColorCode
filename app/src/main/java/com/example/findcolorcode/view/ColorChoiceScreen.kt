@@ -1,5 +1,6 @@
 package com.example.findcolorcode.view
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,12 +27,14 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
 import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.R
+import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 
 //TODO ランダムカラーパレットの導入
@@ -50,11 +53,11 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     // ====== Square1 Color Data =======
     // square1のRGB値を取得
     val red1 by viewModel.red1.observeAsState(255)
-    val green1 by viewModel.green2.observeAsState(255)
+    val green1 by viewModel.green1.observeAsState(255)
     val blue1 by viewModel.blue1.observeAsState(255)
     //square1のカラーコードを取得
-    val square1ColorCode = viewModel.colorSquare1.observeAsState("#FFFFFFF").value
-    val square1ColorData = ColorData(square1ColorCode, red1, green1, blue1)//RGBとカラーコードをまとめたColorData
+    val square1ColorCode = viewModel.square1ColorCode.observeAsState("#FFFFFFF").value
+    val square1ColorData = ColorDataForColorChoice(square1ColorCode, red1, green1, blue1)//RGBとカラーコードをまとめたColorData
 
     // ===== Square2 Color Data =====
     // square2のRGB値を取得
@@ -62,91 +65,163 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     val green2 by viewModel.green2.observeAsState(255)
     val blue2 by viewModel.blue2.observeAsState(255)
     //square2のカラーコードを取得
-    val square2ColorCode = viewModel.colorSquare2.observeAsState("#FFFFFFF").value
-    val square2ColorData = ColorData(square2ColorCode, red2, green2, blue2)
+    val square2ColorCode = viewModel.square2ColorCode.observeAsState("#FFFFFFF").value
+    val square2ColorData = ColorDataForColorChoice(square2ColorCode, red2, green2, blue2)
 
-    //Boxを横一列に2つ並べる
+    // 全体をColumnで囲んでレイアウトを縦方向に
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 40.dp, start = 16.dp, end = 16.dp),
-        verticalArrangement = Arrangement.Top,//全体を中央揃え
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp), // 四角とシークバーの間のスペース
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        //四角を横に二つ並べTextFieldとButtonをその下に2：1の比率で配置
+
+        // Boxを横一列に2つ並べる
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.Top
         ) {
-            //Square1
             Column(
                 modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.Start,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 ColorColumn(viewModel, selectedSquare, square1ColorData, square1Index)
-
+            }
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
                 ColorColumn(viewModel, selectedSquare, square2ColorData, square2Index)
             }
-            Spacer(modifier = Modifier.height(20.dp))//四角とシークバーの間のスペース
-            //シークバーを三つ縦に並べるためのColumn
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(15.dp)//シークバー間に15dpのスペースを入れる
-            ) {
-                val currentColorData =
-                    if (square1Index == selectedSquare) square1ColorData else square2ColorData
-
-                SeekBar(colorDataRGB = currentColorData.red, sliderColor = Color.Red,
-                    onValueChange = {newValue -> }
-                )
-                SeekBar(colorDataRGB = currentColorData.green, sliderColor = Color.Green,
-                    onValueChange = {newValue ->currentColorData.green }
-                )
-                SeekBar(colorDataRGB = currentColorData.blue, sliderColor = Color.Blue,
-                    onValueChange = {newValue ->currentColorData.blue }
-                )
-
-                }
-
-            }
         }
-    }
 
-    data class ColorData(val colorCode: String, val red: Int, val blue: Int, val green: Int)
+        // シークバーを表示
+        SeekBars(
+            selectedSquare = selectedSquare,
+            square1Index = square1Index,
+            viewModel = viewModel,
+            square1ColorData = square1ColorData,
+            square2ColorData = square2ColorData
+        )
+    }
+}
 
     @Composable
     fun ColorColumn(
         viewModel: ColorChoiceViewModel,
         selectedSquare: Int,//現在選択中のsquareのIndex
-        colorData: ColorData,
+        colorData: ColorDataForColorChoice,
         squareIndex: Int//各squareのIndex
     ) {
-        val isSelected: Boolean = squareIndex == selectedSquare
-
-        //squareを表示
-        ColorSquare(color = colorData.colorCode,
-            isSelected = isSelected,
-            onSquareSelected = {
-                viewModel.changeSelectedSquare(squareIndex)
-            }
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.Bottom
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(15.dp)//シークバー間に15dpのスペースを入れる
         ) {
-            ColorCodeText(
-                modifier = Modifier,
-                colorCode = colorData.colorCode,
-                onValueChanged = { newvalue -> colorData.colorCode })
+            val isSelected: Boolean = squareIndex == selectedSquare
 
-            ColorSaveBtn(
-                modifier = Modifier.weight(1f)
+            //squareを表示
+            ColorSquare(color = colorData.colorCode,
+                isSelected = isSelected,
+                onSquareSelected = {
+                    viewModel.changeSelectedSquare(squareIndex)
+                }
             )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.Bottom
+            ) {
+                ColorCodeText(
+                    modifier = Modifier.weight(2f),
+                    selectedSquare= selectedSquare,
+                    colorCode = colorData.colorCode,
+                    onValueChanged = { newvalue -> viewModel.updateColorCode(squareIndex,newvalue) },
+                    onConvertToRGB = {viewModel.convertToRGB(selectedSquare)})
+                ColorSaveBtn(
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            //エラーメッセージの表示
+            //カラーコードに無効な値が入力された時に表示するエラーメッセージ(初期値は"")
+            val colorCodeErrorMessage by viewModel.colorCodeErrorMessage.observeAsState("")
+            if (colorCodeErrorMessage.isNotEmpty()){ //colorCodeErrorMessageが空白の時
+                ShowToast(message = colorCodeErrorMessage)
+            }
+
         }
     }
 
+        @Composable
+        fun SeekBars(selectedSquare: Int,square1Index: Int,viewModel: ColorChoiceViewModel,
+                     square1ColorData: ColorDataForColorChoice,square2ColorData: ColorDataForColorChoice) {
+            //selectedSquareに応じて使用するColorDataを決定する
+            val currentColorData =
+                if (square1Index == selectedSquare) square1ColorData else square2ColorData
+
+            Column(
+                modifier = Modifier.fillMaxWidth(), // 幅を親コンポーネントに合わせる
+                verticalArrangement = Arrangement.spacedBy(16.dp), // シークバー間に16dpの間隔
+                horizontalAlignment = Alignment.CenterHorizontally //水平方向に中央揃え
+            ) {
+                SeekBar(
+                    //現在選択しているsquare
+                    selectedSquare = selectedSquare,
+                    //selectedSquareに応じて決定されたColorDaの中のRGB値のいずれかを値とする
+                    colorDataRGB = currentColorData.red,
+                    //スライダーの色を指定する
+                    sliderColor = Color.Red,
+                    //==スライダーが動かされ値が変更された時の処理==
+                    //setSquareRGBメソッドを呼び出しviewModelの指定されたRGB値の更新を行う
+                    onValueChange = { newValue ->
+                        viewModel.setSquareRGB(
+                            selectedSquare,
+                            "red",
+                            newValue,
+                        )
+                    },
+                    //rgb値をカラーコードに変換し、selectedSquareのcolorCodeを更新する
+                    onConvertToColorCode = {
+                        viewModel.convertToColorCode(selectedSquare)
+                    }
+                )
+                SeekBar(colorDataRGB = currentColorData.green,
+                    sliderColor = Color.Green,
+                    selectedSquare = selectedSquare,
+                    onValueChange = { newValue ->
+                        viewModel.setSquareRGB(
+                            selectedSquare,
+                            "green",
+                            newValue,
+                        )
+                    },
+                    onConvertToColorCode = {
+                        viewModel.convertToColorCode(selectedSquare)
+                    }
+                )
+                SeekBar(colorDataRGB = currentColorData.blue,
+                    sliderColor = Color.Blue,
+                    selectedSquare = selectedSquare,
+                    onValueChange = { newValue ->
+                        viewModel.setSquareRGB(
+                            selectedSquare,
+                            "blue",
+                            newValue,
+                        )
+                    },
+                    onConvertToColorCode = {
+                        viewModel.convertToColorCode(selectedSquare)
+                    }
+                )
+            }
+        }
+
+//TODO　ボタン、テキストコードを触った時もonSquareSelectedを動作させる
+//TODO カラーコード入力時に判定を行う
         @Composable
         //シークバーで作成した色を表示するBox
         fun ColorSquare(color: String, isSelected: Boolean, onSquareSelected: () -> Unit) {
@@ -164,12 +239,17 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
         @Composable
         fun ColorCodeText(
             modifier: Modifier = Modifier,
+            selectedSquare: Int,
             colorCode: String,
-            onValueChanged: (String) -> Unit
+            onValueChanged: (String) -> Unit,
+            onConvertToRGB: (Int) -> Unit
         ) {
             TextField(
                 value = colorCode,
-                onValueChange = { new -> onValueChanged(new) },
+                onValueChange = { newValue ->
+                    onValueChanged(newValue)
+                    onConvertToRGB(selectedSquare)
+                },
                 label = { Text("カラーコード") },
                 modifier = modifier,
                 colors = TextFieldDefaults.colors(
@@ -181,8 +261,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                 )
             )
         }
-
-        @Composable
+      @Composable
         //色を保存するためのボタン
         fun ColorSaveBtn(modifier: Modifier = Modifier) {
             IconButton(
@@ -202,8 +281,14 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
 
         //色を作るためのRGBのシークバー
         @Composable
-        fun SeekBar(colorDataRGB: Int,sliderColor: Color, onValueChange: (Int) -> Unit) {
-            //TODO onValueChangeの定義
+        fun SeekBar(colorDataRGB: Int,
+                    sliderColor: Color,
+                    selectedSquare:Int,
+                    //ViewModelのRGB値を変更
+                    onValueChange: (Int) -> Unit,
+                    //シークバーの値をカラーコードに変換
+                    onConvertToColorCode: (Int) -> (Unit),
+                    ){
             Slider(
                 //あらかじめIf文でselectedSquareに対応するcolorDataを引き渡す
                 value = colorDataRGB.toFloat(),//スライダーを滑らかに動かすためにfloatを指定
@@ -212,9 +297,19 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                     activeTrackColor = sliderColor,
                     activeTickColor = sliderColor //バーの動作中の色
                 ),
-                onValueChange = { onValueChange(it.toInt()) },//スライダーの値Float型をIntに変換する
+                onValueChange = {newValue->
+                    onValueChange(newValue.toInt())
+                    onConvertToColorCode(selectedSquare)
+                },
+                //スライダーの値Float型をIntに変換する
                 valueRange = 0f..255f,
                 modifier = Modifier.fillMaxWidth(0.9f)//スライダーの横幅は最大値の75%
             )
         }
+
+    @Composable
+    fun ShowToast(message: String) {
+        val context = LocalContext.current
+        Toast.makeText(context,message,Toast.LENGTH_SHORT).show()
+    }
 

@@ -1,39 +1,168 @@
 package com.example.findcolorcode.viewmodel
 
+import android.graphics.Color
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.findcolorcode.model.ColorDataForColorChoice
 
-class ColorChoiceViewModel :ViewModel(){
+class ColorChoiceViewModel :ViewModel() {
 
+    //==選択squareについて==
     //選択squareのインデックス
     private val _selectedSquare = MutableLiveData(1)
-    val selectedSquare: LiveData<Int>  = _selectedSquare
+    val selectedSquare: LiveData<Int> = _selectedSquare
 
     //選択squareを変更する
-    fun changeSelectedSquare(newNumber : Int){
-        _selectedSquare.value =   newNumber
+    fun changeSelectedSquare(newNumber: Int) {
+        _selectedSquare.value = newNumber
     }
+    //===================
 
-    //Square１の状態
-    private val _colorSquare1 = MutableLiveData("#FFFFFF")//デフォルトのカラーコード
-    val colorSquare1 : LiveData<String> get() =_colorSquare1
+    //==squareColorCodeの初期値の定義と更新メソッド==
+    //Square1
+    private val _square1ColorCode = MutableLiveData("#FFFFFF")//デフォルトのカラーコード
+    val square1ColorCode: LiveData<String> get() = _square1ColorCode
 
-    //Square２の状態
-    private val _colorSquare2 = MutableLiveData("#FFFFFF")//デフォルトのカラーコード
-    val colorSquare2 : LiveData<String> get() =_colorSquare2
+    //Square2
+    private val _square2ColorCode = MutableLiveData("#FFFFFF")//デフォルトのカラーコード
+    val square2ColorCode: LiveData<String> get() = _square2ColorCode
+
+    //===================
 
     //====シークバーのRGB値を保存する変数square1,square2====
     //rememberはデバイスの回転などのアクティビティの破棄をされると状態が保存されないことに注意
     val red1 = MutableLiveData(255)//square1の各シークバーの値を保存する変数とその初期値
     val green1 = MutableLiveData(255)
-    val blue1= MutableLiveData(255)
+    val blue1 = MutableLiveData(255)
 
     val red2 = MutableLiveData(255)//square2の各シークバーの値を保存する変数とその初期値
     val green2 = MutableLiveData(255)
     val blue2 = MutableLiveData(255)
+    //===================
+
+    //選択しているsquareに応じたシークバーの値を取得する関数
+    fun setSquareRGB(selectedSquare: Int, RGBColorType: String, value: Int) {
+        when (selectedSquare) {
+            1 -> {
+                when (RGBColorType) {
+                    "red" -> red1.value = value
+                    "green" -> green1.value = value
+                    "blue" -> blue1.value = value
+                }
+            }
+
+            2 -> {
+                when (RGBColorType) {
+                    "red" -> red2.value = value
+                    "green" -> green2.value = value
+                    "blue" -> blue2.value = value
+                }
+            }
+        }
+    }
+
+    //====カラーコード→RGB=====
+
+    //入力されたカラーコードをViewModelのカラーコードに入力する
+    fun updateColorCode(squareIndex: Int, newValue: String) {
+        if (isValidColorCode(newValue)) {
+            when (squareIndex) {
+                1 -> _square1ColorCode.value = newValue
+                2 -> _square2ColorCode.value = newValue
+            }
+            _colorCodeErrorMessage.value ="" //エラーメッセージ必要なし
+        } else {
+            _colorCodeErrorMessage.value ="無効なカラーコードです。色の名前, #RRGGBB, #AARRGGBB のみ有効です。"
+        }
+    }
+
+    //ColorCode検証時に表示するエラーコード
+    private val _colorCodeErrorMessage = MutableLiveData<String>()//デフォルトのカラーコード
+    val colorCodeErrorMessage: LiveData<String> get() = _square2ColorCode
+
+    //ColorCodeが手入力された時に検証するメソッド
+    private fun isValidColorCode(colorCode: String): Boolean {
+        //パースできるColorCodeの形式は以下の3種類
+
+        //正規表現　#RRGGBB 6桁の16進数
+        val RRGGBB = Regex("^#([0-9a-fA-F]{6})$", RegexOption.IGNORE_CASE)
+
+        //正規表現　#AARRGGBB 8桁の16進数
+        val AARRGGBB = Regex("^#[0-9A-Fa-f]{8}$", RegexOption.IGNORE_CASE)
+
+        // 認識できる色名をセットにする
+        val colorNames = setOf(
+            "red", "blue", "green", "black", "white", "gray", "cyan", "magenta",
+            "yellow", "lightgray", "darkgray", "grey", "lightgrey", "darkgrey",
+            "aqua", "fuchsia", "lime", "maroon", "navy", "olive", "purple", "silver", "teal"
+        )
+
+        //入力された値が上記3種類に当てはまるか検証
+        return colorCode.let {
+            it.matches(RRGGBB) || it.matches(AARRGGBB) || it.lowercase() in colorNames
+        }
+    }
+
+    fun convertToRGB(selectedSquare: Int) {
+        when (selectedSquare) {
+            //selectedSquareに応じて現在のcolorCodeを取得しRGBを計算する
+            1 -> {
+                val colorCode = _square1ColorCode
+                val (red, green, blue) = calConvertToRGB(colorCode.toString())
+                red1.value = red
+                green1.value = green
+                blue1.value = blue
+            }
+
+            2 -> {
+                val colorCode = _square2ColorCode
+                val (red, green, blue) = calConvertToRGB(colorCode.toString())
+                red2.value = red
+                green2.value = green
+                blue2.value = blue
+            }
+        }
+    }
+
+    //ColorCodeを受け取り10進数に変換しRGB値を返す
+    fun calConvertToRGB(colorCode: String): Triple<Int, Int, Int> {
+        val colorCodeWithoutHash = colorCode.removePrefix("#")
+        //2文字ずつ分割してリストにして各16進数を10進数に変換する
+        val RGBList = colorCodeWithoutHash.chunked(2).map { it.toInt(16) }
+        return Triple(RGBList[0], RGBList[1], RGBList[2]) //R,G,BをTripleで返す
+    }
+    //=============
+
+    //====RGB→カラーコード=====
+    fun convertToColorCode(selectedSquare: Int) {
+        when (selectedSquare) {
+            //selectedSquareに応じて現在のcolorCodeを取得しRGBを計算する
+            1 -> {
+                val red = red1.value ?: 0
+                val green = green1.value ?: 0
+                val blue = blue1.value ?: 0
+                _square1ColorCode.value = calConvertToColorCode(red, green, blue)
+            }
+
+            2 -> {
+                val red = red2.value ?: 0
+                val green = green2.value ?: 0
+                val blue = blue2.value ?: 0
+                _square2ColorCode.value = calConvertToColorCode(red, green, blue)
+            }
+        }
+    }
+
+    //RGBを受け取りColorCodeを返す
+    fun calConvertToColorCode(red: Int, green: Int, blue: Int): String {
+        return String.format("#%02X%02X%02X", red, green, blue)
+    }
+    //=============
+
+}
 
     /*可読性を高めるためにDataClassにまとめてもいいかも。
      データクラス内のデータに一つでも変更があるとデータクラス内を全て再描写しないといけないから注意（RGBならいいかも）
@@ -49,20 +178,6 @@ class ColorChoiceViewModel :ViewModel(){
     val blue :Int
 )
     */
-
-
-
-    //カラーを更新する関数
-    fun updateColorSquare1(color: String){
-        _colorSquare1.value = color
-    }
-
-    fun updateColorSquare2(color:String){
-        _colorSquare2.value = color
-    }
-
-
-}
 
 //import android.widget.TextView
 //import android.widget.Toast
@@ -348,7 +463,7 @@ class ColorChoiceViewModel :ViewModel(){
 //        redPoint = Color.red(color)
 //        bluePoint = Color.blue(color)
 //        greenPoint = Color.green(color)
-//        seekBarRed.progress = redPoint
+//        seekBarRed.progress = redPoin　　t
 //        seekBarBlue.progress = bluePoint
 //        seekBarGreen.progress = greenPoint
 //    }
