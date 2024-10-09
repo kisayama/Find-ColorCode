@@ -1,12 +1,14 @@
 package com.example.findcolorcode.viewmodel
 
 import android.graphics.Color
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.findcolorcode.model.ColorDataForColorChoice
+import java.lang.IllegalStateException
 
 class ColorChoiceViewModel :ViewModel() {
 
@@ -81,11 +83,12 @@ class ColorChoiceViewModel :ViewModel() {
 
     //ColorCode検証時に表示するエラーコード
     private val _colorCodeErrorMessage = MutableLiveData<String>()//デフォルトのカラーコード
-    val colorCodeErrorMessage: LiveData<String> get() = _square2ColorCode
+    val colorCodeErrorMessage: LiveData<String> get() = _colorCodeErrorMessage
 
     //ColorCodeが手入力された時に検証するメソッド
-    private fun isValidColorCode(colorCode: String): Boolean {
+    fun isValidColorCode(colorCode: String): Boolean {
         //パースできるColorCodeの形式は以下の3種類
+        Log.d("ValidColorCode",colorCode)
 
         //正規表現　#RRGGBB 6桁の16進数
         val RRGGBB = Regex("^#([0-9a-fA-F]{6})$", RegexOption.IGNORE_CASE)
@@ -103,6 +106,17 @@ class ColorChoiceViewModel :ViewModel() {
         //入力された値が上記3種類に当てはまるか検証
         return colorCode.let {
             it.matches(RRGGBB) || it.matches(AARRGGBB) || it.lowercase() in colorNames
+        }
+    }
+
+    //TextFieldに入力された値を16進数のカラーコードに変換する
+    fun convertToHexColorCode(text:String):String?{
+        return try {
+            val colorInt = Color.parseColor(text)
+            String.format("#%08X", colorInt)
+        }catch (e:IllegalArgumentException){
+            //入力されたtextからColorCodeが見つからない場合nullを返す
+            return null
         }
     }
 
@@ -129,10 +143,17 @@ class ColorChoiceViewModel :ViewModel() {
 
     //ColorCodeを受け取り10進数に変換しRGB値を返す
     fun calConvertToRGB(colorCode: String): Triple<Int, Int, Int> {
-        val colorCodeWithoutHash = colorCode.removePrefix("#")
-        //2文字ずつ分割してリストにして各16進数を10進数に変換する
-        val RGBList = colorCodeWithoutHash.chunked(2).map { it.toInt(16) }
-        return Triple(RGBList[0], RGBList[1], RGBList[2]) //R,G,BをTripleで返す
+        return try {
+        val adjustColorCode = Color.parseColor(colorCode)
+        val red = Color.red(adjustColorCode)
+        val green = Color.green(adjustColorCode)
+        val blue = Color.blue(adjustColorCode)
+
+        Triple(red, green, blue)// R,G,BをTripleで返す
+    } catch (e:IllegalStateException){
+        //エラーが起きた場合デフォルト色の白を返す
+        Triple(255,255,255)
+    }
     }
     //=============
 
