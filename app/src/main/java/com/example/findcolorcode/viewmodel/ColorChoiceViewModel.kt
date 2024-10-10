@@ -1,14 +1,11 @@
 package com.example.findcolorcode.viewmodel
 
+
 import android.graphics.Color
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.findcolorcode.model.ColorDataForColorChoice
-import java.lang.IllegalStateException
 
 class ColorChoiceViewModel :ViewModel() {
 
@@ -31,6 +28,20 @@ class ColorChoiceViewModel :ViewModel() {
     //Square2
     private val _square2ColorCode = MutableLiveData("#FFFFFF")//デフォルトのカラーコード
     val square2ColorCode: LiveData<String> get() = _square2ColorCode
+
+    //===================
+
+    //==backgroundColorの背景色==
+    //ユーザーがテキスト入力中に背景色が変わらないように
+    // squareColorCodeとは別に背景色を管理する変数を用意しておく
+
+    //Square1
+    private val _square1BackgroundColor = MutableLiveData<String>("#FFFFFF")//デフォルトのカラーコード
+    val square1BackgroundColor: LiveData<String> get() = _square1BackgroundColor
+
+    //Square2
+    private val _square2BackgroundColor = MutableLiveData<String>("#FFFFFF")//デフォルトのカラーコード
+    val square2BackgroundColor: LiveData<String> get() = _square2BackgroundColor
 
     //===================
 
@@ -81,6 +92,7 @@ class ColorChoiceViewModel :ViewModel() {
         }
     }
 
+
     //ColorCode検証時に表示するエラーコード
     private val _colorCodeErrorMessage = MutableLiveData<String>()//デフォルトのカラーコード
     val colorCodeErrorMessage: LiveData<String> get() = _colorCodeErrorMessage
@@ -113,11 +125,13 @@ class ColorChoiceViewModel :ViewModel() {
     fun convertToHexColorCode(text:String):String?{
         return try {
             val colorInt = Color.parseColor(text)
+            Log.d("convertToHexColorCode","return null")
             String.format("#%08X", colorInt)
         }catch (e:IllegalArgumentException){
             //入力されたtextからColorCodeが見つからない場合nullを返す
-            return null
-        }
+            Log.d("convertToHexColorCode","return null")
+            null
+    }
     }
 
     fun convertToRGB(selectedSquare: Int) {
@@ -148,10 +162,12 @@ class ColorChoiceViewModel :ViewModel() {
         val red = Color.red(adjustColorCode)
         val green = Color.green(adjustColorCode)
         val blue = Color.blue(adjustColorCode)
+            Log.d("convertToRGB","convertToRGB")
 
         Triple(red, green, blue)// R,G,BをTripleで返す
     } catch (e:IllegalStateException){
         //エラーが起きた場合デフォルト色の白を返す
+            Log.d("convertToRGB","convertToRGB")
         Triple(255,255,255)
     }
     }

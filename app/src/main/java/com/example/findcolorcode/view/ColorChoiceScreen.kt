@@ -1,5 +1,6 @@
 package com.example.findcolorcode.view
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -32,6 +33,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.R
@@ -57,9 +60,11 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     val red1 by viewModel.red1.observeAsState(255)
     val green1 by viewModel.green1.observeAsState(255)
     val blue1 by viewModel.blue1.observeAsState(255)
-    //square1のカラーコードを取得
+    //square1のカラーコードと背景色を取得
     val square1ColorCode = viewModel.square1ColorCode.observeAsState("#FFFFFF").value
-    val square1ColorData = ColorDataForColorChoice(square1ColorCode, red1, green1, blue1)//RGBとカラーコードをまとめたColorData
+    //ユーザーがテキスト入力中に背景色が変わらないように squareColorCodeとは別に背景色を管理する変数を用意しておく
+    val square1BackgroundColorCode by remember { mutableStateOf("#FFFFFF") }
+    val square1ColorData = ColorDataForColorChoice(square1ColorCode, square1BackgroundColorCode,red1, green1, blue1)//RGBとカラーコードをまとめたColorData
 
     // ===== Square2 Color Data =====
     // square2のRGB値を取得
@@ -68,7 +73,8 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     val blue2 by viewModel.blue2.observeAsState(255)
     //square2のカラーコードを取得
     val square2ColorCode = viewModel.square2ColorCode.observeAsState("#FFFFFF").value
-    val square2ColorData = ColorDataForColorChoice(square2ColorCode, red2, green2, blue2)
+    val square2BackgroundColorCode by remember { mutableStateOf("#FFFFFF") }
+    val square2ColorData = ColorDataForColorChoice(square2ColorCode, square2BackgroundColorCode,red2, green2, blue2)
 
 
     val toastMessage = remember { mutableStateOf("") }
@@ -123,6 +129,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     }
 }
 
+    @SuppressLint("SuspiciousIndentation")
     @Composable
     fun ColorColumn(
         viewModel: ColorChoiceViewModel,
@@ -138,7 +145,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
             val isSelected: Boolean = squareIndex == selectedSquare
 
             //squareを表示
-            ColorSquare(color = colorData.colorCode,
+            ColorSquare(backgroundColor = colorData.backgroundColorCode,
                 isSelected = isSelected,
                 onSquareSelected = {
                     viewModel.changeSelectedSquare(squareIndex)
@@ -156,8 +163,9 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
 
                     onValueChanged = { newvalue ->
                         val colorCode = viewModel.convertToHexColorCode(newvalue)
-                            colorCode?.let{it ->
-                            viewModel.updateColorCode(squareIndex,it)
+                            colorCode?.let{it->
+                                colorData.backgroundColorCode = newvalue
+                                viewModel.updateColorCode(squareIndex,it)
                                 viewModel.convertToRGB(selectedSquare)
                                 toastMessage.value = "カラーコードが更新されました"
                             Log.d("ColorChoiceScreen",colorData.colorCode)
@@ -247,15 +255,15 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
 //TODO　ボタン、テキストコードを触った時もonSquareSelectedを動作させる
 //TODO カラーコード入力時に判定を行う
         @Composable
-        //シークバーで作成した色を表示するBox
-        fun ColorSquare(color: String, isSelected: Boolean, onSquareSelected: () -> Unit) {
+        //色を表示するBox
+        fun ColorSquare(backgroundColor: String, isSelected: Boolean, onSquareSelected: () -> Unit) {
             val borderColor = if (isSelected) Color.Black else Color.Gray
             Box(
                 modifier = Modifier
                     .size(160.dp)
                     //クリック時にisSelectedをチェックしtrueなら1、falseなら2をonSquareSelectedにセットする
                     .clickable { onSquareSelected() }
-                    .background(Color(android.graphics.Color.parseColor(color)))//背景の色を設定
+                    .background(Color(android.graphics.Color.parseColor(backgroundColor)))//背景の色を設定
                     .border(2.dp, borderColor)
             )
         }
@@ -328,6 +336,5 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                 modifier = Modifier.fillMaxWidth(0.9f)//スライダーの横幅は最大値の75%
             )
         }
-
 
 
