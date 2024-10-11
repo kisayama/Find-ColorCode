@@ -162,19 +162,20 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                     colorCode = colorData.colorCode,
 
                     onValueChanged = { newvalue ->
+                        viewModel.updateColorCode(squareIndex, newvalue)
                         val colorCode = viewModel.convertToHexColorCode(newvalue)
-                            colorCode?.let{it->
-                                colorData.backgroundColorCode = newvalue
-                                viewModel.updateColorCode(squareIndex,it)
-                                viewModel.convertToRGB(selectedSquare)
-                                toastMessage.value = "カラーコードが更新されました"
-                            Log.d("ColorChoiceScreen",colorData.colorCode)
+                        if (colorCode == null) {}
+                        else {
+                            colorData.backgroundColorCode = newvalue
+                            viewModel.convertToRGB(selectedSquare)
+                            toastMessage.value = "カラーコードが更新されました"
                         }
                     }
                 )
                 ColorSaveBtn(
                     modifier = Modifier.weight(1f)
                 )
+            }
             }
 
             //TODO 不要になったのでコメントアウト　後から取捨を確認しよう
@@ -186,7 +187,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
 //            }
 
         }
-    }
+
 
         @Composable
         fun SeekBars(selectedSquare: Int,square1Index: Int,viewModel: ColorChoiceViewModel,
@@ -254,6 +255,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
 
 //TODO　ボタン、テキストコードを触った時もonSquareSelectedを動作させる
 //TODO カラーコード入力時に判定を行う
+//TODO 背景色の更新funを追加する（変数もViewModel)
         @Composable
         //色を表示するBox
         fun ColorSquare(backgroundColor: String, isSelected: Boolean, onSquareSelected: () -> Unit) {

@@ -80,16 +80,12 @@ class ColorChoiceViewModel :ViewModel() {
     //====カラーコード→RGB=====
 
     //入力されたカラーコードをViewModelのカラーコードに入力する
+    //TextFieldのリアルタイムな値（手入力した値も）を兼ねるのでここでカラーコードの検証は行わない
     fun updateColorCode(squareIndex: Int, newValue: String) {
-        if (isValidColorCode(newValue)) {
             when (squareIndex) {
                 1 -> _square1ColorCode.value = newValue
                 2 -> _square2ColorCode.value = newValue
             }
-            _colorCodeErrorMessage.value ="" //エラーメッセージ必要なし
-        } else {
-            _colorCodeErrorMessage.value ="無効なカラーコードです。色の名前, #RRGGBB, #AARRGGBB のみ有効です。"
-        }
     }
 
 
@@ -123,9 +119,14 @@ class ColorChoiceViewModel :ViewModel() {
 
     //TextFieldに入力された値を16進数のカラーコードに変換する
     fun convertToHexColorCode(text:String):String?{
+        //TextFieldが空の時はnullを返し呼び出し元で処理を行わないようにする
+        if (text.isEmpty()){
+            Log.d("convertToHexColorCode", "return null because empty ")
+            return null
+        }
         return try {
             val colorInt = Color.parseColor(text)
-            Log.d("convertToHexColorCode","return null")
+            Log.d("convertToHexColorCode","return $colorInt")
             String.format("#%08X", colorInt)
         }catch (e:IllegalArgumentException){
             //入力されたtextからColorCodeが見つからない場合nullを返す
@@ -138,7 +139,7 @@ class ColorChoiceViewModel :ViewModel() {
         when (selectedSquare) {
             //selectedSquareに応じて現在のcolorCodeを取得しRGBを計算する
             1 -> {
-                val colorCode = _square1ColorCode
+                val colorCode = _square1ColorCode.value
                 val (red, green, blue) = calConvertToRGB(colorCode.toString())
                 red1.value = red
                 green1.value = green
@@ -146,7 +147,7 @@ class ColorChoiceViewModel :ViewModel() {
             }
 
             2 -> {
-                val colorCode = _square2ColorCode
+                val colorCode = _square2ColorCode.value
                 val (red, green, blue) = calConvertToRGB(colorCode.toString())
                 red2.value = red
                 green2.value = green
@@ -158,12 +159,12 @@ class ColorChoiceViewModel :ViewModel() {
     //ColorCodeを受け取り10進数に変換しRGB値を返す
     fun calConvertToRGB(colorCode: String): Triple<Int, Int, Int> {
         return try {
+            Log.d("ColorChoiceScreen",colorCode)
         val adjustColorCode = Color.parseColor(colorCode)
         val red = Color.red(adjustColorCode)
         val green = Color.green(adjustColorCode)
         val blue = Color.blue(adjustColorCode)
             Log.d("convertToRGB","convertToRGB")
-
         Triple(red, green, blue)// R,G,BをTripleで返す
     } catch (e:IllegalStateException){
         //エラーが起きた場合デフォルト色の白を返す
