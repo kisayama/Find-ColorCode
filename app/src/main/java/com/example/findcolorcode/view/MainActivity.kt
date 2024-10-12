@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -15,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -32,7 +34,7 @@ import com.squareup.moshi.Moshi
 //エントリーポイント
 class MainActivity : ComponentActivity(){
 
-    //MoshiをコンパニオンオブジェクトにするTODO　消す予定
+    //Moshiをコンパニオンオブジェクトにする TODO　消す予定
     companion object {
         lateinit var moshi: Moshi
             private set
@@ -74,12 +76,17 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel) {
         //画面をタッチしたらキーボードを非表示にする
         val keyboardController = LocalSoftwareKeyboardController.current
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable { keyboardController?.hide() },
+            //ポインタの入力を処理する
+            modifier = Modifier.pointerInput(Unit) {
+                    //入力リスナーの種類を設定する　この場合はタップ
+                    detectTapGestures(onTap = {
+                        //キーボードを隠す
+                        keyboardController?.hide()
+                    }
+                    )
+                },
                 color = Color.Transparent
-        )
-        {
+        ) {
             NavHost( //ルートに基づいて他のコンポーサブルのデスティネーション（フラグメント）を表示する
                 navController = navController,
                 startDestination = BottomBarTab.ColorChoice.route,//初期画面はcolorChoiceFragment
