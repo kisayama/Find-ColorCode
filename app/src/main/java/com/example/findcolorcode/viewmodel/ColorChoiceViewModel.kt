@@ -36,13 +36,20 @@ class ColorChoiceViewModel :ViewModel() {
     // squareColorCodeとは別に背景色を管理する変数を用意しておく
 
     //Square1
-    private val _square1BackgroundColor = MutableLiveData<String>("#FFFFFF")//デフォルトのカラーコード
-    val square1BackgroundColor: LiveData<String> get() = _square1BackgroundColor
+    private val _square1BackgroundColorCode = MutableLiveData<String>("#FFFFFF")//デフォルトのカラーコード
+    val square1BackgroundColorCode: LiveData<String> get() = _square1BackgroundColorCode
 
     //Square2
-    private val _square2BackgroundColor = MutableLiveData<String>("#FFFFFF")//デフォルトのカラーコード
-    val square2BackgroundColor: LiveData<String> get() = _square2BackgroundColor
+    private val _square2BackgroundColorCode = MutableLiveData<String>("#FFFFFF")//デフォルトのカラーコード
+    val square2BackgroundColorCode: LiveData<String> get() = _square2BackgroundColorCode
 
+
+    fun updateBackgroundColorCode(squareIndex: Int, validColorCode: String) {
+        when (squareIndex) {
+            1 -> _square1BackgroundColorCode.value = validColorCode
+            2 -> _square2BackgroundColorCode.value = validColorCode
+        }
+    }
     //===================
 
     //====シークバーのRGB値を保存する変数square1,square2====
@@ -182,14 +189,19 @@ class ColorChoiceViewModel :ViewModel() {
                 val red = red1.value ?: 0
                 val green = green1.value ?: 0
                 val blue = blue1.value ?: 0
-                _square1ColorCode.value = calConvertToColorCode(red, green, blue)
+                val colorCode = calConvertToColorCode(red, green, blue)
+                //TextFieldとsquareの背景色を変更する
+                _square1ColorCode.value = colorCode
+                _square1BackgroundColorCode.value = colorCode
             }
 
             2 -> {
                 val red = red2.value ?: 0
                 val green = green2.value ?: 0
                 val blue = blue2.value ?: 0
-                _square2ColorCode.value = calConvertToColorCode(red, green, blue)
+                val colorCode = calConvertToColorCode(red, green, blue)
+                _square2ColorCode.value = colorCode
+                _square2BackgroundColorCode.value = colorCode
             }
         }
     }

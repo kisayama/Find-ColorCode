@@ -1,7 +1,6 @@
 package com.example.findcolorcode.view
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,13 +9,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -25,21 +28,23 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.R
+import com.example.findcolorcode.components.BottomBar
 import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
+import com.google.android.material.tabs.TabItem
 
 //TODO ランダムカラーパレットの導入
 //TODO　枠線の動作
@@ -48,7 +53,6 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 @Composable
 fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewModel) {
 
-    val TAG = "ColorChoiceScreen"
     //==squareIndex==
     //選択されたsquareのインデックスを取得
     val selectedSquare by viewModel.selectedSquare.observeAsState(1)
@@ -60,10 +64,10 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     val red1 by viewModel.red1.observeAsState(255)
     val green1 by viewModel.green1.observeAsState(255)
     val blue1 by viewModel.blue1.observeAsState(255)
-    //square1のカラーコードと背景色を取得
-    val square1ColorCode = viewModel.square1ColorCode.observeAsState("#FFFFFF").value
+    //square1のカラーコードを取得(TextFieldに表示する値として使用する)
+    val square1ColorCode by viewModel.square1ColorCode.observeAsState("#FFFFFF")
     //ユーザーがテキスト入力中に背景色が変わらないように squareColorCodeとは別に背景色を管理する変数を用意しておく
-    val square1BackgroundColorCode by remember { mutableStateOf("#FFFFFF") }
+    val square1BackgroundColorCode by viewModel.square1BackgroundColorCode.observeAsState("#FFFFFF")
     val square1ColorData = ColorDataForColorChoice(square1ColorCode, square1BackgroundColorCode,red1, green1, blue1)//RGBとカラーコードをまとめたColorData
 
     // ===== Square2 Color Data =====
@@ -72,8 +76,8 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     val green2 by viewModel.green2.observeAsState(255)
     val blue2 by viewModel.blue2.observeAsState(255)
     //square2のカラーコードを取得
-    val square2ColorCode = viewModel.square2ColorCode.observeAsState("#FFFFFF").value
-    val square2BackgroundColorCode by remember { mutableStateOf("#FFFFFF") }
+    val square2ColorCode by viewModel.square2ColorCode.observeAsState("#FFFFFF")
+    val square2BackgroundColorCode by viewModel.square2BackgroundColorCode.observeAsState("#FFFFFF")
     val square2ColorData = ColorDataForColorChoice(square2ColorCode, square2BackgroundColorCode,red2, green2, blue2)
 
 
@@ -126,7 +130,9 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
             square1ColorData = square1ColorData,
             square2ColorData = square2ColorData
         )
+        ColorPalletTab()
     }
+
 }
 
     @SuppressLint("SuspiciousIndentation")
@@ -158,20 +164,18 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
             ) {
                 ColorCodeText(
                     modifier = Modifier.weight(2f),
-                    selectedSquare= selectedSquare,
-                    colorCode = colorData.colorCode,
-
-                    onValueChanged = { newvalue ->
-                        viewModel.updateColorCode(squareIndex, newvalue)
-                        val colorCode = viewModel.convertToHexColorCode(newvalue)
-                        if (colorCode == null) {}
-                        else {
-                            colorData.backgroundColorCode = newvalue
-                            viewModel.convertToRGB(selectedSquare)
-                            toastMessage.value = "カラーコードが更新されました"
-                        }
+                    colorCode = colorData.colorCode
+                ) { newvalue ->
+                    viewModel.updateColorCode(squareIndex, newvalue)
+                    val colorCode = viewModel.convertToHexColorCode(newvalue)
+                    if (colorCode == null) {
+                    }//nullの場合処理は行わない
+                    else {
+                        viewModel.updateBackgroundColorCode(squareIndex, colorCode)
+                        viewModel.convertToRGB(selectedSquare)
+                        toastMessage.value = "カラーコードが更新されました"//TODO　キーボードに隠されてトーストが見えない。取捨確認する。
                     }
-                )
+                }
                 ColorSaveBtn(
                     modifier = Modifier.weight(1f)
                 )
@@ -190,6 +194,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
 
 
         @Composable
+        //TODO Sliderの操作についての簡便化　数値ラベルの表示、+-ボタンの追加
         fun SeekBars(selectedSquare: Int,square1Index: Int,viewModel: ColorChoiceViewModel,
                      square1ColorData: ColorDataForColorChoice,square2ColorData: ColorDataForColorChoice) {
             //selectedSquareに応じて使用するColorDataを決定する
@@ -255,7 +260,6 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
 
 //TODO　ボタン、テキストコードを触った時もonSquareSelectedを動作させる
 //TODO カラーコード入力時に判定を行う
-//TODO 背景色の更新funを追加する（変数もViewModel)
         @Composable
         //色を表示するBox
         fun ColorSquare(backgroundColor: String, isSelected: Boolean, onSquareSelected: () -> Unit) {
@@ -275,7 +279,6 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
             modifier: Modifier = Modifier,
             colorCode: String,
             onValueChanged: (String) -> Unit,
-            selectedSquare: Int,
         ) {
             TextField(
                 value = colorCode,
@@ -290,7 +293,8 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                     focusedIndicatorColor = AppColors.Black,
                     focusedLabelColor = AppColors.Gray,
                     unfocusedLabelColor = AppColors.Gray
-                )
+                ),
+                maxLines = 1
             )
         }
       @Composable
@@ -338,5 +342,51 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                 modifier = Modifier.fillMaxWidth(0.9f)//スライダーの横幅は最大値の75%
             )
         }
+            //TODO　カラーパレット
+            @Composable
+            fun ColorPalletTab(){
+                var selectedTabIndex by remember { mutableStateOf(0) }
+                Scaffold (
+                    topBar = {
+                        TabRow (
+                            selectedTabIndex = selectedTabIndex
+                        ) {
+                            Tab(selected = selectedTabIndex == 0,
+                                onClick = { selectedTabIndex = 0 },
+                                text = {
+                                    Text(text = "基本の色")
+                                }
+                            )
+                            Tab(selected = selectedTabIndex == 1,
+                                onClick = { selectedTabIndex = 1 },
+                                text = {
+                                    Text(text = "選択している色のカラーパレット")
+                                }
+                            )
+                        }
+                    }
+                ) { paddingValues ->
+                    when (selectedTabIndex){
+                        0-> BasicColorTab(Modifier.padding(paddingValues))
+                        1-> SelectedColorPalletContent(Modifier.padding(paddingValues))
+                    }
+                }
+            }
+
+
+    @Composable
+    fun BasicColorTab(modifier:Modifier) {
+        Column (modifier = modifier.fillMaxSize()){
+            Text(text = "基本の色をこちらに")
+        }
+    }
+
+    @Composable
+    fun SelectedColorPalletContent(modifier: Modifier) {
+        Column(modifier = modifier.fillMaxSize()){
+            Text(text = "選択している色のカラーパレッtp")
+        }
+    }
+
 
 

@@ -3,25 +3,29 @@ package com.example.findcolorcode.view
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.findcolorcode.viewmodel.MainViewModel
 import com.example.findcolorcode.components.BottomBar
 import com.example.findcolorcode.components.BottomBarTab
 import com.example.findcolorcode.ui.theme.FindColorCodeTheme
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
+import com.example.findcolorcode.viewmodel.MainViewModel
 import com.squareup.moshi.Moshi
 
 
@@ -45,6 +49,7 @@ class MainActivity : ComponentActivity(){
                 //navController（ナビゲーションの操作を管理する）を取得
                 val navController:NavHostController = rememberNavController()
 
+
                 //MainScreenを呼び出し
                 MainScreen(navController, viewModel)
                }
@@ -56,43 +61,56 @@ class MainActivity : ComponentActivity(){
 @Composable
 fun MainScreen(navController: NavHostController, viewModel: MainViewModel) {
     //初期選択アイテムを指定する
-    var selectedItem by remember { mutableIntStateOf(0) }
+    var selectedItem by remember { mutableStateOf(0) }
     Scaffold(
-        bottomBar = { BottomBar(navController = navController,selectedItem = selectedItem,
-            onItemSelected = {newIndex -> selectedItem = newIndex})
+        bottomBar = {
+            BottomBar(navController = navController,
+                selectedItem = selectedItem,
+                onItemSelected = { newIndex -> selectedItem = newIndex },
+                )
         }
         //paddingはbottombarとかさならないようにscalffoldから提供される
     ) { padding ->
-        NavHost( //ルートに基づいて他のコンポーサブルのデスティネーション（フラグメント）を表示する
-            navController = navController,
-            startDestination = BottomBarTab.ColorChoice.route,//初期画面はcolorChoiceFragment
-            Modifier.padding(padding)
-        ) {
-            //MainActivityに表示するのは以下のフラグメント
-            //RouteはenumClassのBottomBarTabから取得
-            composable(BottomBarTab.ColorChoice.route) {
-                ColorChoiceScreen(
-                    navController,
-                    ColorChoiceViewModel()
-                )
-            }
-            composable(BottomBarTab.FavoriteList.route) {
-                FavoriteListScreen(
-                    navController,
-                    viewModel
-                )
-            }
+        //画面をタッチしたらキーボードを非表示にする
+        val keyboardController = LocalSoftwareKeyboardController.current
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable { keyboardController?.hide() },
+                color = Color.Transparent
+        )
+        {
+            NavHost( //ルートに基づいて他のコンポーサブルのデスティネーション（フラグメント）を表示する
+                navController = navController,
+                startDestination = BottomBarTab.ColorChoice.route,//初期画面はcolorChoiceFragment
+                Modifier.padding(padding)
+            ) {
+                //MainActivityに表示するのは以下のフラグメント
+                //RouteはenumClassのBottomBarTabから取得
+                composable(BottomBarTab.ColorChoice.route) {
+                    ColorChoiceScreen(
+                        navController,
+                        ColorChoiceViewModel()
+                    )
+                }
+                composable(BottomBarTab.FavoriteList.route) {
+                    FavoriteListScreen(
+                        navController,
+                        viewModel
+                    )
+                }
 
+            }
         }
     }
-    }
 
-@Composable
-fun MainScreenPreview() {
-    FindColorCodeTheme {
-        val navController = rememberNavController() // NavControllerのスタブ
-        val viewModel: MainViewModel = viewModel() // ViewModelのスタブ
-        MainScreen(navController, viewModel)
+    @Composable
+    fun MainScreenPreview() {
+        FindColorCodeTheme {
+            val navController = rememberNavController() // NavControllerのスタブ
+            val viewModel: MainViewModel = viewModel() // ViewModelのスタブ
+            MainScreen(navController, viewModel)
+        }
     }
 }
 
