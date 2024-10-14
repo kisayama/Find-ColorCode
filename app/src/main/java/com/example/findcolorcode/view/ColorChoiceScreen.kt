@@ -40,6 +40,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.R
+import com.example.findcolorcode.components.BasicColorContents
+import com.example.findcolorcode.data.basicColorsList1
+import com.example.findcolorcode.data.basicColorsList2
+import com.example.findcolorcode.data.basicColorsList3
 import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 
@@ -364,7 +368,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                     }
                 ) { paddingValues ->
                     when (selectedTabIndex){
-                        0-> BasicColorTab(Modifier.padding(paddingValues))
+                        0-> BasicColorTab(Modifier.padding(paddingValues), viewModel = ColorChoiceViewModel(),selectedTabIndex)
                         1-> SelectedColorPalletContent(Modifier.padding(paddingValues))
                     }
                 }
@@ -372,10 +376,17 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
 
 
     @Composable
-    fun BasicColorTab(modifier:Modifier) {
+    fun BasicColorTab(modifier:Modifier,viewModel: ColorChoiceViewModel,squareIndex: Int) {
         Column (modifier = modifier.fillMaxSize()){
-            Text(text = "基本の色をこちらに")
-
+            BasicColorContents(
+                basicColorsList1.map { it.first },
+                basicColorsList2.map { it.first },
+                basicColorsList3.map { it.first },
+                onBasicSquareSelected = {
+                    selectedColorCode ->
+                    viewModel.updateColorCode(squareIndex,selectedColorCode)
+                }
+            )
         }
     }
 

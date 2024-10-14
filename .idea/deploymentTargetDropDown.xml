@@ -11,7 +11,13 @@
       <entry key="MainScreenPreview (1)">
         <State />
       </entry>
+      <entry key="PreviewBasicColorRow">
+        <State />
+      </entry>
       <entry key="app">
+        <State />
+      </entry>
+      <entry key="basicColorTabPreview">
         <State />
       </entry>
     </value>
