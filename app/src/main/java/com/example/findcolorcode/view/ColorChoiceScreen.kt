@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -131,7 +132,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
             square1ColorData = square1ColorData,
             square2ColorData = square2ColorData
         )
-        ColorPalletTab()
+        ColorPalletTab(selectedSquare)
     }
 
 }
@@ -345,12 +346,13 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
         }
             //TODO　カラーパレット
             @Composable
-            fun ColorPalletTab(){
+            fun ColorPalletTab(selectedSquare: Int){
                 var selectedTabIndex by remember { mutableStateOf(0) }
                 Scaffold (
                     topBar = {
                         TabRow (
-                            selectedTabIndex = selectedTabIndex
+                            selectedTabIndex = selectedTabIndex,
+                            modifier = Modifier.height(56.dp)
                         ) {
                             Tab(selected = selectedTabIndex == 0,
                                 onClick = { selectedTabIndex = 0 },
@@ -361,34 +363,27 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                             Tab(selected = selectedTabIndex == 1,
                                 onClick = { selectedTabIndex = 1 },
                                 text = {
-                                    Text(text = "選択している色のカラーパレット")
+                                    Text(text = "カラーパレットを作る")
                                 }
                             )
                         }
                     }
                 ) { paddingValues ->
                     when (selectedTabIndex){
-                        0-> BasicColorTab(Modifier.padding(paddingValues), viewModel = ColorChoiceViewModel(),selectedTabIndex)
+                        0-> BasicColorContents(
+                            Modifier.padding(paddingValues),
+                            viewModel = ColorChoiceViewModel(),
+                            selectedSquare = selectedSquare,
+                            // basicColorListはPair(colorCode, name)のリスト
+                            // ここでは、colorCodeのみを抽出したリストを引数として渡す
+                            colorList1 = basicColorsList1.map { it.first },
+                            colorList2 = basicColorsList2.map { it.first },
+                            colorList3 = basicColorsList3.map { it.first }
+                            )
                         1-> SelectedColorPalletContent(Modifier.padding(paddingValues))
                     }
                 }
             }
-
-
-    @Composable
-    fun BasicColorTab(modifier:Modifier,viewModel: ColorChoiceViewModel,squareIndex: Int) {
-        Column (modifier = modifier.fillMaxSize()){
-            BasicColorContents(
-                basicColorsList1.map { it.first },
-                basicColorsList2.map { it.first },
-                basicColorsList3.map { it.first },
-                onBasicSquareSelected = {
-                    selectedColorCode ->
-                    viewModel.updateColorCode(squareIndex,selectedColorCode)
-                }
-            )
-        }
-    }
 
     @Composable
     fun SelectedColorPalletContent(modifier: Modifier) {
