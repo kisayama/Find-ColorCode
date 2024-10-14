@@ -1,5 +1,6 @@
 package com.example.findcolorcode.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -41,7 +42,10 @@ fun BasicColorContents(
    //選択されたBasicSquareのカラーコードを取得する。
    // updateColorメソッドを使用して現在選択しているsquareの背景の色を書き換える
     selectedColorCode ->
+   //TextFieldの表示を変更
    viewModel.updateColorCode(selectedSquare,selectedColorCode)
+   //squareの背景色を変更
+   viewModel.updateBackgroundColorCode(selectedSquare,selectedColorCode)
   }
   //縦に3つ並べる
   BasicColorRow(modifier = Modifier.weight(1f), colorList = colorList1,onBasicSquareSelected)

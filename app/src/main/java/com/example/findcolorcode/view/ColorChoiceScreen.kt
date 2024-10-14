@@ -132,7 +132,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
             square1ColorData = square1ColorData,
             square2ColorData = square2ColorData
         )
-        ColorPalletTab(selectedSquare)
+        ColorPalletTab(viewModel,selectedSquare)
     }
 
 }
@@ -346,7 +346,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
         }
             //TODO　カラーパレット
             @Composable
-            fun ColorPalletTab(selectedSquare: Int){
+            fun ColorPalletTab(viewModel: ColorChoiceViewModel,selectedSquare: Int){
                 var selectedTabIndex by remember { mutableStateOf(0) }
                 Scaffold (
                     topBar = {
@@ -372,7 +372,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                     when (selectedTabIndex){
                         0-> BasicColorContents(
                             Modifier.padding(paddingValues),
-                            viewModel = ColorChoiceViewModel(),
+                            viewModel = viewModel,
                             selectedSquare = selectedSquare,
                             // basicColorListはPair(colorCode, name)のリスト
                             // ここでは、colorCodeのみを抽出したリストを引数として渡す
@@ -380,17 +380,10 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                             colorList2 = basicColorsList2.map { it.first },
                             colorList3 = basicColorsList3.map { it.first }
                             )
-                        1-> SelectedColorPalletContent(Modifier.padding(paddingValues))
+                        1-> SelectedColorPalletContent(Modifier.padding(paddingValues),selectedSquare)
                     }
                 }
             }
-
-    @Composable
-    fun SelectedColorPalletContent(modifier: Modifier) {
-        Column(modifier = modifier.fillMaxSize()){
-            Text(text = "選択している色のカラーパレット")
-        }
-    }
 
 
 

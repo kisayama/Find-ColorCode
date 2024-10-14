@@ -49,6 +49,7 @@ class ColorChoiceViewModel :ViewModel() {
             1 -> _square1BackgroundColorCode.value = validColorCode
             2 -> _square2BackgroundColorCode.value = validColorCode
         }
+        Log.d("BasicColorCodeContent","changedBackgroundColorCode${_square1BackgroundColorCode.value}")
     }
     //===================
 
@@ -92,7 +93,9 @@ class ColorChoiceViewModel :ViewModel() {
             when (squareIndex) {
                 1 -> _square1ColorCode.value = newValue
                 2 -> _square2ColorCode.value = newValue
-            }
+                }
+        Log.d("BasicColorCodeContent","changedColorCode${_square1ColorCode.value}")
+
     }
 
 
