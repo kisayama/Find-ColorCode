@@ -2,22 +2,7 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="ColorChoiceScreen">
-        <State />
-      </entry>
-      <entry key="MainScreenPreview">
-        <State />
-      </entry>
-      <entry key="MainScreenPreview (1)">
-        <State />
-      </entry>
-      <entry key="PreviewBasicColorRow">
-        <State />
-      </entry>
       <entry key="app">
-        <State />
-      </entry>
-      <entry key="basicColorTabPreview">
         <State />
       </entry>
     </value>
