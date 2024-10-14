@@ -28,7 +28,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,10 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.R
-import com.example.findcolorcode.components.BottomBar
 import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
-import com.google.android.material.tabs.TabItem
 
 //TODO ランダムカラーパレットの導入
 //TODO　枠線の動作
@@ -378,13 +375,14 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     fun BasicColorTab(modifier:Modifier) {
         Column (modifier = modifier.fillMaxSize()){
             Text(text = "基本の色をこちらに")
+
         }
     }
 
     @Composable
     fun SelectedColorPalletContent(modifier: Modifier) {
         Column(modifier = modifier.fillMaxSize()){
-            Text(text = "選択している色のカラーパレッtp")
+            Text(text = "選択している色のカラーパレット")
         }
     }
 
