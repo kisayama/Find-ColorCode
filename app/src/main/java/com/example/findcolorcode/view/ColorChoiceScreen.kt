@@ -1,6 +1,7 @@
 package com.example.findcolorcode.view
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -169,12 +170,11 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                 ) { newvalue ->
                     viewModel.updateColorCode(squareIndex, newvalue)
                     val colorCode = viewModel.convertToHexColorCode(newvalue)
-                    if (colorCode == null) {
-                    }//nullの場合処理は行わない
-                    else {
+                    if (colorCode != null) {
+                        //背景の色の変更とSeekBarの値の変更を行う
                         viewModel.updateBackgroundColorCode(squareIndex, colorCode)
                         viewModel.convertToRGB(selectedSquare)
-                    }
+                    }else{}//nullの場合は処理を行わない
                 }
                 ColorSaveBtn(
                     modifier = Modifier.weight(1f)
@@ -198,7 +198,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                 SeekBar(
                     //現在選択しているsquare
                     selectedSquare = selectedSquare,
-                    //selectedSquareに応じて決定されたColorDaの中のRGB値のいずれかを値とする
+                    //selectedSquareに応じて決定されたColorDataの中のRGB値のいずれかを値とする
                     colorDataRGB = currentColorData.red,
                     //スライダーの色を指定する
                     sliderColor = Color.Red,
@@ -330,7 +330,6 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                 modifier = Modifier.fillMaxWidth(0.9f)//スライダーの横幅は最大値の75%
             )
         }
-            //TODO　カラーパレット
             @Composable
             fun ColorPalletTab(viewModel: ColorChoiceViewModel,selectedSquare: Int){
                 var selectedTabIndex by remember { mutableStateOf(0) }
