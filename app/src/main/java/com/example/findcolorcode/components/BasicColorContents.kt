@@ -46,6 +46,8 @@ fun BasicColorContents(
    viewModel.updateColorCode(selectedSquare,selectedColorCode)
    //squareの背景色を変更
    viewModel.updateBackgroundColorCode(selectedSquare,selectedColorCode)
+   //RGB値を変更
+   viewModel.convertToRGB(selectedSquare)
   }
   //縦に3つ並べる
   BasicColorRow(modifier = Modifier.weight(1f), colorList = colorList1,onBasicSquareSelected)
