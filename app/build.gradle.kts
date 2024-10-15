@@ -80,8 +80,14 @@ dependencies {
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation("com.squareup.moshi:moshi:1.15.1")
     testImplementation(libs.junit)
+
+    //retrofit2
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    //coroutine
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+
+
     implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
     implementation("androidx.cardview:cardview:1.0.0")
     val lifecycle_version = "2.8.4"
