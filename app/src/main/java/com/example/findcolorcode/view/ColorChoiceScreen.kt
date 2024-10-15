@@ -42,14 +42,13 @@ import androidx.navigation.NavController
 import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.R
 import com.example.findcolorcode.components.BasicColorContents
+import com.example.findcolorcode.components.SelectedColorPalletContent
 import com.example.findcolorcode.data.basicColorsList1
 import com.example.findcolorcode.data.basicColorsList2
 import com.example.findcolorcode.data.basicColorsList3
 import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 
-//TODO ランダムカラーパレットの導入
-//TODO　枠線の動作
 //TODO 時間があればSLiderのthumbを調整するためにカスタムに変更するか検討する
 
 @Composable
@@ -175,7 +174,6 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                     else {
                         viewModel.updateBackgroundColorCode(squareIndex, colorCode)
                         viewModel.convertToRGB(selectedSquare)
-                        toastMessage.value = "カラーコードが更新されました"//TODO　キーボードに隠されてトーストが見えない。取捨確認する。
                     }
                 }
                 ColorSaveBtn(
@@ -183,18 +181,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                 )
             }
             }
-
-            //TODO 不要になったのでコメントアウト　後から取捨を確認しよう
-//            //エラーメッセージの表示
-//            //カラーコードに無効な値が入力された時に表示するエラーメッセージ(初期値は"")
-//            val colorCodeErrorMessage by viewModel.colorCodeErrorMessage.observeAsState("")
-//            if (colorCodeErrorMessage.isNotEmpty()){ //colorCodeErrorMessageが空白の時
-//                ShowToast(message = colorCodeErrorMessage)
-//            }
-
         }
-
-
         @Composable
         //TODO Sliderの操作についての簡便化　数値ラベルの表示、+-ボタンの追加
         fun SeekBars(selectedSquare: Int,square1Index: Int,viewModel: ColorChoiceViewModel,
@@ -261,7 +248,6 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
         }
 
 //TODO　ボタン、テキストコードを触った時もonSquareSelectedを動作させる
-//TODO カラーコード入力時に判定を行う
         @Composable
         //色を表示するBox
         fun ColorSquare(backgroundColor: String, isSelected: Boolean, onSquareSelected: () -> Unit) {
@@ -380,10 +366,17 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                             colorList2 = basicColorsList2.map { it.first },
                             colorList3 = basicColorsList3.map { it.first }
                             )
-                        1-> SelectedColorPalletContent(Modifier.padding(paddingValues),selectedSquare)
+                        1-> SelectedColorPalletContent(
+                            Modifier.padding(paddingValues),
+                            selectedSquare)
                     }
                 }
             }
 
-
-
+//            TextFieldに入力時のToastはキーボードに隠れて見えないため廃止した。
+//            エラーメッセージの表示
+//            //カラーコードに無効な値が入力された時に表示するエラーメッセージ(初期値は"")
+//            val colorCodeErrorMessage by viewModel.colorCodeErrorMessage.observeAsState("")
+//            if (colorCodeErrorMessage.isNotEmpty()){ //colorCodeErrorMessageが空白の時
+//                ShowToast(message = colorCodeErrorMessage)
+//            }
