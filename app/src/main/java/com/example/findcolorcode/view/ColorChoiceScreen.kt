@@ -1,8 +1,6 @@
 package com.example.findcolorcode.view
 
 import android.annotation.SuppressLint
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -10,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,8 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -35,8 +30,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -82,17 +77,6 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     val square2BackgroundColorCode by viewModel.square2BackgroundColorCode.observeAsState("#FFFFFF")
     val square2ColorData = ColorDataForColorChoice(square2ColorCode, square2BackgroundColorCode,red2, green2, blue2)
 
-
-    val toastMessage = remember { mutableStateOf("") }
-    @Composable
-    fun ShowToast(toastMessage: String) {
-        val context = LocalContext.current
-        //LaunchedEffectは指定したキーが変更された時に{}内を実行する
-        LaunchedEffect(toastMessage) {
-            Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
-        }
-    }
-
     // 全体をColumnで囲んでレイアウトを縦方向に
     Column(
         modifier = Modifier
@@ -113,14 +97,14 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                ColorColumn(viewModel, selectedSquare, square1ColorData, square1Index,toastMessage)
+                ColorColumn(viewModel, selectedSquare, square1ColorData, square1Index)
             }
             Column(
                 modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                ColorColumn(viewModel, selectedSquare, square2ColorData, square2Index,toastMessage)
+                ColorColumn(viewModel, selectedSquare, square2ColorData, square2Index)
             }
         }
 
@@ -144,7 +128,6 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
         selectedSquare: Int,//現在選択中のsquareのIndex
         colorData: ColorDataForColorChoice,
         squareIndex: Int,//各squareのIndex
-        toastMessage:MutableState<String>
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -153,8 +136,11 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
             val isSelected: Boolean = squareIndex == selectedSquare
 
             //squareを表示
-            ColorSquare(backgroundColor = colorData.backgroundColorCode,
+            ColorSquare(
+                backgroundColor = colorData.backgroundColorCode,
                 isSelected = isSelected,
+                //クリック時にselectedSquareをColorSquareの親コンポーネントのColorColumnの引数squareIndexの値に変更する
+                //同様の処理をColorCodeText,ColorSaveBtnでも行う
                 onSquareSelected = {
                     viewModel.changeSelectedSquare(squareIndex)
                 }
@@ -166,18 +152,22 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
             ) {
                 ColorCodeText(
                     modifier = Modifier.weight(2f),
-                    colorCode = colorData.colorCode
-                ) { newvalue ->
+                    colorCode = colorData.colorCode,
+                    //ColorSquare,ColorSaveBtnと同様に
+                    onSquareSelected = {viewModel.changeSelectedSquare(squareIndex)},
+                    onValueChanged = {newvalue ->
                     viewModel.updateColorCode(squareIndex, newvalue)
                     val colorCode = viewModel.convertToHexColorCode(newvalue)
                     if (colorCode != null) {
                         //背景の色の変更とSeekBarの値の変更を行う
                         viewModel.updateBackgroundColorCode(squareIndex, colorCode)
                         viewModel.convertToRGB(selectedSquare)
-                    }else{}//nullの場合は処理を行わない
-                }
+                    }else{}//nullの場合(colorCodeに誤った値が入力されている時)は処理を行わない
+                 }
+                )
                 ColorSaveBtn(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onSquareSelected = {viewModel.changeSelectedSquare(squareIndex)},
                 )
             }
             }
@@ -250,7 +240,9 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
 //TODO　ボタン、テキストコードを触った時もonSquareSelectedを動作させる
         @Composable
         //色を表示するBox
-        fun ColorSquare(backgroundColor: String, isSelected: Boolean, onSquareSelected: () -> Unit) {
+        fun ColorSquare(backgroundColor: String,
+                        isSelected: Boolean,
+                        onSquareSelected: () -> Unit) {
             val borderColor = if (isSelected) Color.Black else Color.Gray
             Box(
                 modifier = Modifier
@@ -266,15 +258,20 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
         fun ColorCodeText(
             modifier: Modifier = Modifier,
             colorCode: String,
-            onValueChanged: (String) -> Unit,
-        ) {
+            onSquareSelected:() -> Unit,
+            onValueChanged: (String) -> Unit
+            ) {
             TextField(
                 value = colorCode,
                 onValueChange = { newValue ->
                     onValueChanged(newValue)
                 },
                 label = { Text("カラーコード") },
-                modifier = modifier,
+                modifier = modifier
+                //clickableだとvalueChangeが優先され正しく処理されないのでonFocusChangeを使用する
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused)onSquareSelected()
+                    },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = AppColors.White,//フォーカス時の色
                     unfocusedContainerColor = AppColors.White,
@@ -282,16 +279,18 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                     focusedLabelColor = AppColors.Gray,
                     unfocusedLabelColor = AppColors.Gray
                 ),
-                maxLines = 1
+                maxLines = 1,
             )
         }
       @Composable
         //色を保存するためのボタン
-        fun ColorSaveBtn(modifier: Modifier = Modifier) {
+        fun ColorSaveBtn(modifier: Modifier = Modifier,
+                         onSquareSelected: () -> Unit) {
             IconButton(
+                 modifier = modifier,
                 onClick = {
-                    //TODO SaveColorDialogを表示する
-                }, modifier = modifier
+                   onSquareSelected()
+                },
             ) {
                 Icon(
                     painter = painterResource(
@@ -372,10 +371,26 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                 }
             }
 
-//            TextFieldに入力時のToastはキーボードに隠れて見えないため廃止した。
-//            エラーメッセージの表示
-//            //カラーコードに無効な値が入力された時に表示するエラーメッセージ(初期値は"")
-//            val colorCodeErrorMessage by viewModel.colorCodeErrorMessage.observeAsState("")
-//            if (colorCodeErrorMessage.isNotEmpty()){ //colorCodeErrorMessageが空白の時
-//                ShowToast(message = colorCodeErrorMessage)
-//            }
+            //廃止したコード
+
+            //ShowToast関係 Toastは表示しない方針
+
+            //val toastMessage = remember { mutableStateOf("") }
+            /*
+            TextFieldに入力時のToastはキーボードに隠れて見えないため廃止した。
+            //カラーコードに無効な値が入力された時に表示するエラーメッセージ(初期値は"")
+            val colorCodeErrorMessage by viewModel.colorCodeErrorMessage.observeAsState("")
+            if (colorCodeErrorMessage.isNotEmpty()){ //colorCodeErrorMessageが空白の時
+                ShowToast(message = colorCodeErrorMessage)
+            }
+            */
+
+            //Toastメッセージが変更されたことを検知してToastを表示するメソッド
+            /*@Composable
+            fun ShowToast(toastMessage: String) {
+            val context = LocalContext.current
+            //LaunchedEffectは指定したキーが変更された時に{}内を実行する
+            LaunchedEffect(toastMessage) {
+            Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
+            }
+            }*/
