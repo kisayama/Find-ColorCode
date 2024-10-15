@@ -29,6 +29,16 @@ class ColorChoiceViewModel :ViewModel() {
     private val _square2ColorCode = MutableLiveData("#FFFFFF")//デフォルトのカラーコード
     val square2ColorCode: LiveData<String> get() = _square2ColorCode
 
+    //入力されたカラーコードをViewModelのカラーコードに入力する
+    //TextFieldのリアルタイムな値（手入力した値も）を兼ねるのでここでカラーコードの検証は行わない
+    fun updateColorCode(squareIndex: Int, newValue: String) {
+        when (squareIndex) {
+            1 -> _square1ColorCode.value = newValue
+            2 -> _square2ColorCode.value = newValue
+        }
+        Log.d("BasicColorCodeContent","changedColorCode${_square1ColorCode.value}")
+
+    }
     //===================
 
     //==backgroundColorの背景色==
@@ -36,11 +46,11 @@ class ColorChoiceViewModel :ViewModel() {
     // squareColorCodeとは別に背景色を管理する変数を用意しておく
 
     //Square1
-    private val _square1BackgroundColorCode = MutableLiveData<String>("#FFFFFF")//デフォルトのカラーコード
+    private val _square1BackgroundColorCode = MutableLiveData("#FFFFFF")//デフォルトのカラーコード
     val square1BackgroundColorCode: LiveData<String> get() = _square1BackgroundColorCode
 
     //Square2
-    private val _square2BackgroundColorCode = MutableLiveData<String>("#FFFFFF")//デフォルトのカラーコード
+    private val _square2BackgroundColorCode = MutableLiveData("#FFFFFF")//デフォルトのカラーコード
     val square2BackgroundColorCode: LiveData<String> get() = _square2BackgroundColorCode
 
 
@@ -65,10 +75,10 @@ class ColorChoiceViewModel :ViewModel() {
     //===================
 
     //選択しているsquareに応じたシークバーの値を取得する関数
-    fun setSquareRGB(selectedSquare: Int, RGBColorType: String, value: Int) {
+    fun setSquareRGB(selectedSquare: Int, rgbColorType: String, value: Int) {
         when (selectedSquare) {
             1 -> {
-                when (RGBColorType) {
+                when (rgbColorType) {
                     "red" -> red1.value = value
                     "green" -> green1.value = value
                     "blue" -> blue1.value = value
@@ -76,7 +86,7 @@ class ColorChoiceViewModel :ViewModel() {
             }
 
             2 -> {
-                when (RGBColorType) {
+                when (rgbColorType) {
                     "red" -> red2.value = value
                     "green" -> green2.value = value
                     "blue" -> blue2.value = value
@@ -86,46 +96,6 @@ class ColorChoiceViewModel :ViewModel() {
     }
 
     //====カラーコード→RGB=====
-
-    //入力されたカラーコードをViewModelのカラーコードに入力する
-    //TextFieldのリアルタイムな値（手入力した値も）を兼ねるのでここでカラーコードの検証は行わない
-    fun updateColorCode(squareIndex: Int, newValue: String) {
-            when (squareIndex) {
-                1 -> _square1ColorCode.value = newValue
-                2 -> _square2ColorCode.value = newValue
-                }
-        Log.d("BasicColorCodeContent","changedColorCode${_square1ColorCode.value}")
-
-    }
-
-
-    //ColorCode検証時に表示するエラーコード
-    private val _colorCodeErrorMessage = MutableLiveData<String>()//デフォルトのカラーコード
-    val colorCodeErrorMessage: LiveData<String> get() = _colorCodeErrorMessage
-
-    //ColorCodeが手入力された時に検証するメソッド
-    fun isValidColorCode(colorCode: String): Boolean {
-        //パースできるColorCodeの形式は以下の3種類
-        Log.d("ValidColorCode",colorCode)
-
-        //正規表現　#RRGGBB 6桁の16進数
-        val RRGGBB = Regex("^#([0-9a-fA-F]{6})$", RegexOption.IGNORE_CASE)
-
-        //正規表現　#AARRGGBB 8桁の16進数
-        val AARRGGBB = Regex("^#[0-9A-Fa-f]{8}$", RegexOption.IGNORE_CASE)
-
-        // 認識できる色名をセットにする
-        val colorNames = setOf(
-            "red", "blue", "green", "black", "white", "gray", "cyan", "magenta",
-            "yellow", "lightgray", "darkgray", "grey", "lightgrey", "darkgrey",
-            "aqua", "fuchsia", "lime", "maroon", "navy", "olive", "purple", "silver", "teal"
-        )
-
-        //入力された値が上記3種類に当てはまるか検証
-        return colorCode.let {
-            it.matches(RRGGBB) || it.matches(AARRGGBB) || it.lowercase() in colorNames
-        }
-    }
 
     //TextFieldに入力された値を16進数のカラーコードに変換する
     fun convertToHexColorCode(text:String):String?{
@@ -167,7 +137,7 @@ class ColorChoiceViewModel :ViewModel() {
     }
 
     //ColorCodeを受け取り10進数に変換しRGB値を返す
-    fun calConvertToRGB(colorCode: String): Triple<Int, Int, Int> {
+    private fun calConvertToRGB(colorCode: String): Triple<Int, Int, Int> {
         return try {
             Log.d("ColorChoiceScreen",colorCode)
         val adjustColorCode = Color.parseColor(colorCode)
@@ -210,13 +180,15 @@ class ColorChoiceViewModel :ViewModel() {
     }
 
     //RGBを受け取りColorCodeを返す
-    fun calConvertToColorCode(red: Int, green: Int, blue: Int): String {
+    private fun calConvertToColorCode(red: Int, green: Int, blue: Int): String {
         return String.format("#%02X%02X%02X", red, green, blue)
     }
     //=============
 
 }
+//廃止OR今後実装するかもしれないコード置き場
 
+//今後
     /*可読性を高めるためにDataClassにまとめてもいいかも。
      データクラス内のデータに一つでも変更があるとデータクラス内を全て再描写しないといけないから注意（RGBならいいかも）
      //square1の各シークバーの値とその初期値
@@ -229,7 +201,40 @@ class ColorChoiceViewModel :ViewModel() {
     val red:Int,
     val green :Int,
     val blue :Int
-)
+    )
+    */
+
+//廃止
+    /*　TextField入力についてToastを表示しない方針
+    //ColorCode検証時に表示するエラーコード
+    private val _colorCodeErrorMessage = MutableLiveData<String>()//デフォルトのカラーコード
+    val colorCodeErrorMessage: LiveData<String> get() = _colorCodeErrorMessage
+    */
+
+    /*入力された値をParseできるかどうかで判断する方がシンプルだから検証機能を廃止した
+    //ColorCodeが手入力された時に検証するメソッド
+    fun isValidColorCode(colorCode: String): Boolean {
+    //パースできるColorCodeの形式は以下の3種類
+    Log.d("ValidColorCode",colorCode)
+
+    //正規表現　#RRGGBB 6桁の16進数
+    val RRGGBB = Regex("^#([0-9a-fA-F]{6})$", RegexOption.IGNORE_CASE)
+
+    //正規表現　#AARRGGBB 8桁の16進数
+    val AARRGGBB = Regex("^#[0-9A-Fa-f]{8}$", RegexOption.IGNORE_CASE)
+
+    // 認識できる色名をセットにする
+    val colorNames = setOf(
+        "red", "blue", "green", "black", "white", "gray", "cyan", "magenta",
+        "yellow", "lightgray", "darkgray", "grey", "lightgrey", "darkgrey",
+        "aqua", "fuchsia", "lime", "maroon", "navy", "olive", "purple", "silver", "teal"
+    )
+
+    //入力された値が上記3種類に当てはまるか検証
+    return colorCode.let {
+        it.matches(RRGGBB) || it.matches(AARRGGBB) || it.lowercase() in colorNames
+    }
+}
     */
 
 //import android.widget.TextView
@@ -516,7 +521,7 @@ class ColorChoiceViewModel :ViewModel() {
 //        redPoint = Color.red(color)
 //        bluePoint = Color.blue(color)
 //        greenPoint = Color.green(color)
-//        seekBarRed.progress = redPoin　　t
+//        seekBarRed.progress = redPoint
 //        seekBarBlue.progress = bluePoint
 //        seekBarGreen.progress = greenPoint
 //    }
