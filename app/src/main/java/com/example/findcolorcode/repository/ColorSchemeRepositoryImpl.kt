@@ -8,8 +8,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 //APIと通信を行うクラス
 //プリマリコンストラクタで引数にtheColorApiServiceインスタンスを引き渡し依存性注入を行う
-class ColorSchemeRepositoryImpl(private val apiService: TheColorApiService)
-    :ColorSchemeRepository {//Repository(InterFace)の実装
+class ColorSchemeRepositoryImpl :ColorSchemeRepository {//Repository(InterFace)の実装
 
     private val moshi : Moshi = Moshi.Builder().build()//Moshiのインスタンスを作成
 
@@ -21,6 +20,8 @@ class ColorSchemeRepositoryImpl(private val apiService: TheColorApiService)
         .addConverterFactory(MoshiConverterFactory.create(moshi))//Moshi
         .build()
 
+    //TODO　今後DIを使用する
+    private val apiService :TheColorApiService = retrofit.create(TheColorApiService::class.java)
 
     override suspend fun getColorScheme(
         colorCodeWithoutHash: String,
