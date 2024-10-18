@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    id("com.google.devtools.ksp").version("1.6.10-1.0.4")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -70,7 +70,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -86,7 +85,9 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     //coroutine
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
-
+    //ksp
+    ksp("androidx.room:room-compiler:2.6.1")//KSPとRoom間の依存関係を追加(@でコードを自動生成)
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")//KSPとmoshi間の依存関係を追加
 
     implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
     implementation("androidx.cardview:cardview:1.0.0")
@@ -98,11 +99,16 @@ dependencies {
 
     //JetPackCompose
     //NavigationCompose
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("androidx.navigation:navikyogation-compose:2.7.7")
     //Compose作成のためのmaterial3
     implementation("androidx.compose.material3:material3:1.2.1")
     implementation("androidx.compose.material3:material3-window-size-class:1.2.1")
     implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.3.0-rc01")
+
+    implementation ("androidx.room:room-runtime:2.6.1") // Room
+    ksp ("androidx.room:room-compiler:2.6.1") // Room用のKSP
+    implementation ("com.squareup.moshi:moshi:1.12.0") // Moshi
+    ksp ("com.squareup.moshi:moshi-kotlin-codegen:1.12.0") // Moshi用のKSP
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
