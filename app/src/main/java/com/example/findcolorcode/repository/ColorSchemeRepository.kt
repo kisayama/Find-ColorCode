@@ -1,7 +1,6 @@
 package com.example.findcolorcode.repository
 
 import com.example.findcolorcode.model.ColorSchemeResponse
-import retrofit2.http.Query
 
 //RepositoryはAPIデータ取得を目的とするクラスに実装され、
 //クライアントからの指示でデータの取得を行う(窓口になる)
@@ -11,8 +10,9 @@ import retrofit2.http.Query
 interface ColorSchemeRepository {
     suspend fun getColorScheme(
         colorCodeWithoutHash :String,
-        mode :String,
-        format :String,
-        count : Int
+        mode :String = "analogic",
+        format :String = "json",
+        count : Int = 5
     ):ColorSchemeResponse //戻り値のデータ型
+
 }
