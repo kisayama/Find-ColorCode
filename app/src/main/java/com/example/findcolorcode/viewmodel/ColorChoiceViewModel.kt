@@ -6,8 +6,13 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.findcolorcode.model.ColorSchemeResponse
+import com.example.findcolorcode.repository.ColorSchemeRepository
+import com.example.findcolorcode.repository.ColorSchemeRepositoryImpl
+import kotlinx.coroutines.launch
 
-class ColorChoiceViewModel :ViewModel() {
+class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewModel() {
 
     //==選択squareについて==
     //選択squareのインデックス
@@ -184,6 +189,19 @@ class ColorChoiceViewModel :ViewModel() {
         return String.format("#%02X%02X%02X", red, green, blue)
     }
     //=============
+
+    //====API関連====
+
+    //selectedColorPalletContentに表示するColorSchemeを取得する
+    //repositoryを依存性注入することで、Repositoryのインターフェースが
+    // 実装されているクラス(Impl) を使用することができる
+    fun fetchColorScheme(colorCode: String) {
+        viewModelScope.launch {
+            val response = repository.getColorScheme(
+                colorCode.removePrefix("#"))
+
+        }
+    }
 
 }
 //廃止OR今後実装するかもしれないコード置き場
