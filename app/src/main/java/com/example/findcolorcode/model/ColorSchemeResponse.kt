@@ -13,11 +13,14 @@ import com.squareup.moshi.JsonClass
 data class ColorSchemeResponse (
     @Json val mode:String,
     @Json val count:Int,
-    @Json val colors:List<ColorCodesList>
+    @Json val colors:List<ColorCode>
+)
+data class ColorCode(
+    @Json val hex :HexValue
 )
 
 @JsonClass (generateAdapter = true)
-data class ColorCodesList(
+data class HexValue(
     @Json val value :String,
     @Json val clean: String
 )
