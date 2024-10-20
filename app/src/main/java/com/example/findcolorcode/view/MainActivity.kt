@@ -25,6 +25,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.findcolorcode.components.BottomBar
 import com.example.findcolorcode.components.BottomBarTab
+import com.example.findcolorcode.repository.ColorSchemeRepository
+import com.example.findcolorcode.repository.ColorSchemeRepositoryImpl
 import com.example.findcolorcode.ui.theme.FindColorCodeTheme
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 import com.example.findcolorcode.viewmodel.MainViewModel
@@ -97,7 +99,7 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel) {
                 composable(BottomBarTab.ColorChoice.route) {
                     ColorChoiceScreen(
                         navController,
-                        ColorChoiceViewModel()
+                        ColorChoiceViewModel(repository = ColorSchemeRepositoryImpl())
                     )
                 }
                 composable(BottomBarTab.FavoriteList.route) {
