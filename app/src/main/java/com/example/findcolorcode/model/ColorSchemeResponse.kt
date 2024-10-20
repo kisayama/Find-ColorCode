@@ -15,6 +15,7 @@ data class ColorSchemeResponse (
     @Json val count:Int,
     @Json val colors:List<ColorCode>
 )
+@JsonClass (generateAdapter = true)
 data class ColorCode(
     @Json val hex :HexValue
 )
