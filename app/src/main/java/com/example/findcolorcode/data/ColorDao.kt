@@ -22,7 +22,7 @@ interface ColorDao {
 
     //指定したIDで色を取得するメソッド
     @Query("SELECT * from FavoriteColorDataClass WHERE id = :colorId")
-    suspend fun getColorById(colorId:String) : Flow<FavoriteColorDataClass>//Flowはデータの変更を監視する
+    fun getColorById(colorId:String) : Flow<FavoriteColorDataClass>//Flowはデータの変更を監視する
 
     //色を更新するメソッド
     @Update
