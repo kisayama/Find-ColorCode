@@ -1,7 +1,6 @@
 package com.example.findcolorcode
 
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -16,7 +15,6 @@ import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.savedinstancestate.savedInstanceState
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.findcolorcode.databinding.FragmentColorChoiceBinding
