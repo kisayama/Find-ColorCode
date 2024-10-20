@@ -1,14 +1,14 @@
 plugins {
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
     id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.android")version "1.9.24"
 }
 
 android {
     namespace = "com.example.findcolorcode"
     compileSdk = 34
 
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
         compose = true
     }
@@ -74,7 +74,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
-    implementation ("androidx.fragment:fragment-ktx:1.7.0")
+    implementation("androidx.fragment:fragment-ktx:1.7.0")
     implementation(libs.androidx.constraintlayout)
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation("com.squareup.moshi:moshi:1.15.1")
@@ -94,25 +94,25 @@ dependencies {
     val lifecycle_version = "2.8.4"
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
-    implementation ("androidx.compose.foundation:foundation-layout")
+    implementation("androidx.compose.foundation:foundation-layout")
 
 
     //JetPackCompose
     //NavigationCompose
-    implementation("androidx.navigation:navikyogation-compose:2.7.7")
+    implementation("androidx.navigation:navigation-compose:2.7.3")
     //Compose作成のためのmaterial3
     implementation("androidx.compose.material3:material3:1.2.1")
     implementation("androidx.compose.material3:material3-window-size-class:1.2.1")
     implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.3.0-rc01")
 
     //テスト用の依存関係
-    testImplementation ("junit:junit:4.13.2")
-    testImplementation ("org.mockito:mockito-core:3.11.2")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:3.11.2")
 
-    implementation ("androidx.room:room-runtime:2.6.1") // Room
-    ksp ("androidx.room:room-compiler:2.6.1") // Room用のKSP
-    implementation ("com.squareup.moshi:moshi:1.12.0") // Moshi
-    ksp ("com.squareup.moshi:moshi-kotlin-codegen:1.12.0") // Moshi用のKSP
+    implementation("androidx.room:room-runtime:2.6.1") // Room
+    ksp("androidx.room:room-compiler:2.6.1") // Room用のKSP
+    implementation("com.squareup.moshi:moshi:1.12.0") // Moshi
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.12.0") // Moshi用のKSP
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
