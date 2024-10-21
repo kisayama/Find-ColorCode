@@ -195,7 +195,7 @@ class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewM
     //selectedColorPalletContentに表示するColorSchemeを取得する
     //repositoryを依存性注入することで、Repositoryのインターフェースが
     // 実装されているクラス(Impl) を使用することができる
-    fun fetchColorScheme(colorCode: String) {
+    fun fetchColorScheme(colorCode: String) :List<String>{
         viewModelScope.launch {
             val response = repository.getColorScheme(
                 colorCode.removePrefix("#"))
