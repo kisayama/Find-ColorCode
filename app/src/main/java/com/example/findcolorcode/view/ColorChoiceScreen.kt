@@ -168,6 +168,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                 ColorSaveBtn(
                     modifier = Modifier.weight(1f),
                     onSquareSelected = {viewModel.changeSelectedSquare(squareIndex)},
+                    //TODO onClickを記述　SaveDialogを表示
                 )
             }
             }
@@ -330,7 +331,8 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
             )
         }
             @Composable
-            fun ColorPalletTab(viewModel: ColorChoiceViewModel,selectedSquare: Int){
+            fun ColorPalletTab(viewModel: ColorChoiceViewModel,selectedSquare: Int,
+                               square1ColorData: ColorDataForColorChoice,square2ColorData: ColorDataForColorChoice){
                 var selectedTabIndex by remember { mutableStateOf(0) }
                 Scaffold (
                     topBar = {
@@ -355,7 +357,6 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                 ) { paddingValues ->
                     when (selectedTabIndex){
                         0-> BasicColorContents(
-                            Modifier.padding(paddingValues),
                             viewModel = viewModel,
                             selectedSquare = selectedSquare,
                             // basicColorListはPair(colorCode, name)のリスト
@@ -366,7 +367,12 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                             )
                         1-> SelectedColorPalletContent(
                             Modifier.padding(paddingValues),
-                            selectedSquare)
+                            viewModel = viewModel,
+                            selectedSquare = selectedSquare,
+                            square1ColorData = square1ColorData,
+                            square2ColorData = square2ColorData,
+                            colorList = null
+                        )
                     }
                 }
             }
