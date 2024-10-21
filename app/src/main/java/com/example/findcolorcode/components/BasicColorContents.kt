@@ -57,7 +57,7 @@ fun BasicColorContents(
 }
 
 @Composable
-fun BasicColorRow(
+private fun BasicColorRow(
  modifier: Modifier = Modifier,
  colorList: List<String>,
  onBasicSquareSelected: (String) -> Unit
@@ -90,7 +90,7 @@ fun BasicColorRow(
 
 
 @Composable
- fun BasicColorSquare(
+ private fun BasicColorSquare(
  modifier: Modifier = Modifier,
  colorCode:String,
  onBasicSquareSelected: (String)->Unit){
