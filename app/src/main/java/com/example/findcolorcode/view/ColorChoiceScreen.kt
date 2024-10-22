@@ -116,7 +116,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
             square1ColorData = square1ColorData,
             square2ColorData = square2ColorData
         )
-        ColorPalletTab(viewModel,selectedSquare)
+        ColorPalletTab(viewModel,selectedSquare,square1ColorData,square2ColorData)
     }
 
 }
