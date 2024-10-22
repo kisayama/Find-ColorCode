@@ -84,11 +84,6 @@ class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewM
     private val _colorPalletList =MutableLiveData(initialColorPalletList)
     val colorPalletList:LiveData<List<String>> get() = _colorPalletList
 
-    //colorPalletList変更メソッド
-    fun updateColorPalletList(colorPalletList: List<String>) {
-    _colorPalletList.value = colorPalletList
-    }
-
     //======
 
     //選択しているsquareに応じたシークバーの値を取得する関数
