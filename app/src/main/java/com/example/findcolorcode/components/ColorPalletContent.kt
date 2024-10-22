@@ -14,13 +14,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.findcolorcode.model.ColorDataForColorChoice
-import com.example.findcolorcode.repository.ColorSchemeRepositoryImpl
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 
 @Composable
@@ -29,14 +29,14 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
     viewModel:ColorChoiceViewModel,
     square1ColorData:ColorDataForColorChoice,
     square2ColorData:ColorDataForColorChoice,
-    selectedSquare:Int,
-    colorList: List<String>?) {
+    selectedSquare:Int) {
+
+    val initialColorPalletList = listOf("#FFFFFF","#FFFFFF","#FFFFFF","#FFFFFF","#FFFFFF")//初期値のリスト
+    //viewModelのcolorPalletListをobserveAsStateで取得する
+    val colorPalletList by viewModel.colorPalletList.observeAsState(initialColorPalletList)
 
     //selectedSquareに応じて使用するColorDataを決定する
     val currentColorData = if (1 == selectedSquare) square1ColorData else square2ColorData
-
-    // colorListがnullならデフォルト値を使用する
-    val adjustList = colorList ?: listOf("#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF")
 
     //Pallet選択時の処理
     val palletsquareSellected : (String) -> Unit = { palletColorCode ->
@@ -47,7 +47,8 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
         //RGB値を変更
         viewModel.convertToRGB(selectedSquare)
     }
-        Column(modifier = modifier.fillMaxSize()
+        Column(modifier = modifier
+            .fillMaxSize()
             .padding(top = 66.dp, bottom = 10.dp)
         ){
             PalletCreateButton(
@@ -57,23 +58,24 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
             Row(modifier.padding(start = 10.dp, end = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly){
                 PalletColorSquare(
-                    colorCode = adjustList[0],
+                    //colorPalletListの要素一つずつをcolorCodeとして渡す
+                    colorCode = colorPalletList[0],
                     onPalletSquareSelected = palletsquareSellected
                 )
                 PalletColorSquare(
-                    colorCode = adjustList[0],
+                    colorCode = colorPalletList[1],
                     onPalletSquareSelected = palletsquareSellected
                 )
                 PalletColorSquare(
-                    colorCode = adjustList[0],
+                    colorCode = colorPalletList[2],
                     onPalletSquareSelected = palletsquareSellected
                 )
                 PalletColorSquare(
-                    colorCode = adjustList[0],
+                    colorCode = colorPalletList[3],
                     onPalletSquareSelected = palletsquareSellected
                 )
                 PalletColorSquare(
-                    colorCode = adjustList[0],
+                    colorCode = colorPalletList[4],
                     onPalletSquareSelected = palletsquareSellected
                 )
             }
