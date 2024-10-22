@@ -28,9 +28,10 @@ class ColorSchemeRepositoryImpl :ColorSchemeRepository {//Repository(InterFace)�
         mode: String,
         format: String,
         count: Int
-    ): ColorSchemeResponse {//ColorSchemeRepositoryと同じ戻り値の型を使用する
+    ): List<String> {//ColorSchemeRepositoryと同じ戻り値の型を使用する
         //APIサービスから結果を取得する
-        return apiService.getColorScheme(colorCodeWithoutHash,mode,format,count)
+        val responce = apiService.getColorScheme(colorCodeWithoutHash,mode,format,count)
+        return responce.colors.map { it.hex.value }
     }
 
 }
