@@ -16,14 +16,13 @@ class ColorSchemeRepositoryImplTest {
     @Test
     fun testGetColorScheme() = runBlocking {
         val colorCode = "ff0000"
-        val order = repository.getColorScheme(colorCode,"analogic", "json",5)
-        assertNotNull(order)
-        assertEquals("analogic",order.mode)
-        assertEquals(5,order.count)
-        assertTrue(order.colors.isNotEmpty())
-        order.colors.forEach{
+        val colorList = repository.getColorScheme(colorCode,"analogic", "json",5)
+
+        assertNotNull(colorList)
+        assertEquals(5,colorList.size)
+        colorList.forEach{
             colorCode ->
-            println("HexValue: ${colorCode.hex.value}, Clean: ${colorCode.hex.clean}")
+            println("HexValue:$colorCode")
         }
     }
 
