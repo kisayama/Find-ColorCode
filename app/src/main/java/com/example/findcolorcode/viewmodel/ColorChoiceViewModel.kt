@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.findcolorcode.model.ColorSchemeResponse
+import com.example.findcolorcode.model.HexValue
 import com.example.findcolorcode.repository.ColorSchemeRepository
 import com.example.findcolorcode.repository.ColorSchemeRepositoryImpl
 import kotlinx.coroutines.launch
@@ -78,6 +79,12 @@ class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewM
     val green2 = MutableLiveData(255)
     val blue2 = MutableLiveData(255)
     //===================
+
+    //===ColorPalletContentに表示するカラーパレットのリスト===
+    // カラーコードは#付きのHex形式、リストサイズは5
+    private val _palletColorList =MutableLiveData<List<String>>()
+    val palletColorList:LiveData<List<String>> get() = _palletColorList
+    //======
 
     //選択しているsquareに応じたシークバーの値を取得する関数
     fun setSquareRGB(selectedSquare: Int, rgbColorType: String, value: Int) {
@@ -195,11 +202,11 @@ class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewM
     //selectedColorPalletContentに表示するColorSchemeを取得する
     //repositoryを依存性注入することで、Repositoryのインターフェースが
     // 実装されているクラス(Impl) を使用することができる
-    fun fetchColorScheme(colorCode: String) :List<String>{
+    fun fetchColorScheme(colorCode: String){
         viewModelScope.launch {
             val response = repository.getColorScheme(
                 colorCode.removePrefix("#"))
-
+            _palletColorList.value = response
         }
     }
 
