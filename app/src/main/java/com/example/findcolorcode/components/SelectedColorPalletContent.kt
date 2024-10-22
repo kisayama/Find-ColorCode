@@ -52,7 +52,8 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
         ){
             PalletCreateButton(
                 //次はここから
-                onButtonClicked = viewModel.fetchColorScheme(currentColorData.colorCode) )
+                onButtonClicked = {viewModel.fetchColorScheme(currentColorData.colorCode)}
+            )
             Row(modifier.padding(start = 10.dp, end = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly){
                 PalletColorSquare(
@@ -113,10 +114,5 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 @Composable
 fun PreviewPallet(){
     PalletColorSquare(modifier = Modifier,colorCode = "#FFFFFF", onPalletSquareSelected = {})
-}
-@Preview
-@Composable
-fun PreviewSelectedColorPalletContent(){
-    SelectedColorPalletContent(modifier = Modifier, colorList = null, selectedSquare = 1, viewModel = ColorChoiceViewModel(ColorSchemeRepositoryImpl()))
 }
 
