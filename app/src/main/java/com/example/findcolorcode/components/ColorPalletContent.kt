@@ -52,8 +52,10 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
             .padding(top = 66.dp, bottom = 10.dp)
         ){
             PalletCreateButton(
-                //次はここから
-                onButtonClicked = {viewModel.fetchColorScheme(currentColorData.colorCode)}
+                onButtonClicked = {
+                    //API通信を行う　ViewModel自身の動作でcolorPalletListを更新するのでここでは操作を行わない
+                    viewModel.fetchColorScheme(currentColorData.colorCode)
+                }
             )
             Row(modifier.padding(start = 10.dp, end = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly){
