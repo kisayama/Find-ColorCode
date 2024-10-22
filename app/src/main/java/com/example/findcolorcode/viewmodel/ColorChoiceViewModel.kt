@@ -7,11 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.findcolorcode.model.ColorSchemeResponse
-import com.example.findcolorcode.model.HexValue
 import com.example.findcolorcode.repository.ColorSchemeRepository
-import com.example.findcolorcode.repository.ColorSchemeRepositoryImpl
 import kotlinx.coroutines.launch
+import java.lang.Exception
 
 class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewModel() {
 
@@ -82,8 +80,15 @@ class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewM
 
     //===ColorPalletContentに表示するカラーパレットのリスト===
     // カラーコードは#付きのHex形式、リストサイズは5
-    private val _palletColorList =MutableLiveData<List<String>>()
-    val palletColorList:LiveData<List<String>> get() = _palletColorList
+    private val initialColorPalletList = listOf("#FFFFFF","#FFFFFF","#FFFFFF","#FFFFFF","#FFFFFF")//初期値のリスト
+    private val _colorPalletList =MutableLiveData(initialColorPalletList)
+    val colorPalletList:LiveData<List<String>> get() = _colorPalletList
+
+    //colorPalletList変更メソッド
+    fun updateColorPalletList(colorPalletList: List<String>) {
+    _colorPalletList.value = colorPalletList
+    }
+
     //======
 
     //選択しているsquareに応じたシークバーの値を取得する関数
@@ -199,14 +204,17 @@ class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewM
 
     //====API関連====
 
-    //selectedColorPalletContentに表示するColorSchemeを取得する
-    //repositoryを依存性注入することで、Repositoryのインターフェースが
-    // 実装されているクラス(Impl) を使用することができる
+    //selectedColorPalletContentに表示するpalletColorListを取得するためのAPI通信を行う
     fun fetchColorScheme(colorCode: String){
         viewModelScope.launch {
-            val response = repository.getColorScheme(
-                colorCode.removePrefix("#"))
-            _palletColorList.value = response
+            try {
+                val response = repository.getColorScheme(
+                    colorCode.removePrefix("#")//#を取り除いたHex値を引き渡す
+                )
+                _colorPalletList.value = response //APIから取得したレスポンスをカラーパレットリストに保存
+            }catch (e:Exception){
+                Log.e("getColorSchemeError","API通信でエラーが発生しました${e.message}")
+            }
         }
     }
 
