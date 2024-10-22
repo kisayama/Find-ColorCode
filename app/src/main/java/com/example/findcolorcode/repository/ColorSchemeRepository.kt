@@ -13,6 +13,5 @@ interface ColorSchemeRepository {
         mode :String = "analogic",
         format :String = "json",
         count : Int = 5
-    ):ColorSchemeResponse //戻り値のデータ型
-
+    ):List<String> //戻り値のデータ型
 }
