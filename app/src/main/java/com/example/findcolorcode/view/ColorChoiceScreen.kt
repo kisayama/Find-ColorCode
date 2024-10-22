@@ -370,8 +370,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                             viewModel = viewModel,
                             selectedSquare = selectedSquare,
                             square1ColorData = square1ColorData,
-                            square2ColorData = square2ColorData,
-                            colorList = null
+                            square2ColorData = square2ColorData
                         )
                     }
                 }
