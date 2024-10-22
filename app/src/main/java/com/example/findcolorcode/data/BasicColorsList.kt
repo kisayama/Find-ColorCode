@@ -1,24 +1,4 @@
 package com.example.findcolorcode.data
-/*
-val basicColorsList1 = listOf(
-    "#FF0000", // 赤
-    "#FFA500", // オレンジ
-    "#800080", // 紫
-    "#00FF00"  // 緑
-)
-val basicColorsList2 = listOf(
-    "#00FFFF", // シアン
-    "#0000FF", // 青
-    "#FFFF00", // 黄
-    "#FF00FF"  // マゼンタ
-)
-val basicColorsList3 = listOf(
-    "#A52A2A", // 茶色
-    "#000000", // 黒
-    "#FFFFFF", // 白
-    "#808080"  // グレー
-)
-*/
 val basicColorsList1 = listOf(
     Pair("#FF0000", "赤"),    // Red
     Pair("#FFA500", "オレンジ"), // Orange
