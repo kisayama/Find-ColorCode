@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,16 +50,12 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
     }
         Column(modifier = modifier
             .fillMaxSize()
-            .padding(top = 66.dp, bottom = 10.dp)
+            .padding(top = 66.dp, bottom = 10.dp, end = 1.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),//パレットカラースクエアとボタンのの間のスペース
+            horizontalAlignment = Alignment.CenterHorizontally
         ){
-            PalletCreateButton(
-                onButtonClicked = {
-                    //API通信を行う　ViewModel自身の動作でcolorPalletListを更新するのでここでは操作を行わない
-                    viewModel.fetchColorScheme(currentColorData.colorCode)
-                }
-            )
-            Row(modifier.padding(start = 10.dp, end = 8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly){
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp)){
                 PalletColorSquare(
                     //colorPalletListの要素一つずつをcolorCodeとして渡す
                     colorCode = colorPalletList[0],
@@ -81,6 +78,13 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
                     onPalletSquareSelected = palletsquareSellected
                 )
             }
+
+            PalletCreateButton(
+                onButtonClicked = {
+                    //API通信を行う　ViewModel自身の動作でcolorPalletListを更新するのでここでは操作を行わない
+                    viewModel.fetchColorScheme(currentColorData.colorCode)
+                }
+            )
         }
         }
 
@@ -99,8 +103,7 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
     onPalletSquareSelected: (String) -> Unit){
     Box(
         modifier = modifier
-            .padding(end = 8.dp)
-            .size(70.dp)
+            .size(65.dp)
             .background(
                 try {
                     Color(android.graphics.Color.parseColor(colorCode))
