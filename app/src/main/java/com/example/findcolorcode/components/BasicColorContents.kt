@@ -101,7 +101,7 @@ private fun BasicColorRow(
     .size(70.dp)
     .clickable { onBasicSquareSelected(colorCode) }
     .background(Color(android.graphics.Color.parseColor(colorCode)))
-    .border(2.dp, Color.LightGray)
+    .border(1.dp, Color.LightGray)
     .aspectRatio(1f)//1:1比率
   )
  }
