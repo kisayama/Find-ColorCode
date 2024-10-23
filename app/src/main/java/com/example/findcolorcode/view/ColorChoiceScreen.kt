@@ -82,7 +82,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp), // 四角とシークバーの間のスペース
+        verticalArrangement = Arrangement.spacedBy(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
