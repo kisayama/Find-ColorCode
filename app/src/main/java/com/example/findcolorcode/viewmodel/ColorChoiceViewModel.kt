@@ -9,7 +9,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.findcolorcode.repository.ColorSchemeRepository
 import kotlinx.coroutines.launch
-import java.lang.Exception
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
+import kotlin.Exception
 
 class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewModel() {
 
@@ -81,7 +83,7 @@ class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewM
     //===ColorPalletContentに表示するカラーパレットのリスト===
     // カラーコードは#付きのHex形式、リストサイズは5
     private val initialColorPalletList = listOf("#FFFFFF","#FFFFFF","#FFFFFF","#FFFFFF","#FFFFFF")//初期値のリスト
-    private val _colorPalletList =MutableLiveData(initialColorPalletList)
+    private val _colorPalletList = MutableLiveData(initialColorPalletList)
     val colorPalletList:LiveData<List<String>> get() = _colorPalletList
 
     //======
@@ -110,19 +112,23 @@ class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewM
     //====カラーコード→RGB=====
 
     //TextFieldに入力された値を16進数のカラーコードに変換する
+    //Hexが正しい形式か検証するメソッドとしても利用する
     fun convertToHexColorCode(text:String):String?{
         //TextFieldが空の時はnullを返し呼び出し元で処理を行わないようにする
-        if (text.isEmpty()){
-            Log.d("convertToHexColorCode", "return null because empty ")
+        val trimText = text.trim()//スペースを削除
+        if (trimText.isEmpty()){
             return null
         }
         return try {
-            val colorInt = Color.parseColor(text)
-            Log.d("convertToHexColorCode","return $colorInt")
-            String.format("#%08X", colorInt)
+            //parseColorで変換した値
+            val intColorCode = Color.parseColor(text)
+            //colorInt(上2桁は透明度、下4桁はRGB)から透明度を無視するAND演算を行いRGB部分だけ取得する
+            //0xはプレフィックスで数値が16進数であることを示す
+            val rgbColorCode = Color.parseColor(text) and 0x00FFFFFF
+            Log.d("convertToHexColorCode","return $rgbColorCode")
+            String.format("#%06X", rgbColorCode)
         }catch (e:IllegalArgumentException){
             //入力されたtextからColorCodeが見つからない場合nullを返す
-            Log.d("convertToHexColorCode","return null")
             null
     }
     }
@@ -152,17 +158,17 @@ class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewM
     private fun calConvertToRGB(colorCode: String): Triple<Int, Int, Int> {
         return try {
             Log.d("ColorChoiceScreen",colorCode)
-        val adjustColorCode = Color.parseColor(colorCode)
-        val red = Color.red(adjustColorCode)
-        val green = Color.green(adjustColorCode)
-        val blue = Color.blue(adjustColorCode)
+            val adjustColorCode = Color.parseColor(colorCode)
+            val red = Color.red(adjustColorCode)
+            val green = Color.green(adjustColorCode)
+            val blue = Color.blue(adjustColorCode)
             Log.d("convertToRGB","convertToRGB")
         Triple(red, green, blue)// R,G,BをTripleで返す
-    } catch (e:IllegalStateException){
-        //エラーが起きた場合デフォルト色の白を返す
+        } catch (e:IllegalStateException){
+            //エラーが起きた場合デフォルトのRGB値を返す
             Log.d("convertToRGB","convertToRGB")
-        Triple(255,255,255)
-    }
+            Triple(255,255,255)
+        }
     }
     //=============
 
@@ -206,12 +212,43 @@ class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewM
                 val response = repository.getColorScheme(
                     colorCode.removePrefix("#")//#を取り除いたHex値を引き渡す
                 )
-                _colorPalletList.value = response //APIから取得したレスポンスをカラーパレットリストに保存
-            }catch (e:Exception){
-                Log.e("getColorSchemeError","API通信でエラーが発生しました${e.message}")
+                //リストのサイズが5かつ全てのカラーコードが正しい形式であることを確認
+                if (response.size == 5&&
+                    response.all {convertToHexColorCode(it) != null}
+                    ){
+                    _colorPalletList.value = response //APIから取得したレスポンスをカラーパレットリストに保存
+                    _toastMessage.value = "カラーパレットが作成できました！"
+                }else{
+                    //RepositoryImplからのレスポンスが誤った形式で他の通信エラーと同様のタグを設定する
+                    Log.e("RepositoryImpl","リストサイズ:${response.size},colorCodeHex:${response}　サイズが5以外,colorCodeHexの形式エラー")
+                    _toastMessage.value = "無効なレスポンスが含まれています。再度お試しください"
+                }
             }
+            catch (e: SocketTimeoutException){
+                _toastMessage.value = "通信がタイムアウトしました。ネットワーク接続を確認してください"
+            }
+            catch (e: UnknownHostException){
+                _toastMessage.value = "インターネット接続エラー　ネットワーク接続を確認してください"
+            }
+            catch (e:Exception){
+                _toastMessage.value = "予期しないエラーが発生しました。ネットワーク接続を確認してください"
+            }
+
         }
     }
+
+    //=======
+
+    //===トーストメッセージ===
+    //view
+    private val _toastMessage = MutableLiveData<String>()
+    val toastMessage: LiveData<String> get() = _toastMessage
+
+    //変更メソッド
+    fun updateToastMessage(message:String){
+        _toastMessage.value = message
+    }
+    //======
 
 }
 //廃止OR今後実装するかもしれないコード置き場
