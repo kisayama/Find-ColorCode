@@ -89,10 +89,13 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
         }
 
 @Composable
-    private fun PalletCreateButton(onButtonClicked:() -> Unit) {
-    OutlinedButton(onClick = {onButtonClicked() }){
-            Text("選択した色からカラーパレットを作成します")
-        }
+private fun PalletCreateButton(
+    onButtonClicked: () -> Unit) {
+    OutlinedButton(
+        onClick = { onButtonClicked() }
+    ) {
+        Text("選択した色からカラーパレットを作成します")
+    }
 }
 
 //APIから受け取ったカラーコードを表示するSquare
@@ -111,7 +114,7 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
                     Color.White
                 }
             )
-            .border(1.dp, androidx.compose.ui.graphics.Color.LightGray)
+            .border(1.dp, Color.LightGray)
             .aspectRatio(1f) //1:1比率
             .clickable { onPalletSquareSelected(colorCode) }
     )
