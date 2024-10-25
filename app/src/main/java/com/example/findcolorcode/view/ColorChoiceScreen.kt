@@ -184,7 +184,8 @@ fun ColorColumn(
             )
             ColorSaveBtn(
                 modifier = Modifier.weight(1f),
-                onSquareSelected = { viewModel.changeSelectedSquare(squareIndex) },
+                onClicked = { viewModel.changeSelectedSquare(squareIndex)
+                            },
                 //TODO onClickを記述　SaveDialogを表示
             )
         }
@@ -311,12 +312,12 @@ fun ColorCodeText(
 //色を保存するためのボタン
 fun ColorSaveBtn(
     modifier: Modifier = Modifier,
-    onSquareSelected: () -> Unit
+    onClicked: () -> Unit
 ) {
     IconButton(
         modifier = modifier,
         onClick = {
-            onSquareSelected()
+            onClicked()
         },
     ) {
         Icon(
