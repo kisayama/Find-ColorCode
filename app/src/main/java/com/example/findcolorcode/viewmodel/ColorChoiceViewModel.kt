@@ -88,6 +88,17 @@ class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewM
 
     //======
 
+    //===トーストメッセージ===
+    //view
+    private val _toastMessage = MutableLiveData<String>()
+    val toastMessage: LiveData<String> get() = _toastMessage
+
+    //変更メソッド
+    fun updateToastMessage(message:String){
+        _toastMessage.value = message
+    }
+    //======
+
     //選択しているsquareに応じたシークバーの値を取得する関数
     fun setSquareRGB(selectedSquare: Int, rgbColorType: String, value: Int) {
         when (selectedSquare) {
@@ -239,16 +250,7 @@ class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewM
 
     //=======
 
-    //===トーストメッセージ===
-    //view
-    private val _toastMessage = MutableLiveData<String>()
-    val toastMessage: LiveData<String> get() = _toastMessage
 
-    //変更メソッド
-    fun updateToastMessage(message:String){
-        _toastMessage.value = message
-    }
-    //======
 
 }
 //廃止OR今後実装するかもしれないコード置き場
