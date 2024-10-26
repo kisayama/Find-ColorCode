@@ -87,7 +87,7 @@ fun ColorSaveDialog(
                         .padding(bottom = 8.dp),
                     ) {
                         //カラーコード表示
-                        Text(modifier = Modifier.border(2.dp,AppColors.gainsboro).padding(5.dp),
+                        Text(modifier = Modifier.border(3.dp,AppColors.gainsboro).padding(5.dp),
                             text = currentColorData.backgroundColorCode,
                             style = TextStyle(fontSize = 16.sp)
                              )
