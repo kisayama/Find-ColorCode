@@ -10,5 +10,6 @@ object AppColors {
     val Blue = Color(0xFF0000FF)
     val Gray = Color(0xFFB0B0B0)
     val lightGray = Color(0xFFE7E7E7)
+    val gainsboro = Color(0xFFDCDCDC)
 
 }

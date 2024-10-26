@@ -11,7 +11,6 @@ import com.example.findcolorcode.repository.ColorSchemeRepository
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import kotlin.Exception
 
 class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewModel() {
 
@@ -89,13 +88,21 @@ class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewM
     //======
 
     //===トーストメッセージ===
-    //view
     private val _toastMessage = MutableLiveData<String>()
     val toastMessage: LiveData<String> get() = _toastMessage
 
     //変更メソッド
     fun updateToastMessage(message:String){
         _toastMessage.value = message
+    }
+    //======
+
+    //===ColorSveDialogの表示状態を表すフラグ===
+    private val _openDialog = MutableLiveData<Boolean>(false)
+    val openDialog: LiveData<Boolean> get() = _openDialog
+    //変更メソッド
+    fun updateOpenDialog(newOpenDialog:Boolean){
+        _openDialog.value = newOpenDialog
     }
     //======
 
