@@ -1,6 +1,7 @@
 package com.example.findcolorcode.view
 
-import android.annotation.SuppressLint
+import android.util.Log
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -28,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,8 +51,9 @@ import com.example.findcolorcode.data.basicColorsList3
 import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 
-//TODO 時間があればSLiderのthumbを調整するためにカスタムに変更するか検討する
+//TODO 時間があればSliderのthumbを調整するためにカスタムに変更するか検討する
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewModel) {
 
@@ -68,15 +72,9 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     val square1ColorCode by viewModel.square1ColorCode.observeAsState("#FFFFFF")
     //ユーザーがテキスト入力中に背景色が変わらないように squareColorCodeとは別に背景色を管理する変数を用意しておく
     val square1BackgroundColorCode by viewModel.square1BackgroundColorCode.observeAsState("#FFFFFF")
-    val square1ColorData = ColorDataForColorChoice(
-        square1ColorCode,
-        square1BackgroundColorCode,
-        red1,
-        green1,
-        blue1
-    )
+    val square1ColorData = ColorDataForColorChoice(square1ColorCode, square1BackgroundColorCode, red1, green1, blue1)
+    //========
 
-    //RGBとカラーコードをまとめたColorData
     // ===== Square2 Color Data =====
     // square2のRGB値を取得
     val red2 by viewModel.red2.observeAsState(255)
@@ -87,9 +85,22 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     val square2BackgroundColorCode by viewModel.square2BackgroundColorCode.observeAsState("#FFFFFF")
     val square2ColorData =
         ColorDataForColorChoice(square2ColorCode, square2BackgroundColorCode, red2, green2, blue2)
+    //========
+
+    //selectedSquareに応じて使用するColorDataを決定する
+    val currentColorData = if (square1Index == selectedSquare) square1ColorData else square2ColorData
+
     //トーストメッセージを取得
     val toastMessage by viewModel.toastMessage.observeAsState("")
 
+    //ダイアログ表示用フラグ
+    val openDialog  by viewModel.openDialog.observeAsState(false)
+
+    if (openDialog){
+        com.example.findcolorcode.components.ColorSaveDialog(
+            currentColorData = currentColorData,
+            openDialogUpdate = {viewModel.updateOpenDialog(false) })
+    }
 
     // 全体をColumnで囲んでレイアウトを縦方向に
     Column(
@@ -97,7 +108,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
             .fillMaxWidth()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
         // Boxを横一列に2つ並べる
@@ -124,11 +135,9 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
 
         // シークバーを表示
         SeekBars(
+            currentColorData = currentColorData,
             selectedSquare = selectedSquare,
-            square1Index = square1Index,
             viewModel = viewModel,
-            square1ColorData = square1ColorData,
-            square2ColorData = square2ColorData
         )
         ColorPalletTab(viewModel, selectedSquare, square1ColorData, square2ColorData)
         ShowToast(toastMessage = toastMessage)
@@ -136,7 +145,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
 
 }
 
-@SuppressLint("SuspiciousIndentation")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorColumn(
     viewModel: ColorChoiceViewModel,
@@ -182,12 +191,15 @@ fun ColorColumn(
                     }
                 }
             )
+
             ColorSaveBtn(
                 modifier = Modifier.weight(1f),
-                onClicked = { viewModel.changeSelectedSquare(squareIndex)
-                            },
-                //TODO onClickを記述　SaveDialogを表示
+                onClicked = {
+                    viewModel.changeSelectedSquare(squareIndex)
+                    viewModel.updateOpenDialog(true) }
             )
+
+
         }
     }
 }
@@ -195,13 +207,8 @@ fun ColorColumn(
 @Composable
 //TODO Sliderの操作についての簡便化　数値ラベルの表示、+-ボタンの追加
 fun SeekBars(
-    selectedSquare: Int, square1Index: Int, viewModel: ColorChoiceViewModel,
-    square1ColorData: ColorDataForColorChoice, square2ColorData: ColorDataForColorChoice
+    selectedSquare: Int, viewModel: ColorChoiceViewModel, currentColorData:ColorDataForColorChoice
 ) {
-    //selectedSquareに応じて使用するColorDataを決定する
-    val currentColorData =
-        if (square1Index == selectedSquare) square1ColorData else square2ColorData
-
     Column(
         modifier = Modifier.fillMaxWidth(), // 幅を親コンポーネントに合わせる
         verticalArrangement = Arrangement.spacedBy(16.dp), // シークバー間に16dpの間隔
@@ -222,6 +229,7 @@ fun SeekBars(
                     "red",
                     newValue,
                 )
+                Log.d("SeekBar","${currentColorData}")
             },
             //rgb値をカラーコードに変換し、selectedSquareのcolorCodeを更新する
             onConvertToColorCode = {
@@ -259,7 +267,6 @@ fun SeekBars(
     }
 }
 
-//TODO　ボタン、テキストコードを触った時もonSquareSelectedを動作させる
 @Composable
 //色を表示するBox
 fun ColorSquare(
