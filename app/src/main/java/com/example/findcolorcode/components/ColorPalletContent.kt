@@ -84,12 +84,10 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
                 onButtonClicked = {
                     //API通信を行う　ViewModel自身の動作でcolorPalletListを更新するのでここでは操作を行わない
                     //現在背景色に使用されている色をAPIに引き渡す
-                    //念の為parseできるかで正しいHEXが入力されているか検証する
+                    //念の為正しいHEXが入力されているか検証する
                     //パースできない値が入力されていない場合はトーストを表示する
                     val currentColorCode = currentColorData.backgroundColorCode
-                    Log.d("PalletCreateButton","${currentColorCode}")
                     val colorCode = viewModel.convertToHexColorCode(currentColorCode)
-                    Log.d("PalletCreateButton","${colorCode}")
                     if (colorCode != null){
                         viewModel.fetchColorScheme(colorCode)
                     }else {
