@@ -23,6 +23,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,6 +48,7 @@ import com.example.findcolorcode.data.basicColorsList1
 import com.example.findcolorcode.data.basicColorsList2
 import com.example.findcolorcode.data.basicColorsList3
 import com.example.findcolorcode.model.ColorDataForColorChoice
+import com.example.findcolorcode.ui.theme.customTextFieldColors
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 
 //TODO 時間があればSliderのthumbを調整するためにカスタムに変更するか検討する
@@ -302,13 +304,7 @@ fun ColorCodeText(
             .onFocusChanged { focusState ->
                 if (focusState.isFocused) onSquareSelected()
             },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = AppColors.White,//フォーカス時の色
-            unfocusedContainerColor = AppColors.White,
-            focusedIndicatorColor = AppColors.Black,
-            focusedLabelColor = AppColors.Gray,
-            unfocusedLabelColor = AppColors.Gray
-        ),
+        colors = customTextFieldColors(),
         maxLines = 1,
     )
 }
