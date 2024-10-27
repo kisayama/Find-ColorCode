@@ -2,14 +2,11 @@ package com.example.findcolorcode.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.snapping.SnapPosition
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,8 +23,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,14 +35,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.model.ColorDataForColorChoice
+import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.ui.theme.customTextFieldColors
 
 @ExperimentalMaterial3Api
 @Composable
 
 fun ColorSaveDialog(
-    currentColorData:ColorDataForColorChoice,//ボタンごとのカラーデータ
-    openDialogUpdate:() -> Unit//openDialogをfalseに変更するメソッド
+    currentColorData: ColorDataForColorChoice,//ボタンごとのカラーデータ
+    insertFavoriteColor: (FavoriteColorDataClass) -> Unit,
+    openDialogUpdate: () -> Unit,//openDialogをfalseに変更するメソッド
 ) {
     FindColorCodeTheme {
         val dialogTextStyle = TextStyle(fontSize = 14.sp)
@@ -56,7 +53,7 @@ fun ColorSaveDialog(
         val saveMemo = remember { mutableStateOf("") }
         BasicAlertDialog(
             modifier = Modifier.wrapContentWidth(),
-            onDismissRequest = { openDialogUpdate() },//ダイアログを閉じる
+            onDismissRequest = { openDialogUpdate() }, // ダイアログが閉じられたときに、フラグの更新処理を実行する
         ) {
             Surface(
                 color = Color.White,//ダイアログの背景の色
@@ -82,20 +79,20 @@ fun ColorSaveDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         //ダイアログの左側に,保存する色を背景にしたBOXを配置
-                            Box(
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .aspectRatio(1f)
-                                    .weight(2f)
-                                    .background(
-                                        Color(
-                                            android.graphics.Color.parseColor(
-                                                currentColorData.backgroundColorCode
-                                            )
+                        Box(
+                            modifier = Modifier
+                                .size(50.dp)
+                                .aspectRatio(1f)
+                                .weight(2f)
+                                .background(
+                                    Color(
+                                        android.graphics.Color.parseColor(
+                                            currentColorData.backgroundColorCode
                                         )
                                     )
-                                    .border(1.dp, Color.LightGray)
-                            )
+                                )
+                                .border(1.dp, Color.LightGray)
+                        )
                         Spacer(modifier = Modifier.width(10.dp))
                         //右側に名前とメモのテキストフィールドを配置する
                         Column(
@@ -166,7 +163,18 @@ fun ColorSaveDialog(
 
                         //決定ボタン
                         TextButton(
-                            onClick = { openDialogUpdate() },/*TODO　ROOMにデータを保存する*/
+                            onClick = {
+                                openDialogUpdate()//openDialogをfalseに変更する（閉じた状態）
+                                val currentTimeMillis = System.currentTimeMillis()//現在の日時
+
+                                val saveData = FavoriteColorDataClass(
+                                    colorCode = currentColorData.backgroundColorCode,
+                                    colorName = saveName.value,
+                                    colorMemo = saveMemo.value,
+                                    editDateTime = currentTimeMillis//1970/1/1からの経過時間をミリビョウで表す
+                                )
+                                insertFavoriteColor(saveData)
+                            },
                             modifier = Modifier
                                 .weight(1f)
                                 .background(AppColors.gainsboro)

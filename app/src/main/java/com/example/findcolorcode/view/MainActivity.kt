@@ -3,9 +3,7 @@ package com.example.findcolorcode.view
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -25,8 +23,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.findcolorcode.components.BottomBar
 import com.example.findcolorcode.components.BottomBarTab
-import com.example.findcolorcode.repository.ColorSchemeRepository
+import com.example.findcolorcode.data.ColorDatabase
 import com.example.findcolorcode.repository.ColorSchemeRepositoryImpl
+import com.example.findcolorcode.repository.FavoriteColorRepositoryImpl
 import com.example.findcolorcode.ui.theme.FindColorCodeTheme
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 import com.example.findcolorcode.viewmodel.MainViewModel
@@ -42,7 +41,6 @@ class MainActivity : ComponentActivity(){
             private set
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -53,9 +51,14 @@ class MainActivity : ComponentActivity(){
                 //navController（ナビゲーションの操作を管理する）を取得
                 val navController:NavHostController = rememberNavController()
 
+                //カラーデータベースのインスタンスを取得する
+                //thisはActivityのみのcontext UIコンポーネント関連に使用する
+                // applicationContextはアプリ全体のライフサイクルに結びついている
+                // アプリが終了したらコンテキストが開放される
+                val colorDatabase = ColorDatabase.getDatabase(applicationContext)
 
                 //MainScreenを呼び出し
-                MainScreen(navController, viewModel)
+                MainScreen(navController, viewModel, colorDatabase = colorDatabase)
                }
             }
         }
@@ -63,7 +66,7 @@ class MainActivity : ComponentActivity(){
 
 
 @Composable
-fun MainScreen(navController: NavHostController, viewModel: MainViewModel) {
+fun MainScreen(navController: NavHostController, viewModel: MainViewModel, colorDatabase: ColorDatabase) {
     //初期選択アイテムを指定する
     var selectedItem by remember { mutableStateOf(0) }
     Scaffold(
@@ -94,12 +97,16 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel) {
                 startDestination = BottomBarTab.ColorChoice.route,//初期画面はcolorChoiceFragment
                 Modifier.padding(padding)
             ) {
+
                 //MainActivityに表示するのは以下のフラグメント
                 //RouteはenumClassのBottomBarTabから取得
                 composable(BottomBarTab.ColorChoice.route) {
                     ColorChoiceScreen(
                         navController,
-                        ColorChoiceViewModel(repository = ColorSchemeRepositoryImpl())
+                        ColorChoiceViewModel(
+                            apiRepository = ColorSchemeRepositoryImpl(),
+                            favoriteColorRepository = FavoriteColorRepositoryImpl(colorDao =colorDatabase.colorDao())
+                        )
                     )
                 }
                 composable(BottomBarTab.FavoriteList.route) {
@@ -113,127 +120,5 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel) {
         }
     }
 
-    @Composable
-    fun MainScreenPreview() {
-        FindColorCodeTheme {
-            val navController = rememberNavController() // NavControllerのスタブ
-            val viewModel: MainViewModel = viewModel() // ViewModelのスタブ
-            MainScreen(navController, viewModel)
-        }
-    }
-}
-
-
-
-
-
-
-    /*
-    //各リスナーはMainActivityに実装している
-    ColorSaveDialog.ColorSaveListener,
-    ColorEditDialog.ColorEditListener,
-    FavoriteColorAdapter.baseOnColorClickListener{
-
-
-    private lateinit var binding: ActivityMainBinding
-    private lateinit var colorChoiceFragment: ColorChoiceFragment
-    private lateinit var favoriteColorFragment: FavoriteColorFragment
-    private lateinit var buttons: List<ImageView>
-
-
-
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        moshi = Moshi.Builder()
-            .add(KotlinJsonAdapterFactory())
-            .build()
-
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        buttons = listOf(
-            binding.colorChoiceFragmentBtn,
-            binding.FavoriteColorFragmentBtn
-        )
-
-        colorChoiceFragment = ColorChoiceFragment.newInstance()
-        favoriteColorFragment = FavoriteColorFragment.newInstance()
-
-        //最初に表示する
-        val fragmentContainerId = R.id.fragmentContainer
-        supportFragmentManager.beginTransaction()
-            .replace(fragmentContainerId, ColorChoiceFragment())
-            .commit()
-        updateButtonColor(0,buttons)
-
-        //ボタンを押してフラグメント表示する
-        binding.colorChoiceFragmentBtn.setOnClickListener {
-            supportFragmentManager.beginTransaction()
-                .replace(fragmentContainerId, colorChoiceFragment)
-                .commit()
-                updateButtonColor(0,buttons)
-        }
-
-        binding.FavoriteColorFragmentBtn.setOnClickListener {
-            supportFragmentManager.beginTransaction()
-                .replace(fragmentContainerId, favoriteColorFragment)
-                .commit()
-                updateButtonColor(1,buttons)
-        }
     }
 
-      override fun onColorSaved(newColorIndex: Int, newColor: FavoriteColorDataClass) {
-          favoriteColorFragment.addNewColor(newColorIndex,newColor)
-        Log.d("MainActivity","$favoriteColorFragment")
-      }
-
-        override fun onColorEdit(editColorIndex: Int,editedColor:FavoriteColorDataClass) {
-            favoriteColorFragment.editColor(editColorIndex,editedColor)
-        }
-
-    //Viewがタッチされる時に処理を実行するメソッド
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-
-        val inputMethodManager: InputMethodManager =
-            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
-        val focusView = currentFocus ?:return false
-
-        inputMethodManager.hideSoftInputFromWindow(
-            focusView.windowToken,
-            InputMethodManager.HIDE_NOT_ALWAYS
-        )
-        return false
-    }
-
-    //favoriteColorAdapterから通知を受け取ってColorChoiceFragmentを表示
-    override fun deliveryColorChoiceFragment(colorCode: String){
-        val bundle = Bundle()
-        bundle.putString("colorCode",colorCode)
-
-        val fragment = ColorChoiceFragment()
-        fragment.arguments = bundle
-
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer,fragment)
-            .commit()
-        updateButtonColor(0, buttons)
-    }
-
-    private fun updateButtonColor(selectedIndex: Int, buttons: List<ImageView>) {
-        val selectColor = getColor(R.color.blue02)
-        val defaultColor = getColor(R.color.gray)
-
-        buttons.forEachIndexed { index, buttonImageView ->
-            if (index == selectedIndex) {
-                buttonImageView.setColorFilter(selectColor)
-            } else {
-                buttonImageView.setColorFilter(defaultColor)
-            }
-        }
-    }
-}
-*/
