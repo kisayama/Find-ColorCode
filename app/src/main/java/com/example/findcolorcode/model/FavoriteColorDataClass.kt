@@ -12,4 +12,5 @@ data class FavoriteColorDataClass(
     val colorCode:String,
     var colorName :String,
     var colorMemo: String,
-    var editDate:String)
+    var editDateTime:Long
+)
