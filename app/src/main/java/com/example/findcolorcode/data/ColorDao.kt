@@ -14,7 +14,7 @@ interface ColorDao {
     //色をデータベースに挿入
     //onConflictで同じ主キーが存在している場合の処理を決める（この場合は置き換える）
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertColor(color: FavoriteColorDataClass)
+    suspend fun insertColor(saveData: FavoriteColorDataClass)
 
     //全ての色を取得するメソッド
     @Query("SELECT * from FavoriteColorDataClass")
