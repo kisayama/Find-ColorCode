@@ -23,8 +23,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,9 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
-import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.R
 import com.example.findcolorcode.components.BasicColorContents
 import com.example.findcolorcode.components.SelectedColorPalletContent
@@ -100,6 +96,11 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     if (openDialog){
         com.example.findcolorcode.components.ColorSaveDialog(
             currentColorData = currentColorData,
+            insertFavoriteColor = {
+                //データベースインサート用メソッドを引き渡す
+                favoriteColorData ->
+                viewModel.insertColor(favoriteColorData)
+            },
             openDialogUpdate = {viewModel.updateOpenDialog(false) })
     }
 

@@ -7,12 +7,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.repository.ColorSchemeRepository
+import com.example.findcolorcode.repository.FavoriteColorRepository
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
-class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewModel() {
+class ColorChoiceViewModel(
+    //APIとデータベースのRepositoryの依存性を注入
+    private val apiRepository: ColorSchemeRepository,
+    private val favoriteColorRepository :FavoriteColorRepository
+) :ViewModel() {
 
     //==選択squareについて==
     //選択squareのインデックス
@@ -230,7 +236,7 @@ class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewM
     fun fetchColorScheme(colorCode: String){
         viewModelScope.launch {
             try {
-                val response = repository.getColorScheme(
+                val response = apiRepository.getColorScheme(
                     colorCode.removePrefix("#")//#を取り除いたHex値を引き渡す
                 )
                 //リストのサイズが5かつ全てのカラーコードが正しい形式であることを確認
@@ -260,8 +266,12 @@ class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewM
 
     //=======
 
-
-
+    //データベース関連のメソッド
+    fun insertColor(color:FavoriteColorDataClass) {
+        viewModelScope.launch {
+            favoriteColorRepository.insertColor(color)
+        }
+    }
 }
 //廃止OR今後実装するかもしれないコード置き場
 
