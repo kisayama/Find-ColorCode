@@ -95,6 +95,9 @@ class ColorChoiceViewModel(private val repository: ColorSchemeRepository) :ViewM
     fun updateToastMessage(message:String){
         _toastMessage.value = message
     }
+    fun resetToast(){
+        _toastMessage.value = ""
+    }
     //======
 
     //===ColorSveDialogの表示状態を表すフラグ===

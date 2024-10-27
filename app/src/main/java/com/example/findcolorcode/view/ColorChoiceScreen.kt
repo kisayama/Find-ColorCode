@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.R
@@ -140,7 +141,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
             viewModel = viewModel,
         )
         ColorPalletTab(viewModel, selectedSquare, square1ColorData, square2ColorData)
-        ShowToast(toastMessage = toastMessage)
+        ShowToast(viewModel= viewModel, toastMessage = toastMessage)
     }
 
 }
@@ -412,12 +413,13 @@ fun ColorPalletTab(
 }
 //Toastメッセージが変更されたことを検知してToastを表示する
 @Composable
-fun ShowToast(toastMessage: String) {
+fun ShowToast(viewModel: ColorChoiceViewModel,toastMessage: String) {
     val context = LocalContext.current
     //LaunchedEffectは指定したキーが変更された時に{}内を実行する
     if (toastMessage.isNotEmpty()) {
         LaunchedEffect(toastMessage) {
             Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
+            viewModel.resetToast()
         }
     }
 }
