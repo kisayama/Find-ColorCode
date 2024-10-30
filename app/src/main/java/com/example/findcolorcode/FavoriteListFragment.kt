@@ -18,6 +18,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 class FavoriteListFragment : Fragment(){
+    /*
 
     private lateinit var recyclerView: RecyclerView
     private var _binding: FragmentFavoriteColorBinding? = null
@@ -118,4 +119,5 @@ class FavoriteListFragment : Fragment(){
         }
         popupMenu.show()
     }
+    */
 }

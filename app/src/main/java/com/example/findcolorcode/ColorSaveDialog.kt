@@ -19,10 +19,10 @@ import java.util.UUID
 class ColorSaveDialog : DialogFragment() {
 
     interface ColorSaveListener {
-        fun onColorSaved(newColorIndex:Int,newColor: FavoriteColorDataClass)
+        fun onColorSaved(newColorIndex: Int, newColor: FavoriteColorDataClass)
     }
 
-    private var listener: ColorSaveListener? = null
+    /*private var listener: ColorSaveListener? = null
     private val TAG = "ColorSaveDialog"
 
     override fun onAttach(context: Context) {
@@ -108,4 +108,6 @@ class ColorSaveDialog : DialogFragment() {
             } ?: throw IllegalStateException("Activity cannot be null")
         }
     }
-    }
+
+*/
+}

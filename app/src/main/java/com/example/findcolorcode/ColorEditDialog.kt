@@ -93,7 +93,6 @@ class ColorEditDialog: DialogFragment() {
                             if (editIndexInExistingColors in list.indices) {
                                 existingColors[editIndexInExistingColors].colorName = favoriteColorMyName
                                 existingColors[editIndexInExistingColors].colorMemo = favoriteColorMemo
-                                existingColors[editIndexInExistingColors].editDate = getDate(LocalDateTime.now())
                             }
                         }
                         sharedPreferences.saveFavoriteColors(moshi,existingColors)
