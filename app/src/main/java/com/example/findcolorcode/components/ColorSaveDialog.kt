@@ -174,6 +174,7 @@ fun ColorSaveDialog(
                                     editDateTime = currentTimeMillis//1970/1/1からの経過時間をミリビョウで表す
                                 )
                                 insertFavoriteColor(saveData)
+
                             },
                             modifier = Modifier
                                 .weight(1f)
