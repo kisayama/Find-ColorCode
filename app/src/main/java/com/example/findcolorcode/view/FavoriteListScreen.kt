@@ -1,16 +1,109 @@
 package com.example.findcolorcode.view
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.snapping.SnapPosition
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.ViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.findcolorcode.model.FavoriteColorDataClass
+import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
 
 @Composable
-fun FavoriteListScreen(navController: NavController, viewModel: ViewModel){
-    Greeting()
+fun FavoriteColorList(
+    navController: NavController,
+    viewModel: FavoriteScreenViewModel
+) {
+    // データベースから取得したお気に入りの色リスト
+    val allColors by viewModel.allColors.observeAsState(emptyList())
+
+    //フィルター用のテキスト
+    val filterText by viewModel.filterText.observeAsState("")
+
+    Column (modifier = Modifier
+        .fillMaxSize()
+        .padding(10.dp),
+            verticalArrangement = Arrangement.Center
+    ){
+        //フィルター用の入力フォーム
+        Column{
+            TextField(
+                value = filterText,
+                //入力された値でfilterTextを更新する
+                onValueChange = {newText -> viewModel.updateFilterText(newText)}
+
+            )
+        }
+
+        LazyColumn {
+            items(allColors) { color ->
+                ColorItem(
+                    colorItem = color,
+                    //currentTimeMillisの変換メソッドを引き渡す
+                    convertCurrentTimeMillisToYyyyMmDd ={ millis ->
+                        viewModel.convertCurrentTimeMillisToYYYYMMDD(millis)
+                    }
+                )
+            }
+        }
+    }
 }
 
+
 @Composable
-private fun Greeting (){
-    Text(text = "I'm FavoriteListScreen")
+private fun ColorItem (
+    colorItem:FavoriteColorDataClass,
+    convertCurrentTimeMillisToYyyyMmDd:(Long) -> String)
+{
+        Card (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 6.dp
+            )
+        ){
+            Row (
+                modifier = Modifier.padding(10.dp),
+                ){
+                Column {
+                    
+                    //左右に１：２の比率で分け左側には色を視覚的に表示するためのボックス、カラーコード
+                    //右側には色の詳細データ（色の名前,メモ,日付など）
+                    Row (modifier = Modifier.weight(1f)){
+                        //ボックス
+                        Box (modifier = Modifier
+                            .size(100.dp)
+                            .background(Color(android.graphics.Color.parseColor(colorItem.colorCode)))
+                        )
+                        //カラーコード
+                        Text(text = colorItem.colorCode)
+                    }
+                    Column(modifier=Modifier.weight(1f)) {
+                        //色の詳細データ
+                        Text(text = colorItem.colorName)//名前
+                        Text(text = colorItem.colorMemo)//メモ
+                        //currentTimeMillisからyyyy/mm/dd形式に変換する　
+                        Text(text = convertCurrentTimeMillisToYyyyMmDd(colorItem.editDateTime)) //日付
+                    }
+                }
+            }
+        }
 }
