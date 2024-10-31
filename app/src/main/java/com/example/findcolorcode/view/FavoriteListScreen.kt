@@ -21,10 +21,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.findcolorcode.model.FavoriteColorDataClass
+import com.example.findcolorcode.repository.FavoriteColorRepository
 import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun FavoriteColorList(
