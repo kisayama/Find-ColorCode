@@ -11,7 +11,7 @@ class FavoriteColorRepositoryImpl(private val colorDao: ColorDao):FavoriteColorR
         colorDao.insertColor(color)
     }
 
-    override suspend fun getAllColors(): List<FavoriteColorDataClass> {
+    override fun getAllColors(): Flow<List<FavoriteColorDataClass>> {
         return colorDao.getAllColors()
     }
 
