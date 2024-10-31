@@ -28,6 +28,7 @@ import com.example.findcolorcode.repository.ColorSchemeRepositoryImpl
 import com.example.findcolorcode.repository.FavoriteColorRepositoryImpl
 import com.example.findcolorcode.ui.theme.FindColorCodeTheme
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
+import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
 import com.example.findcolorcode.viewmodel.MainViewModel
 import com.squareup.moshi.Moshi
 
@@ -110,12 +111,13 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel, color
                     )
                 }
                 composable(BottomBarTab.FavoriteList.route) {
-                    FavoriteListScreen(
+                    FavoriteColorList(
                         navController,
-                        viewModel
+                        FavoriteScreenViewModel(
+                            favoriteColorRepository = FavoriteColorRepositoryImpl(colorDao = colorDatabase.colorDao()),
+                        )
                     )
                 }
-
             }
         }
     }
