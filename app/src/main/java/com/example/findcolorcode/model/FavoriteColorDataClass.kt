@@ -10,7 +10,7 @@ import java.util.UUID
 data class FavoriteColorDataClass(
     @PrimaryKey val id:String = UUID.randomUUID().toString(),
     val colorCode:String,
-    var colorName :String,
+    var colorName:String,
     var colorMemo: String,
     var editDateTime:Long
 )
