@@ -8,11 +8,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.repository.FavoriteColorRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
 class FavoriteScreenViewModel(
     private val favoriteColorRepository: FavoriteColorRepository
 ) : ViewModel() {
@@ -20,9 +22,13 @@ class FavoriteScreenViewModel(
     // === プロパティ ===
 
     //--データベース関連--
-    //現在データベースで管理されている全てのデータ
     private val _allColors = MutableLiveData<List<FavoriteColorDataClass>>(emptyList())   // データベースのデータ
     val allColors: LiveData<List<FavoriteColorDataClass>> get() = _allColors
+
+
+    //選択した色のデータ
+    private val _chosenColor = MutableLiveData<FavoriteColorDataClass>()
+    val chosenColor :LiveData<FavoriteColorDataClass> get() = _chosenColor
 
     //--フィルター関連--
     private val _filterText = MutableLiveData<String>("")   // フィルター用テキスト
@@ -42,10 +48,42 @@ class FavoriteScreenViewModel(
 
     // === メソッド ===
 
-    // データベースからデータを全て取得する
+    // データベースからデータを全て取得し_allColorsに格納する
     private fun getAllColors() {
         viewModelScope.launch {
-            _allColors.value = favoriteColorRepository.getAllColors()
+            //collectは.flowで流された各データに{}内の処理を行う
+            favoriteColorRepository.getAllColors().collect{ colorList ->
+                _allColors.value = colorList
+            }
+        }
+    }
+
+    //選択したデータを削除する
+    fun deleteColors(id: String){
+        viewModelScope.launch {
+            //getColorByIdは条件に一致する<FavoriteColorDataClass>を一つずつ流すが
+            // idは一意なのでfirstで最初のデータだけ取得すればOK
+            val colorToDelete = favoriteColorRepository.getColorById(id).first()
+            //削除する
+            favoriteColorRepository.deleteColor(colorToDelete)
+        }
+    }
+
+    //IDから色を特定しFavoriteColorDataClass型のデータを返す
+    fun searchColorById(id:String){
+        viewModelScope.launch {
+            _chosenColor.value = favoriteColorRepository.getColorById(id).first()
+        }
+    }
+
+    //選択した色を更新する
+    //_chosenColorを変更したものを引数colorに渡す
+    fun updateColors(color: FavoriteColorDataClass){
+        viewModelScope.launch {
+            //カラーデータの更新を行う　
+            favoriteColorRepository.updateColor(color)
+            //データベースの最新のデータを取得し,_allColorsに格納する
+            getAllColors()
         }
     }
 
