@@ -1,5 +1,6 @@
 package com.example.findcolorcode.viewmodel
 
+import androidx.compose.ui.res.colorResource
 import androidx.core.graphics.convertTo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -48,29 +49,43 @@ class FavoriteScreenViewModel(
         }
     }
 
+    //フィルターメソッド
+    /*Filterのルール
+      1.検索対象はallColorsの以下の項目
+      colorCode,colorMemo,colorName,editDateTime(yyyy/mm/dd形式の文字列)
+      2.[赤　2024]といったスペースで区切られた検索ワードの場合
+      　　キーワードごとに個別にフィルタリングを行い、
+         各キーワードに一致した色全てを検索結果として出力する
+      3.同じ色が複数の検索条件に一致した場合は、重複なく出力する
+     */
     fun filter() {
         val filterText = _filterText.value ?: ""
-
         _filteredColors.value = if (filterText.isEmpty()) {
-            //filterText（検索欄）がヌルなら全てのデータを表示する
+            //filterText（検索欄）が空なら全てのデータを表示する
             allColors.value
         } else {
+            //フィルタリング後に同じ色を保持しないように一時保持用のSetを定義する
+            val currentSet :MutableSet<FavoriteColorDataClass> = mutableSetOf()
             //全角スペースまたは半角スペース区切りで分割する
             val keywords = filterText.split(" ", "　")
-            //フィルタリングする
-            keywords.any{keyword ->
-                allColors.value?.filter { it ->
-                    it.colorCode.contains(keyword, ignoreCase = true) ||
-                            it.colorMemo.contains(keyword, ignoreCase = true) ||
-                            it.colorName.contains(keyword, ignoreCase = true) ||
-                            SimpleDateFormat(
-                                "yyyy/MM/dd",
-                                Locale.getDefault()
-                            ).format(Date(it.editDateTime)).contains(keyword, ignoreCase = true)
+            //各キーワードでフィルタリングを行う
+            keywords.forEach { keyword ->
+                //キーワードごとにフィルタリングしたリスト
+                val filteredByKeywords = allColors.value?.filter { color ->
+                            color.colorCode.contains(keyword, ignoreCase = true) ||
+                            color.colorMemo.contains(keyword, ignoreCase = true) ||
+                            color.colorName.contains(keyword, ignoreCase = true) ||
+                            SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
+                                .format(Date(color.editDateTime))
+                                .contains(keyword, ignoreCase = true)
                 }
+                //currentSetに追加する（重複したcolorを削除することができる）
+                filteredByKeywords?.let { currentSet.addAll(it) }
             }
+            //SetをList型に変換し _filteredColors.valueに格納
+             currentSet.toList()
         }
-
+        }
 
     // フィルター用テキストを更新する
     fun updateFilterText(newFilterText: String) {
@@ -84,4 +99,3 @@ class FavoriteScreenViewModel(
         return formatter.format(date)
     }
 }
-    }
