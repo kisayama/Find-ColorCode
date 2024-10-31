@@ -92,6 +92,13 @@ class FavoriteScreenViewModel(
         _filterText.value = newFilterText
     }
 
+    //Filter用テキストを空にするメソッド
+    fun clearFilterText() {
+        _filterText.value = ""
+    }
+
+
+
     // ミリ秒を"yyyy/MM/dd"形式の日付に変換する
     fun convertCurrentTimeMillisToYYYYMMDD(millis: Long): String {
         val formatter = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
