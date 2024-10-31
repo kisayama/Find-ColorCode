@@ -17,8 +17,10 @@ interface ColorDao {
     suspend fun insertColor(saveData: FavoriteColorDataClass)
 
     //全ての色を取得するメソッド
+    //データベースの削除や更新、データの追加が行われるのでFlow型にする
+    //viewModelで変更を監視する
     @Query("SELECT * from FavoriteColorDataClass")
-    suspend fun getAllColors(): List<FavoriteColorDataClass>
+    fun getAllColors(): Flow<List<FavoriteColorDataClass>>
 
     //指定したIDで色を取得するメソッド
     @Query("SELECT * from FavoriteColorDataClass WHERE id = :colorId")
