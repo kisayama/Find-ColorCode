@@ -84,6 +84,7 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     //coroutine
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
     //ksp
     ksp("androidx.room:room-compiler:2.6.1")//KSPとRoom間の依存関係を追加(@でコードを自動生成)
