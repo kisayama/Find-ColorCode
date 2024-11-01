@@ -122,7 +122,7 @@ class FavoriteScreenViewModel(
             }
             //SetをList型に変換し _filteredColors.valueに格納
              currentSet.toList()
-        }
+            }
         }
 
     // フィルター用テキストを更新する
@@ -134,8 +134,6 @@ class FavoriteScreenViewModel(
     fun clearFilterText() {
         _filterText.value = ""
     }
-
-
 
     // ミリ秒を"yyyy/MM/dd"形式の日付に変換する
     fun convertCurrentTimeMillisToYYYYMMDD(millis: Long): String {
