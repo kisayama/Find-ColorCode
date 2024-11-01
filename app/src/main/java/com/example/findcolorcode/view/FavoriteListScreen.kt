@@ -19,6 +19,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,6 +28,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.repository.FavoriteColorRepository
+import com.example.findcolorcode.ui.theme.Dimensions
 import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -45,12 +47,13 @@ fun FavoriteColorList(
 
     Column (modifier = Modifier
         .fillMaxSize()
-        .padding(10.dp),
-            verticalArrangement = Arrangement.Center
+        .padding(Dimensions.screenPadding),
+            horizontalAlignment = Alignment.CenterHorizontally
     ){
         //フィルター用の入力フォーム
         Column{
             TextField(
+                modifier = Modifier.fillMaxWidth(),
                 value = filterText,
                 //入力された値でfilterTextを更新する
                 onValueChange = {newText -> viewModel.updateFilterText(newText)}

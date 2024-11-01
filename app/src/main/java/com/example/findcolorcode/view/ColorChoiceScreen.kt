@@ -45,6 +45,7 @@ import com.example.findcolorcode.data.basicColorsList1
 import com.example.findcolorcode.data.basicColorsList2
 import com.example.findcolorcode.data.basicColorsList3
 import com.example.findcolorcode.model.ColorDataForColorChoice
+import com.example.findcolorcode.ui.theme.Dimensions
 import com.example.findcolorcode.ui.theme.customTextFieldColors
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 
@@ -108,7 +109,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(Dimensions.screenPadding),
         verticalArrangement = Arrangement.spacedBy(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
