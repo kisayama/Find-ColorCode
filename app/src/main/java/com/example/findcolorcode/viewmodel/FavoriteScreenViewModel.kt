@@ -1,20 +1,17 @@
 package com.example.findcolorcode.viewmodel
 
-import androidx.compose.ui.res.colorResource
-import androidx.core.graphics.convertTo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.repository.FavoriteColorRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
 class FavoriteScreenViewModel(
     private val favoriteColorRepository: FavoriteColorRepository
 ) : ViewModel() {
