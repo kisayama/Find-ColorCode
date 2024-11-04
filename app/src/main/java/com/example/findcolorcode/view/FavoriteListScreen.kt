@@ -135,13 +135,13 @@
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(10.dp),
+                        .padding(top = 13.dp, bottom = 8.dp, start = 10.dp , end =10.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp) // 行間を少し開ける
                 ) {
                     // 1行目: カラー表示ボックス、色の名前、色のメモ
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically // 中央揃え
+                        verticalAlignment = Alignment.Top
                     ) {
                         // カラー表示ボックス
                         Box(
@@ -153,8 +153,8 @@
                         // 色の名前とメモを縦に並べる
                         Column(
                             modifier = Modifier
-                                .padding(start = 8.dp) // ボックスとテキストの間にスペースを追加
-                                .weight(1f)
+                                .fillMaxSize()
+                                .padding(start = 10.dp) ,// ボックスとテキストの間にスペースを追加
                         ) {
                             Text(text = colorItem.colorName) // 色の名前
                             Text(text = colorItem.colorMemo) // 色のメモ
@@ -167,7 +167,7 @@
                         horizontalArrangement = Arrangement.SpaceBetween // 左右に配置
                     ) {
                         // カラーコード
-                        Text(text = colorItem.colorCode, textAlign = TextAlign.Start)
+                        Text(modifier = Modifier.padding(start = 15.dp), text = colorItem.colorCode)
                         // 日付
                         Text(
                             text = convertCurrentTimeMillisToYyyyMmDd(colorItem.editDateTime),
