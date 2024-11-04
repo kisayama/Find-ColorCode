@@ -5,6 +5,7 @@
     import androidx.compose.foundation.layout.Box
     import androidx.compose.foundation.layout.Column
     import androidx.compose.foundation.layout.Row
+    import androidx.compose.foundation.layout.aspectRatio
     import androidx.compose.foundation.layout.fillMaxHeight
     import androidx.compose.foundation.layout.fillMaxSize
     import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +30,7 @@
     import androidx.compose.ui.Modifier
     import androidx.compose.ui.graphics.Color
     import androidx.compose.ui.res.painterResource
+    import androidx.compose.ui.text.style.TextAlign
     import androidx.compose.ui.unit.dp
     import androidx.compose.ui.unit.sp
     import androidx.navigation.NavController
@@ -59,7 +61,8 @@
                 Row (modifier = Modifier.height(50.dp),
                     horizontalArrangement = Arrangement.spacedBy(2.dp)){
                     OutlinedTextField(
-                        modifier = Modifier.weight(6f),
+                        modifier = Modifier
+                            .weight(6f),
                         value = filterText,
                         //テキストフィールドの左端に虫眼鏡ボタンを設置
                         //目印なので押した時の処理は無し
@@ -79,7 +82,7 @@
                             }
                         },
                         colors = customTextFieldColors(),
-                        placeholder = { Text(text ="色の名前、メモ、日付など" , fontSize = 14.sp) },
+                        placeholder = { Text(text ="色の名前、メモ、日付など" , fontSize = 12.sp) },
                         //入力された値でfilterTextを更新する
                         //変更後のテキストを使用してフィルタリングを行う
                         onValueChange = {
@@ -101,7 +104,7 @@
             }
 
             //データベースに含まれるカラーデータを表示する
-            LazyColumn {
+            LazyColumn (modifier = Modifier.fillMaxSize()){
                 items(allColors) { color ->
                     ColorItem(
                         colorItem = color,
@@ -116,44 +119,65 @@
     }
 
 
-    //カラー表示のレイアウトを子コンポーネントで定義する
-    @Composable
-    private fun ColorItem (
-        colorItem:FavoriteColorDataClass,
-        convertCurrentTimeMillisToYyyyMmDd:(Long) -> String)
-    {
-            Card (
+        @Composable
+        private fun ColorItem(
+            colorItem: FavoriteColorDataClass,
+            convertCurrentTimeMillisToYyyyMmDd: (Long) -> String
+        ) {
+            Card(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .padding(8.dp),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 6.dp
                 )
-            ){
-                Row (
-                    modifier = Modifier.padding(10.dp),
-                    ){
-                    Column {
-
-                        //左右に１：２の比率で分け左側には色を視覚的に表示するためのボックス、カラーコード
-                        //右側には色の詳細データ（色の名前,メモ,日付など）
-                        Row (modifier = Modifier.weight(1f)){
-                            //ボックス
-                            Box (modifier = Modifier
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(10.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp) // 行間を少し開ける
+                ) {
+                    // 1行目: カラー表示ボックス、色の名前、色のメモ
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically // 中央揃え
+                    ) {
+                        // カラー表示ボックス
+                        Box(
+                            modifier = Modifier
                                 .size(100.dp)
-                                .background(Color(android.graphics.Color.parseColor(colorItem.colorCode)))
-                            )
-                            //カラーコード
-                            Text(text = colorItem.colorCode)
+                                .aspectRatio(1f)
+                                .background(Color(android.graphics.Color.parseColor(colorItem.colorCode))),
+                        )
+                        // 色の名前とメモを縦に並べる
+                        Column(
+                            modifier = Modifier
+                                .padding(start = 8.dp) // ボックスとテキストの間にスペースを追加
+                                .weight(1f)
+                        ) {
+                            Text(text = colorItem.colorName) // 色の名前
+                            Text(text = colorItem.colorMemo) // 色のメモ
                         }
-                        Column(modifier=Modifier.weight(1f)) {
-                            //色の詳細データ
-                            Text(text = colorItem.colorName)//名前
-                            Text(text = colorItem.colorMemo)//メモ
-                            //currentTimeMillisからyyyy/mm/dd形式に変換する　
-                            Text(text = convertCurrentTimeMillisToYyyyMmDd(colorItem.editDateTime)) //日付
-                        }
+                    }
+
+                    // 2行目: カラーコードと日付
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween // 左右に配置
+                    ) {
+                        // カラーコード
+                        Text(text = colorItem.colorCode, textAlign = TextAlign.Start)
+                        // 日付
+                        Text(
+                            text = convertCurrentTimeMillisToYyyyMmDd(colorItem.editDateTime),
+                            textAlign = TextAlign.End
+                        )
                     }
                 }
             }
-    }
+        }
+
+
+
+
