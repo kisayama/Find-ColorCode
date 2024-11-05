@@ -50,8 +50,11 @@ class FavoriteScreenViewModel(
         viewModelScope.launch {
             //collectは.flowで流された各データに{}内の処理を行う
             favoriteColorRepository.getAllColors().collect{ colorList ->
+                //新しく作成・編集をされた順にリストを並び替える（editDateTimeはUNIXTIMEスタンプ）
+                colorList.sortedByDescending { it.editDateTime }
                 _allColors.value = colorList
             }
+
         }
     }
 
