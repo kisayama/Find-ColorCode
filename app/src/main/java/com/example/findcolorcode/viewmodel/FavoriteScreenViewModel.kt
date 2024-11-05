@@ -1,5 +1,6 @@
 package com.example.findcolorcode.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,21 +20,22 @@ class FavoriteScreenViewModel(
     // === プロパティ ===
 
     //--データベース関連--
-    private val _allColors = MutableLiveData<List<FavoriteColorDataClass>>(emptyList())   // データベースのデータ
+    private val _allColors =
+        MutableLiveData<List<FavoriteColorDataClass>>(emptyList())   // データベースのデータ
     val allColors: LiveData<List<FavoriteColorDataClass>> get() = _allColors
 
 
     //選択した色のデータ
     private val _chosenColor = MutableLiveData<FavoriteColorDataClass>()
-    val chosenColor :LiveData<FavoriteColorDataClass> get() = _chosenColor
+    val chosenColor: LiveData<FavoriteColorDataClass> get() = _chosenColor
 
     //--フィルター関連--
-    private val _filterText = MutableLiveData<String>("")   // フィルター用テキスト
+    private val _filterText = MutableLiveData("")   // フィルター用テキスト
     val filterText: LiveData<String> get() = _filterText//フィルター用テキスト（読み取り専用）
 
     // フィルタリング後のリストを保持する
     private val _filteredColors = MutableLiveData<List<FavoriteColorDataClass>>(emptyList())
-    val filteredColors:LiveData<List<FavoriteColorDataClass>> get() = _filteredColors
+    val filteredColors: LiveData<List<FavoriteColorDataClass>> get() = _filteredColors
 
 
     // === 初期化処理 ===
@@ -49,17 +51,19 @@ class FavoriteScreenViewModel(
     private fun getAllColors() {
         viewModelScope.launch {
             //collectは.flowで流された各データに{}内の処理を行う
-            favoriteColorRepository.getAllColors().collect{ colorList ->
+            favoriteColorRepository.getAllColors().collect { colorList ->
                 //新しく作成・編集をされた順にリストを並び替える（editDateTimeはUNIXTIMEスタンプ）
-                colorList.sortedByDescending { it.editDateTime }
-                _allColors.value = colorList
+                val sortedColorList = colorList.sortedByDescending { it.editDateTime }
+                _allColors.value = sortedColorList
+                //filteredColorsの初期設定
+                _filteredColors.value = _allColors.value
             }
 
         }
     }
 
     //選択したデータを削除する
-    fun deleteColors(id: String){
+    fun deleteColors(id: String) {
         viewModelScope.launch {
             //getColorByIdは条件に一致する<FavoriteColorDataClass>を一つずつ流すが
             // idは一意なのでfirstで最初のデータだけ取得すればOK
@@ -70,7 +74,7 @@ class FavoriteScreenViewModel(
     }
 
     //IDから色を特定しFavoriteColorDataClass型のデータを返す
-    fun searchColorById(id:String){
+    fun searchColorById(id: String) {
         viewModelScope.launch {
             _chosenColor.value = favoriteColorRepository.getColorById(id).first()
         }
@@ -78,7 +82,7 @@ class FavoriteScreenViewModel(
 
     //選択した色を更新する
     //_chosenColorを変更したものを引数colorに渡す
-    fun updateColors(color: FavoriteColorDataClass){
+    fun updateColors(color: FavoriteColorDataClass) {
         viewModelScope.launch {
             //カラーデータの更新を行う　
             favoriteColorRepository.updateColor(color)
@@ -93,52 +97,58 @@ class FavoriteScreenViewModel(
       colorCode,colorMemo,colorName,editDateTime(yyyy/mm/dd形式の文字列)
       2.[赤　2024]といったスペースで区切られた検索ワードの場合
       　　キーワードごとに個別にフィルタリングを行い、
-         各キーワードに一致した色全てを検索結果として出力する
-      3.同じ色が複数の検索条件に一致した場合は、重複なく出力する
+         各キーワードすべてに一致した色全てを検索結果として出力する
      */
     fun filter() {
         val filterText = _filterText.value ?: ""
-        _filteredColors.value = if (filterText.isEmpty()) {
+        _filteredColors.value = if (filterText.isEmpty() || filterText == "") {
             //filterText（検索欄）が空なら全てのデータを表示する
             allColors.value
         } else {
             //フィルタリング後に同じ色を保持しないように一時保持用のSetを定義する
-            val currentSet :MutableSet<FavoriteColorDataClass> = mutableSetOf()
+            val filteredColorList: MutableList<FavoriteColorDataClass> = mutableListOf()
             //全角スペースまたは半角スペース区切りで分割する
             val keywords = filterText.split(" ", "　")
-            //各キーワードでフィルタリングを行う
-            keywords.forEach { keyword ->
-                //キーワードごとにフィルタリングしたリスト
-                val filteredByKeywords = allColors.value?.filter { color ->
-                            color.colorCode.contains(keyword, ignoreCase = true) ||
-                            color.colorMemo.contains(keyword, ignoreCase = true) ||
-                            color.colorName.contains(keyword, ignoreCase = true) ||
+            val allColorsList = allColors.value ?: emptyList()
+            //キーワードごとにフィルタリングしたリスト
+            for (color in allColorsList) {
+                //各キーワードはAND条件で絞り込みを行う
+                //（例　2024　赤　ならどちらも以下の検索対象にのいずれかに当てはまるものを抽出する)
+                val filteredAllKeyWords = keywords.all { word ->
+                    color.colorCode.contains(word, ignoreCase = true) ||
+                            color.colorMemo.contains(word, ignoreCase = true) ||
+                            color.colorName.contains(word, ignoreCase = true) ||
                             SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
                                 .format(Date(color.editDateTime))
-                                .contains(keyword, ignoreCase = true)
+                                .contains(word, ignoreCase = true)
                 }
-                //currentSetに追加する（重複したcolorを削除することができる）
-                filteredByKeywords?.let { currentSet.addAll(it) }
+                if (filteredAllKeyWords) {
+                    filteredColorList.add(color)
+                }
             }
-            //SetをList型に変換し _filteredColors.valueに格納
-             currentSet.toList()
-            }
+            filteredColorList
+        }
+    }
+
+        // フィルター用テキストを更新する
+        fun updateFilterText(newFilterText: String) {
+            _filterText.value = newFilterText
         }
 
-    // フィルター用テキストを更新する
-    fun updateFilterText(newFilterText: String) {
-        _filterText.value = newFilterText
-    }
+        //Filter用テキストを空にするメソッド
+        fun clearFilterText() {
+            _filterText.value = ""
+            // フィルターテキストがクリアされた後、onValueChangeが適用されないため
+            // allColorsから全てのデータを取得し、_filteredColorsに設定することで
+            // 表示される色のリストを更新する
+            _filteredColors.value = allColors.value
+        }
 
-    //Filter用テキストを空にするメソッド
-    fun clearFilterText() {
-        _filterText.value = ""
-    }
+        // ミリ秒を"yyyy/MM/dd"形式の日付に変換する
+        fun convertCurrentTimeMillisToYYYYMMDD(millis: Long): String {
+            val formatter = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
+            val date = Date(millis)
+            return formatter.format(date)
+        }
 
-    // ミリ秒を"yyyy/MM/dd"形式の日付に変換する
-    fun convertCurrentTimeMillisToYYYYMMDD(millis: Long): String {
-        val formatter = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
-        val date = Date(millis)
-        return formatter.format(date)
-    }
 }
