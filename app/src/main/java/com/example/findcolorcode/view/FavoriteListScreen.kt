@@ -6,7 +6,6 @@
     import androidx.compose.foundation.layout.Column
     import androidx.compose.foundation.layout.Row
     import androidx.compose.foundation.layout.aspectRatio
-    import androidx.compose.foundation.layout.fillMaxHeight
     import androidx.compose.foundation.layout.fillMaxSize
     import androidx.compose.foundation.layout.fillMaxWidth
     import androidx.compose.foundation.layout.height
@@ -18,9 +17,11 @@
     import androidx.compose.material.icons.filled.Clear
     import androidx.compose.material.icons.filled.Search
     import androidx.compose.material3.Card
+    import androidx.compose.material3.CardColors
     import androidx.compose.material3.CardDefaults
     import androidx.compose.material3.Icon
     import androidx.compose.material3.IconButton
+    import androidx.compose.material3.MaterialTheme
     import androidx.compose.material3.OutlinedTextField
     import androidx.compose.material3.Text
     import androidx.compose.runtime.Composable
@@ -30,10 +31,11 @@
     import androidx.compose.ui.Modifier
     import androidx.compose.ui.graphics.Color
     import androidx.compose.ui.res.painterResource
+    import androidx.compose.ui.text.TextStyle
     import androidx.compose.ui.text.style.TextAlign
     import androidx.compose.ui.unit.dp
-    import androidx.compose.ui.unit.sp
     import androidx.navigation.NavController
+    import com.example.app.ui.theme.AppColors
     import com.example.findcolorcode.R
     import com.example.findcolorcode.model.FavoriteColorDataClass
     import com.example.findcolorcode.ui.theme.Dimensions
@@ -45,14 +47,15 @@
         navController: NavController,
         viewModel: FavoriteScreenViewModel
     ) {
-        // データベースから取得したお気に入りの色リスト
-        val allColors by viewModel.allColors.observeAsState(emptyList())
+        // filter後のリストを取得する　filterTextが空ならデータベースの全てのデータ
+        val displayColors by viewModel.filteredColors.observeAsState(emptyList())
 
         //フィルター用のテキスト
         val filterText by viewModel.filterText.observeAsState("")
 
         Column (modifier = Modifier
             .fillMaxSize()
+            .background(AppColors.White)
             .padding(Dimensions.screenPadding),
                 horizontalAlignment = Alignment.CenterHorizontally
         ){
@@ -60,10 +63,13 @@
             Column{
                 Row (modifier = Modifier.height(50.dp),
                     horizontalArrangement = Arrangement.spacedBy(2.dp)){
+
                     OutlinedTextField(
                         modifier = Modifier
                             .weight(6f),
                         value = filterText,
+                        //TextFieldの入力文字の大きさを設定
+                        textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize),
                         //テキストフィールドの左端に虫眼鏡ボタンを設置
                         //目印なので押した時の処理は無し
                         leadingIcon = {
@@ -82,7 +88,7 @@
                             }
                         },
                         colors = customTextFieldColors(),
-                        placeholder = { Text(text ="色の名前、メモ、日付など" , fontSize = 12.sp) },
+                        placeholder = { Text(text ="色の名前、メモ、日付など" , fontSize = MaterialTheme.typography.labelSmall.fontSize) },
                         //入力された値でfilterTextを更新する
                         //変更後のテキストを使用してフィルタリングを行う
                         onValueChange = {
@@ -91,13 +97,16 @@
                         }
                     )
                     //ソートボタン
-                    IconButton(onClick = {}/*TODO　並び替えメニューを表示*/,) {
-                        Icon(
+                    IconButton(
                         modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(1f),
+                        .weight(1f)
+                        .fillMaxSize(),
+                        onClick = {}/*TODO　並び替えメニューを表示*/,) {
+                        Icon(
+                            modifier = Modifier.fillMaxSize(),
                         painter = painterResource(id = R.drawable.ic_sort_24),
-                        contentDescription = "ソート"
+                        contentDescription = "ソート",
+                            tint = AppColors.Black
                         )
                     }
                 }
@@ -105,7 +114,7 @@
 
             //データベースに含まれるカラーデータを表示する
             LazyColumn (modifier = Modifier.fillMaxSize()){
-                items(allColors) { color ->
+                items(displayColors) { color ->
                     ColorItem(
                         colorItem = color,
                         //currentTimeMillisの変換メソッドを引き渡す
@@ -128,6 +137,13 @@
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(8.dp),
+                colors = CardColors(
+                    //カード内の背景や文字の色を指定する
+                    containerColor = AppColors.White,
+                    contentColor = AppColors.Black,
+                    disabledContainerColor = AppColors.Black,
+                    disabledContentColor = AppColors.White
+                ),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 6.dp
                 )
@@ -135,9 +151,13 @@
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 13.dp, bottom = 8.dp, start = 10.dp , end =10.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp) // 行間を少し開ける
+                        .padding(top = 13.dp, bottom = 8.dp, start = 10.dp, end = 10.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp) // Box等のRowとカラーコード、日付Rowの間にスペース
                 ) {
+                    /*TODO 本当はROW内に２Column　カラーボックスとカラーコード　名前、メモ、日付　のに列を１Rowとして表示したかったけど
+                            日付のCard下辺右寄せができなかったから２Row　カラーボックス、名前、メモ　カラーコード、日付としている
+                            Cardないの2つ目のColumnのサイズに下限がいてしまうことが原因なので解決方法が見つかれば上記配置に修正する*/
+
                     // 1行目: カラー表示ボックス、色の名前、色のメモ
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -154,10 +174,11 @@
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(start = 10.dp) ,// ボックスとテキストの間にスペースを追加
+                                .padding(start = 15.dp) ,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)// 名前とメモの間にスペースを追加
                         ) {
-                            Text(text = colorItem.colorName) // 色の名前
-                            Text(text = colorItem.colorMemo) // 色のメモ
+                            Text(text = colorItem.colorName, fontSize = MaterialTheme.typography.titleLarge.fontSize) // 色の名前
+                            Text(text = colorItem.colorMemo, fontSize = MaterialTheme.typography.bodyLarge.fontSize) // 色のメモ
                         }
                     }
 
@@ -167,10 +188,15 @@
                         horizontalArrangement = Arrangement.SpaceBetween // 左右に配置
                     ) {
                         // カラーコード
-                        Text(modifier = Modifier.padding(start = 15.dp), text = colorItem.colorCode)
+                        Text(
+                             modifier = Modifier.padding(start = 15.dp),
+                             text = colorItem.colorCode,
+                             fontSize = MaterialTheme.typography.bodyLarge.fontSize
+                        )
                         // 日付
                         Text(
                             text = convertCurrentTimeMillisToYyyyMmDd(colorItem.editDateTime),
+                            fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                             textAlign = TextAlign.End
                         )
                     }
