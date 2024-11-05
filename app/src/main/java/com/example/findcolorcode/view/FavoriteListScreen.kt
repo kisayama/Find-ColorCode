@@ -1,5 +1,6 @@
     package com.example.findcolorcode.view
 
+    import android.util.Log
     import androidx.compose.foundation.background
     import androidx.compose.foundation.layout.Arrangement
     import androidx.compose.foundation.layout.Box
@@ -80,7 +81,8 @@
                         },
                         //テキストフィールドの右端にクリアボタンを設置
                         trailingIcon = {
-                            IconButton(onClick = { viewModel.clearFilterText() }) {
+                            IconButton(onClick = { viewModel.clearFilterText()
+                                Log.d("FavoriteScreen","clearFilter${filterText}")}) {
                                 Icon(
                                     imageVector = Icons.Default.Clear,
                                     contentDescription = "Clear",
@@ -94,13 +96,14 @@
                         onValueChange = {
                             newText -> viewModel.updateFilterText(newText)
                             viewModel.filter()
-                        }
+                        },
+                        maxLines = 1
                     )
                     //ソートボタン
                     IconButton(
                         modifier = Modifier
-                        .weight(1f)
-                        .fillMaxSize(),
+                            .weight(1f)
+                            .fillMaxSize(),
                         onClick = {}/*TODO　並び替えメニューを表示*/,) {
                         Icon(
                             modifier = Modifier.fillMaxSize(),
@@ -177,7 +180,19 @@
                                 .padding(start = 15.dp) ,
                             verticalArrangement = Arrangement.spacedBy(8.dp)// 名前とメモの間にスペースを追加
                         ) {
-                            Text(text = colorItem.colorName, fontSize = MaterialTheme.typography.titleLarge.fontSize) // 色の名前
+                            Row {
+                                Text(modifier = Modifier.weight(1f),// 色の名前
+                                    text = colorItem.colorName,
+                                     fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                                )
+                                IconButton(onClick = { /*TODO　メニューを表示*/ }, modifier = Modifier.padding()) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_more),
+                                        contentDescription = "その他のメニュー",
+                                        tint = AppColors.Black
+                                    )
+                                }
+                            }
                             Text(text = colorItem.colorMemo, fontSize = MaterialTheme.typography.bodyLarge.fontSize) // 色のメモ
                         }
                     }
