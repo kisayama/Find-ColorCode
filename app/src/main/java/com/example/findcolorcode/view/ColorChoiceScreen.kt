@@ -37,10 +37,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.findcolorcode.R
 import com.example.findcolorcode.components.BasicColorContents
 import com.example.findcolorcode.components.SelectedColorPalletContent
+import com.example.findcolorcode.components.ShowToast
 import com.example.findcolorcode.data.basicColorsList1
 import com.example.findcolorcode.data.basicColorsList2
 import com.example.findcolorcode.data.basicColorsList3
@@ -48,6 +50,7 @@ import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.ui.theme.Dimensions
 import com.example.findcolorcode.ui.theme.customTextFieldColors
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
+import com.example.findcolorcode.viewmodel.MainViewModel
 
 //TODO 時間があればSliderのthumbを調整するためにカスタムに変更するか検討する
 
@@ -85,11 +88,11 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
         ColorDataForColorChoice(square2ColorCode, square2BackgroundColorCode, red2, green2, blue2)
     //========
 
-    //selectedSquareに応じて使用するColorDataを決定する
-    val currentColorData = if (square1Index == selectedSquare) square1ColorData else square2ColorData
-
     //トーストメッセージを取得
     val toastMessage by viewModel.toastMessage.observeAsState("")
+
+    //selectedSquareに応じて使用するColorDataを決定する
+    val currentColorData = if (square1Index == selectedSquare) square1ColorData else square2ColorData
 
     //ダイアログ表示用フラグ
     val openDialog  by viewModel.openDialog.observeAsState(false)
@@ -143,7 +146,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
             viewModel = viewModel,
         )
         ColorPalletTab(viewModel, selectedSquare, square1ColorData, square2ColorData)
-        ShowToast(viewModel= viewModel, toastMessage = toastMessage)
+        ShowToast(toastMessage = toastMessage, resetMessage = { viewModel.resetToast() })
     }
 
 }
@@ -410,18 +413,6 @@ fun ColorPalletTab(
                 square1ColorData = square1ColorData,
                 square2ColorData = square2ColorData
             )
-        }
-    }
-}
-//Toastメッセージが変更されたことを検知してToastを表示する
-@Composable
-fun ShowToast(viewModel: ColorChoiceViewModel,toastMessage: String) {
-    val context = LocalContext.current
-    //LaunchedEffectは指定したキーが変更された時に{}内を実行する
-    if (toastMessage.isNotEmpty()) {
-        LaunchedEffect(toastMessage) {
-            Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
-            viewModel.resetToast()
         }
     }
 }
