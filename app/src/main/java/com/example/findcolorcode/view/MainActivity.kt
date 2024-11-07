@@ -3,12 +3,14 @@ package com.example.findcolorcode.view
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -23,6 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.findcolorcode.components.BottomBar
 import com.example.findcolorcode.components.BottomBarTab
+import com.example.findcolorcode.components.ShowToast
 import com.example.findcolorcode.data.ColorDatabase
 import com.example.findcolorcode.repository.ColorSchemeRepositoryImpl
 import com.example.findcolorcode.repository.FavoriteColorRepositoryImpl
@@ -47,10 +50,14 @@ class MainActivity : ComponentActivity(){
         setContent {
             FindColorCodeTheme {
                 //ViewModelのインスタンスを取得
-                val viewModel: MainViewModel = viewModel()
+                val viewModel: MainViewModel = MainViewModel()
 
                 //navController（ナビゲーションの操作を管理する）を取得
                 val navController:NavHostController = rememberNavController()
+
+                val toastMessage by viewModel.toastMessage.observeAsState("")
+
+                val mainViewModel:MainViewModel by viewModels()
 
                 //カラーデータベースのインスタンスを取得する
                 //thisはActivityのみのcontext UIコンポーネント関連に使用する
@@ -60,6 +67,8 @@ class MainActivity : ComponentActivity(){
 
                 //MainScreenを呼び出し
                 MainScreen(navController, viewModel, colorDatabase = colorDatabase)
+                
+                ShowToast(viewModel = viewModel, toastMessage = toastMessage)
                }
             }
         }
