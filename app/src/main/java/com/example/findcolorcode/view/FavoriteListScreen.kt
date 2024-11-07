@@ -38,6 +38,7 @@
     import androidx.navigation.NavController
     import com.example.app.ui.theme.AppColors
     import com.example.findcolorcode.R
+    import com.example.findcolorcode.components.ShowToast
     import com.example.findcolorcode.model.FavoriteColorDataClass
     import com.example.findcolorcode.ui.theme.Dimensions
     import com.example.findcolorcode.ui.theme.customTextFieldColors
@@ -53,6 +54,9 @@
 
         //フィルター用のテキスト
         val filterText by viewModel.filterText.observeAsState("")
+
+        //トーストメッセージを取得
+        val toastMessage by viewModel.toastMessage.observeAsState("")
 
         Column (modifier = Modifier
             .fillMaxSize()
@@ -127,6 +131,7 @@
                     )
                 }
             }
+            ShowToast(toastMessage = toastMessage, resetMessage = { viewModel.resetToast() })
         }
     }
 
