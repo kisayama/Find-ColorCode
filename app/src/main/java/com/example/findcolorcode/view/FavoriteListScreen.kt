@@ -58,6 +58,12 @@
         //トーストメッセージを取得
         val toastMessage by viewModel.toastMessage.observeAsState("")
 
+        //メニュー開閉フラグ
+        val menuExpand by viewModel.menuExpand.observeAsState(false)
+
+        //ダイアログ開閉フラグ
+        val openDialog  by viewModel.openDialog.observeAsState(false)
+
         Column (modifier = Modifier
             .fillMaxSize()
             .background(AppColors.White)
@@ -129,6 +135,14 @@
                             viewModel.convertCurrentTimeMillisToYYYYMMDD(millis)
                         }
                     )
+
+                    if (menuExpand){
+                        com.example.findcolorcode.components.FavoriteColorListMenu(
+                            colorItem = color,
+                            viewModel = viewModel
+                        )
+                    }
+
                 }
             }
             ShowToast(toastMessage = toastMessage, resetMessage = { viewModel.resetToast() })
