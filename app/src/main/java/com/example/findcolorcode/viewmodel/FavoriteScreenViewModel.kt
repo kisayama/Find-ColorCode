@@ -1,6 +1,7 @@
 package com.example.findcolorcode.viewmodel
 
-import android.util.Log
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,6 +19,9 @@ class FavoriteScreenViewModel(
 ) : ViewModel() {
 
     // === プロパティ ===
+
+    //MainActivity内でスコープを持つViewModelを取得
+
 
     //--データベース関連--
     private val _allColors =
@@ -38,6 +42,16 @@ class FavoriteScreenViewModel(
     val filteredColors: LiveData<List<FavoriteColorDataClass>> get() = _filteredColors
 
 
+    //FavoriteColorListの削除や変更の操作メニューを表示するドロップダウンメニューのフラグ
+    private val _menuExpand = MutableLiveData<Boolean>(false)
+    val menuExpand : LiveData<Boolean> get() = _menuExpand
+
+    //色情報の変更ダイアログ
+    //===ColorInfoChangeDialogの表示状態を表すフラグ===
+    private val _openDialog = MutableLiveData<Boolean>(false)
+    val openDialog: LiveData<Boolean> get() = _openDialog
+    //======
+
     // === 初期化処理 ===
     init {
         // データベースからデータを全て取得する
@@ -47,7 +61,20 @@ class FavoriteScreenViewModel(
 
     // === メソッド ===
 
+    //==menu==
+    //menuの開閉フラグmenuExpandを更新する
+    fun updateMenuExpand(flag:Boolean){
+        _menuExpand.value = flag
+    }
+
+    //==Dialog==
+    //dialogの開閉フラグupdateOpenDialogを更新する
+    fun updateOpenDialog(newOpenDialog:Boolean){
+        _openDialog.value = newOpenDialog
+    }
+
     // データベースからデータを全て取得し_allColorsに格納する
+
     private fun getAllColors() {
         viewModelScope.launch {
             //collectは.flowで流された各データに{}内の処理を行う
@@ -62,6 +89,8 @@ class FavoriteScreenViewModel(
         }
     }
 
+    //=====
+
     //選択したデータを削除する
     fun deleteColors(id: String) {
         viewModelScope.launch {
@@ -74,7 +103,7 @@ class FavoriteScreenViewModel(
     }
 
     //IDから色を特定しFavoriteColorDataClass型のデータを返す
-    fun searchColorById(id: String) {
+    private fun searchColorById(id: String) {
         viewModelScope.launch {
             _chosenColor.value = favoriteColorRepository.getColorById(id).first()
         }
@@ -82,7 +111,7 @@ class FavoriteScreenViewModel(
 
     //選択した色を更新する
     //_chosenColorを変更したものを引数colorに渡す
-    fun updateColors(color: FavoriteColorDataClass) {
+     fun updateColors(color: FavoriteColorDataClass) {
         viewModelScope.launch {
             //カラーデータの更新を行う　
             favoriteColorRepository.updateColor(color)
@@ -99,7 +128,7 @@ class FavoriteScreenViewModel(
       　　キーワードごとに個別にフィルタリングを行い、
          各キーワードすべてに一致した色全てを検索結果として出力する
      */
-    fun filter() {
+     fun filter() {
         val filterText = _filterText.value ?: ""
         _filteredColors.value = if (filterText.isEmpty() || filterText == "") {
             //filterText（検索欄）が空なら全てのデータを表示する
@@ -131,24 +160,34 @@ class FavoriteScreenViewModel(
     }
 
         // フィルター用テキストを更新する
-        fun updateFilterText(newFilterText: String) {
+         fun updateFilterText(newFilterText: String) {
             _filterText.value = newFilterText
         }
 
         //Filter用テキストを空にするメソッド
-        fun clearFilterText() {
+         fun clearFilterText() {
             _filterText.value = ""
             // フィルターテキストがクリアされた後、onValueChangeが適用されないため
             // allColorsから全てのデータを取得し、_filteredColorsに設定することで
             // 表示される色のリストを更新する
             _filteredColors.value = allColors.value
         }
+    //=====
+
+    //その他
 
         // ミリ秒を"yyyy/MM/dd"形式の日付に変換する
-        fun convertCurrentTimeMillisToYYYYMMDD(millis: Long): String {
+         fun convertCurrentTimeMillisToYYYYMMDD(millis: Long): String {
             val formatter = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
             val date = Date(millis)
             return formatter.format(date)
+        }
+
+        //クリップボードにカラーコードをコピーする
+        fun copyToClipBoard(context:Context,colorCode:String){
+            val clipBoard = context.getSystemService(Context.CLIPBOARD_SERVICE)as ClipboardManager
+            val clip = android.content.ClipData.newPlainText("カラーコード",colorCode)
+            clipBoard.setPrimaryClip(clip)
         }
 
 }
