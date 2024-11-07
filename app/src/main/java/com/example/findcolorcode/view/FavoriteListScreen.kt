@@ -185,7 +185,10 @@
                                     text = colorItem.colorName,
                                      fontSize = MaterialTheme.typography.titleLarge.fontSize,
                                 )
-                                IconButton(onClick = { /*TODO　メニューを表示*/ }, modifier = Modifier.padding()) {
+                                IconButton(onClick = { /*TODO　メニューを表示*/ },
+                                           modifier = Modifier
+                                               .padding(0.dp)
+                                               .size(24.dp)) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_more),
                                         contentDescription = "その他のメニュー",
