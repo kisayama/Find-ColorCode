@@ -20,9 +20,6 @@ class FavoriteScreenViewModel(
 
     // === プロパティ ===
 
-    //MainActivity内でスコープを持つViewModelを取得
-
-
     //--データベース関連--
     private val _allColors =
         MutableLiveData<List<FavoriteColorDataClass>>(emptyList())   // データベースのデータ
@@ -50,6 +47,20 @@ class FavoriteScreenViewModel(
     //===ColorInfoChangeDialogの表示状態を表すフラグ===
     private val _openDialog = MutableLiveData<Boolean>(false)
     val openDialog: LiveData<Boolean> get() = _openDialog
+    //======
+
+    //トースト関連
+    //===トーストメッセージ===
+    private val _toastMessage = MutableLiveData<String>()
+    val toastMessage: LiveData<String> get() = _toastMessage
+
+    //変更メソッド
+    fun updateToastMessage(message:String){
+        _toastMessage.value = message
+    }
+    fun resetToast(){
+        _toastMessage.value = ""
+    }
     //======
 
     // === 初期化処理 ===
