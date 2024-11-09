@@ -54,7 +54,7 @@
         viewModel: FavoriteScreenViewModel
     ) {
         // filter後のリストを取得する　filterTextが空ならデータベースの全てのデータ
-        val displhayColors by viewModel.filteredColors.observeAsState(emptyList())
+        val displayColors by viewModel.filteredColors.observeAsState(emptyList())
 
         //フィルター用のテキスト
         val filterText by viewModel.filterText.observeAsState("")
