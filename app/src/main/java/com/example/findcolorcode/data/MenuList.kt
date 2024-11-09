@@ -1,5 +1,5 @@
 package com.example.findcolorcode.data
 
-val favoriteColorScreenMenu = listOf(
+val favoriteColorScreenMenuList = listOf(
     "カラーコードをコピー","変更","削除"
 )
