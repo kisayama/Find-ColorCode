@@ -54,16 +54,13 @@
         viewModel: FavoriteScreenViewModel
     ) {
         // filter後のリストを取得する　filterTextが空ならデータベースの全てのデータ
-        val displayColors by viewModel.filteredColors.observeAsState(emptyList())
+        val displhayColors by viewModel.filteredColors.observeAsState(emptyList())
 
         //フィルター用のテキスト
         val filterText by viewModel.filterText.observeAsState("")
 
         //トーストメッセージを取得
         val toastMessage by viewModel.toastMessage.observeAsState("")
-
-        //ダイアログ開閉フラグ
-        val openDialog by viewModel.openDialog.observeAsState(false)
 
         //LazyColumnで選択したアイテム
         var selectedColorItem:FavoriteColorDataClass? by remember { mutableStateOf(null) }
