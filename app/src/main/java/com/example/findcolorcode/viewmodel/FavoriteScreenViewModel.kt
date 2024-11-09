@@ -199,6 +199,7 @@ class FavoriteScreenViewModel(
             val clipBoard = context.getSystemService(Context.CLIPBOARD_SERVICE)as ClipboardManager
             val clip = android.content.ClipData.newPlainText("カラーコード",colorCode)
             clipBoard.setPrimaryClip(clip)
+            updateToastMessage("カラーコードをクリップボードにコピーしました")
         }
 
 }
