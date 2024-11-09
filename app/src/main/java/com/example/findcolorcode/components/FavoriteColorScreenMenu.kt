@@ -1,25 +1,29 @@
 package com.example.findcolorcode.components
 
-import android.content.Context
-import androidx.compose.runtime.Composable
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import com.example.findcolorcode.data.favoriteColorScreenMenu
+import com.example.findcolorcode.data.favoriteColorScreenMenuList
 import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
 
 @Composable
- fun FavoriteColorListMenu(colorItem:FavoriteColorDataClass,viewModel: FavoriteScreenViewModel){
+ fun favoriteColorScreenMenu(
+    colorItem:FavoriteColorDataClass,
+    viewModel: FavoriteScreenViewModel,
+    openMenuExpand:Boolean,
+    closeMenuExpand:()->Unit
+ ){
 
      //トーストとクリップボードへの保存に使用するContext
     val context = LocalContext.current
      DropdownMenu(
-         expanded = viewModel.menuExpand.value?:false,
-         onDismissRequest = { viewModel.updateMenuExpand(false) }
+         expanded = openMenuExpand,
+         onDismissRequest = {closeMenuExpand()}
      ) {
-         favoriteColorScreenMenu.forEachIndexed{index, menu ->
+         favoriteColorScreenMenuList.forEachIndexed{index, menu ->
              DropdownMenuItem(
                  text = {Text(text = menu)},
                  onClick = {

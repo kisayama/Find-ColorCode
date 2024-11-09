@@ -55,10 +55,6 @@ class MainActivity : ComponentActivity(){
                 //navController（ナビゲーションの操作を管理する）を取得
                 val navController:NavHostController = rememberNavController()
 
-                val toastMessage by viewModel.toastMessage.observeAsState("")
-
-                val mainViewModel:MainViewModel by viewModels()
-
                 //カラーデータベースのインスタンスを取得する
                 //thisはActivityのみのcontext UIコンポーネント関連に使用する
                 // applicationContextはアプリ全体のライフサイクルに結びついている
@@ -67,8 +63,6 @@ class MainActivity : ComponentActivity(){
 
                 //MainScreenを呼び出し
                 MainScreen(navController, viewModel, colorDatabase = colorDatabase)
-                
-                ShowToast(viewModel = viewModel, toastMessage = toastMessage)
                }
             }
         }
