@@ -48,7 +48,7 @@ fun ColorSaveDialog(
 ) {
     FindColorCodeTheme {
         val dialogTextStyle = TextStyle(fontSize = 14.sp)
-        //Roomのデータベース追加メソッドに引き渡すだけなのでコンポーネント内で状態管理を行う
+        //Roomのデータベース追加メソッドに引き渡すためにコンポーネント内で状態管理を行う
         val saveName = remember { mutableStateOf("") }
         val saveMemo = remember { mutableStateOf("") }
         BasicAlertDialog(
