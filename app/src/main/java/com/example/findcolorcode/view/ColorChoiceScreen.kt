@@ -1,7 +1,6 @@
 package com.example.findcolorcode.view
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,7 +23,6 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -34,10 +32,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.findcolorcode.R
 import com.example.findcolorcode.components.BasicColorContents
@@ -50,7 +46,6 @@ import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.ui.theme.Dimensions
 import com.example.findcolorcode.ui.theme.customTextFieldColors
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
-import com.example.findcolorcode.viewmodel.MainViewModel
 
 //TODO 時間があればSliderのthumbを調整するためにカスタムに変更するか検討する
 
@@ -94,10 +89,10 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     //selectedSquareに応じて使用するColorDataを決定する
     val currentColorData = if (square1Index == selectedSquare) square1ColorData else square2ColorData
 
-    //ダイアログ表示用フラグ
-    val openDialog  by viewModel.openDialog.observeAsState(false)
+    //ダイアログ開閉状態(trueなら開く falseなら閉じる)
+    val isOpenDialog  by viewModel.openDialog.observeAsState(false)
 
-    if (openDialog){
+    if (isOpenDialog){
         com.example.findcolorcode.components.ColorSaveDialog(
             currentColorData = currentColorData,
             saveFavoriteColor = {
