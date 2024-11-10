@@ -20,18 +20,16 @@ class ColorChoiceViewModel(
     private val favoriteColorRepository :FavoriteColorRepository
 ) :ViewModel() {
 
-    //==選択squareについて==
+    //==プロパティ==
+
     //選択squareのインデックス
     private val _selectedSquare = MutableLiveData(1)
     val selectedSquare: LiveData<Int> = _selectedSquare
 
-    //選択squareを変更する
-    fun changeSelectedSquare(newNumber: Int) {
-        _selectedSquare.value = newNumber
-    }
-    //===================
-
-    //==squareColorCodeの初期値の定義と更新メソッド==
+    //===colorCodeプロパティ====
+    //・テキストフィールドに表示するカラーコード
+    //・ユーザーがテキストフィールドに入力した文字列
+    //上記両方を管理するプロパティ
     //Square1
     private val _square1ColorCode = MutableLiveData("#FFFFFF")//デフォルトのカラーコード
     val square1ColorCode: LiveData<String> get() = _square1ColorCode
@@ -40,22 +38,7 @@ class ColorChoiceViewModel(
     private val _square2ColorCode = MutableLiveData("#FFFFFF")//デフォルトのカラーコード
     val square2ColorCode: LiveData<String> get() = _square2ColorCode
 
-    //入力されたカラーコードをViewModelのカラーコードに入力する
-    //TextFieldのリアルタイムな値（手入力した値も）を兼ねるのでここでカラーコードの検証は行わない
-    fun updateColorCode(squareIndex: Int, newValue: String) {
-        when (squareIndex) {
-            1 -> _square1ColorCode.value = newValue
-            2 -> _square2ColorCode.value = newValue
-        }
-        Log.d("BasicColorCodeContent","changedColorCode${_square1ColorCode.value}")
-
-    }
-    //===================
-
-    //==backgroundColorの背景色==
-    //ユーザーがテキスト入力中に背景色が変わらないように
-    // squareColorCodeとは別に背景色を管理する変数を用意しておく
-
+    //背景色を管理するプロパティ
     //Square1
     private val _square1BackgroundColorCode = MutableLiveData("#FFFFFF")//デフォルトのカラーコード
     val square1BackgroundColorCode: LiveData<String> get() = _square1BackgroundColorCode
@@ -63,16 +46,7 @@ class ColorChoiceViewModel(
     //Square2
     private val _square2BackgroundColorCode = MutableLiveData("#FFFFFF")//デフォルトのカラーコード
     val square2BackgroundColorCode: LiveData<String> get() = _square2BackgroundColorCode
-
-
-    fun updateBackgroundColorCode(squareIndex: Int, validColorCode: String) {
-        when (squareIndex) {
-            1 -> _square1BackgroundColorCode.value = validColorCode
-            2 -> _square2BackgroundColorCode.value = validColorCode
-        }
-        Log.d("BasicColorCodeContent","changedBackgroundColorCode${_square1BackgroundColorCode.value}")
-    }
-    //===================
+    //=====
 
     //====シークバーのRGB値を保存する変数square1,square2====
     //rememberはデバイスの回転などのアクティビティの破棄をされると状態が保存されないことに注意
@@ -96,14 +70,6 @@ class ColorChoiceViewModel(
     //===トーストメッセージ===
     private val _toastMessage = MutableLiveData<String>()
     val toastMessage: LiveData<String> get() = _toastMessage
-
-    //変更メソッド
-    fun updateToastMessage(message:String){
-        _toastMessage.value = message
-    }
-    fun resetToast(){
-        _toastMessage.value = ""
-    }
     //======
 
     //===ColorSveDialogの表示状態を表すフラグ===
@@ -115,7 +81,31 @@ class ColorChoiceViewModel(
     }
     //======
 
-    //選択しているsquareに応じたシークバーの値を取得する関数
+    //==メソッド==
+
+    //選択squareを変更する
+    fun changeSelectedSquare(newNumber: Int) {
+        _selectedSquare.value = newNumber
+    }
+
+    //テキストフィールド表示用のカラーコードを変更するメソッド
+    //TextFieldのリアルタイムな値（手入力した値も）を兼ねるのでここでカラーコードの検証は行わない
+    fun updateColorCode(squareIndex: Int, newValue: String) {
+        when (squareIndex) {
+            1 -> _square1ColorCode.value = newValue
+            2 -> _square2ColorCode.value = newValue
+        }
+    }
+
+    //背景色のカラーコードを変更するメソッド
+    fun updateBackgroundColorCode(squareIndex: Int, validColorCode: String) {
+        when (squareIndex) {
+            1 -> _square1BackgroundColorCode.value = validColorCode
+            2 -> _square2BackgroundColorCode.value = validColorCode
+        }
+    }
+
+    //selectedSquare別のシークバー3種類の値を取得する
     fun setSquareRGB(selectedSquare: Int, rgbColorType: String, value: Int) {
         when (selectedSquare) {
             1 -> {
@@ -136,10 +126,9 @@ class ColorChoiceViewModel(
         }
     }
 
-    //====カラーコード→RGB=====
-
-    //TextFieldに入力された値を16進数のカラーコードに変換する
-    //Hexが正しい形式か検証するメソッドとしても利用する
+    //色名→Hex、Hex検証
+    //ユーザーが入力した色名をHexに変換する
+    //Hexが正しい値か検証する際にも使用する
     fun convertToHexColorCode(text:String):String?{
         //TextFieldが空の時はnullを返し呼び出し元で処理を行わないようにする
         val trimText = text.trim()//スペースを削除
@@ -152,13 +141,14 @@ class ColorChoiceViewModel(
             //colorInt(上2桁は透明度、下4桁はRGB)から透明度を無視するAND演算を行いRGB部分だけ取得する
             //0xはプレフィックスで数値が16進数であることを示す
             val rgbColorCode = intColorCode and 0x00FFFFFF
-            Log.d("convertToHexColorCode","return $rgbColorCode")
             String.format("#%06X", rgbColorCode)
         }catch (e:IllegalArgumentException){
             //入力されたtextからColorCodeが見つからない場合nullを返す
             null
+        }
     }
-    }
+
+    //====カラーコード→RGB=====
 
     fun convertToRGB(selectedSquare: Int) {
         when (selectedSquare) {
@@ -184,16 +174,13 @@ class ColorChoiceViewModel(
     //ColorCodeを受け取り10進数に変換しRGB値を返す
     private fun calConvertToRGB(colorCode: String): Triple<Int, Int, Int> {
         return try {
-            Log.d("ColorChoiceScreen",colorCode)
             val adjustColorCode = Color.parseColor(colorCode)
             val red = Color.red(adjustColorCode)
             val green = Color.green(adjustColorCode)
             val blue = Color.blue(adjustColorCode)
-            Log.d("convertToRGB","convertToRGB")
-        Triple(red, green, blue)// R,G,BをTripleで返す
+            Triple(red, green, blue)// R,G,BをTripleで返す
         } catch (e:IllegalStateException){
             //エラーが起きた場合デフォルトのRGB値を返す
-            Log.d("convertToRGB","convertToRGB")
             Triple(255,255,255)
         }
     }
@@ -230,6 +217,16 @@ class ColorChoiceViewModel(
     }
     //=============
 
+    //====Toast関連====
+    //変更メソッド
+    fun updateToastMessage(message:String){
+        _toastMessage.value = message
+    }
+    fun resetToast(){
+        _toastMessage.value = ""
+    }
+    //=====
+
     //====API関連====
 
     //selectedColorPalletContentに表示するpalletColorListを取得するためのAPI通信を行う
@@ -242,7 +239,7 @@ class ColorChoiceViewModel(
                 //リストのサイズが5かつ全てのカラーコードが正しい形式であることを確認
                 if (response.size == 5&&
                     response.all {convertToHexColorCode(it) != null}
-                    ){
+                ){
                     _colorPalletList.value = response //APIから取得したレスポンスをカラーパレットリストに保存
                     _toastMessage.value = "カラーパレットが作成できました！"
                 }else{
@@ -266,12 +263,14 @@ class ColorChoiceViewModel(
 
     //=======
 
-    //データベース関連のメソッド
+    //データベース挿入メソッド
     fun insertColor(color:FavoriteColorDataClass) {
         viewModelScope.launch {
             favoriteColorRepository.insertColor(color)
         }
     }
+
+    //==========
 }
 //廃止OR今後実装するかもしれないコード置き場
 
