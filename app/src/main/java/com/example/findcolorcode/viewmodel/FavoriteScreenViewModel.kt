@@ -46,7 +46,7 @@ class FavoriteScreenViewModel(
     //色情報の変更ダイアログ
     //===ColorInfoChangeDialogの表示状態を表すフラグ===
     private val _openDialog = MutableLiveData<Boolean>(false)
-    val openDialog: LiveData<Boolean> get() = _openDialog
+    val isOpenDialog: LiveData<Boolean> get() = _openDialog
     //======
 
     //トースト関連
