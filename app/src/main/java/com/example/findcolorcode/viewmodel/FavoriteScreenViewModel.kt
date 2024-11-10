@@ -51,7 +51,7 @@ class FavoriteScreenViewModel(
 
     //トースト関連
     //===トーストメッセージ===
-    private val _toastMessage = MutableLiveData<String>()
+    private val _toastMessage = MutableLiveData<String>("")
     val toastMessage: LiveData<String> get() = _toastMessage
 
     //変更メソッド
