@@ -1,5 +1,6 @@
 package com.example.findcolorcode.components
 
+import android.util.Log
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
@@ -16,28 +17,25 @@ import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
     openMenuExpand:Boolean,
     closeMenuExpand:()->Unit
  ){
-
      //トーストとクリップボードへの保存に使用するContext
     val context = LocalContext.current
      DropdownMenu(
          expanded = openMenuExpand,
-         onDismissRequest = {closeMenuExpand()}
+         onDismissRequest = {closeMenuExpand()}//メニューを閉じる
      ) {
          favoriteColorScreenMenuList.forEachIndexed{index, menu ->
              DropdownMenuItem(
                  text = {Text(text = menu)},
                  onClick = {
-                     viewModel.updateMenuExpand(false)
+                     closeMenuExpand()//メニューを閉じる
                      when(index){
                          //クリップボードにカラーコードをコピー 
-                         0 -> {
-                             viewModel.copyToClipBoard(context, colorItem.colorCode)
-                         }
+                         0 -> viewModel.copyToClipBoard(context, colorItem.colorCode)
                          //色情報を変更するダイアログを表示
-                         1 -> viewModel.updateOpenDialog(true)//TODO ダイアログの再利用
+                         1 -> viewModel.updateOpenDialog(true)
                          //色をデータベースから削除する
                          2 -> viewModel.deleteColors(colorItem.id)
-                         else -> {}//例外では何も行わない
+                         else -> {}//その他は何もしない
                      }
                  }
              )
