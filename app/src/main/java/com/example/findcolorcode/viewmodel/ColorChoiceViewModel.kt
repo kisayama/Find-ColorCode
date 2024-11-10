@@ -107,7 +107,7 @@ class ColorChoiceViewModel(
     //======
 
     //===ColorSveDialogの表示状態を表すフラグ===
-    private val _openDialog = MutableLiveData<Boolean>(false)
+    private val _openDialog = MutableLiveData(false)
     val openDialog: LiveData<Boolean> get() = _openDialog
     //変更メソッド
     fun updateOpenDialog(newOpenDialog:Boolean){
@@ -289,37 +289,4 @@ class ColorChoiceViewModel(
     val green :Int,
     val blue :Int
     )
-    */
-
-//廃止
-    /*　TextField入力についてToastを表示しない方針
-    //ColorCode検証時に表示するエラーコード
-    private val _colorCodeErrorMessage = MutableLiveData<String>()//デフォルトのカラーコード
-    val colorCodeErrorMessage: LiveData<String> get() = _colorCodeErrorMessage
-    */
-
-    /*入力された値をParseできるかどうかで判断する方がシンプルだから検証機能を廃止した
-    //ColorCodeが手入力された時に検証するメソッド
-    fun isValidColorCode(colorCode: String): Boolean {
-    //パースできるColorCodeの形式は以下の3種類
-    Log.d("ValidColorCode",colorCode)
-
-    //正規表現　#RRGGBB 6桁の16進数
-    val RRGGBB = Regex("^#([0-9a-fA-F]{6})$", RegexOption.IGNORE_CASE)
-
-    //正規表現　#AARRGGBB 8桁の16進数
-    val AARRGGBB = Regex("^#[0-9A-Fa-f]{8}$", RegexOption.IGNORE_CASE)
-
-    // 認識できる色名をセットにする
-    val colorNames = setOf(
-        "red", "blue", "green", "black", "white", "gray", "cyan", "magenta",
-        "yellow", "lightgray", "darkgray", "grey", "lightgrey", "darkgrey",
-        "aqua", "fuchsia", "lime", "maroon", "navy", "olive", "purple", "silver", "teal"
-    )
-
-    //入力された値が上記3種類に当てはまるか検証
-    return colorCode.let {
-        it.matches(RRGGBB) || it.matches(AARRGGBB) || it.lowercase() in colorNames
-    }
-}
     */
