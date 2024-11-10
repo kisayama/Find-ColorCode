@@ -100,7 +100,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
     if (openDialog){
         com.example.findcolorcode.components.ColorSaveDialog(
             currentColorData = currentColorData,
-            insertFavoriteColor = {
+            saveFavoriteColor = {
                 //データベースインサート用メソッドを引き渡す
                 favoriteColorData ->
                 viewModel.insertColor(favoriteColorData)
