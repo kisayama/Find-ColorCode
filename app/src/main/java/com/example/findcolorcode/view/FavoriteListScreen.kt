@@ -258,7 +258,7 @@
                     }
                 }
 
-            ShowToast(toastMessage = viewModel.toastMessage.value.toString(), resetMessage = { viewModel.resetToast() })
+            ShowToast(toastMessage = toastMessage, resetMessage = { viewModel.resetToast() })
         }
     }
 
