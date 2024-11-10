@@ -1,6 +1,5 @@
 package com.example.findcolorcode.view
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -229,7 +228,6 @@ fun SeekBars(
                     "red",
                     newValue,
                 )
-                Log.d("SeekBar","${currentColorData}")
             },
             //rgb値をカラーコードに変換し、selectedSquareのcolorCodeを更新する
             onConvertToColorCode = {
