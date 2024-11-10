@@ -20,6 +20,7 @@
     import androidx.compose.material3.Card
     import androidx.compose.material3.CardColors
     import androidx.compose.material3.CardDefaults
+    import androidx.compose.material3.ExperimentalMaterial3Api
     import androidx.compose.material3.Icon
     import androidx.compose.material3.IconButton
     import androidx.compose.material3.MaterialTheme
@@ -48,6 +49,7 @@
     import com.example.findcolorcode.ui.theme.customTextFieldColors
     import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun FavoriteColorList(
         navController: NavController,
@@ -62,8 +64,22 @@
         //トーストメッセージを取得
         val toastMessage by viewModel.toastMessage.observeAsState("")
 
+        //色情報変更用Dialogの開閉状態
+        val isOpenDialog by viewModel.isOpenDialog.observeAsState(false)
+
         //LazyColumnで選択したアイテム
         var selectedColorItem:FavoriteColorDataClass? by remember { mutableStateOf(null) }
+
+        //変更用ダイアログ
+        if (isOpenDialog && selectedColorItem != null){
+            com.example.findcolorcode.components.ColorUpdateDialog(
+                currentColorData = selectedColorItem!!,
+                updateFavoriteColor = {
+                        favoriteColorData ->
+                    viewModel.updateColors(favoriteColorData)
+                },
+                openDialogUpdate = {viewModel.updateOpenDialog(false) })
+        }
 
         Column(
             modifier = Modifier
@@ -97,7 +113,6 @@
                         trailingIcon = {
                             IconButton(onClick = {
                                 viewModel.clearFilterText()
-                                Log.d("FavoriteScreen", "clearFilter${filterText}")
                             }) {
                                 Icon(
                                     imageVector = Icons.Default.Clear,
@@ -207,9 +222,7 @@
                                                     selectedColorItem = color
                                                     expandedItemId = color.id
                                                     isMenuExpand = true
-                                                    //メニューが開かれている且つ選択されている色のIDと一致している
-
-                                                          },
+                                                    },
                                                 modifier = Modifier
                                                     .padding(0.dp)
                                                     .size(24.dp))
@@ -224,9 +237,8 @@
                                                         colorItem = selectedColorItem!!,
                                                         viewModel = viewModel,
                                                         openMenuExpand = true,
-                                                        closeMenuExpand = {isMenuExpand = false}
+                                                        closeMenuExpand = {isMenuExpand = false }
                                                     )
-                                                    Log.d("FavoriteScreen","${selectedColorItem}colorItem:${viewModel}")
                                                 }
                                             }
 
