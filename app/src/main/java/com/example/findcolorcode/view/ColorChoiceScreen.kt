@@ -146,7 +146,6 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorColumn(
     viewModel: ColorChoiceViewModel,
