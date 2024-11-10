@@ -43,7 +43,7 @@ import com.example.findcolorcode.ui.theme.customTextFieldColors
 
 fun ColorSaveDialog(
     currentColorData: ColorDataForColorChoice,//ボタンごとのカラーデータ
-    insertFavoriteColor: (FavoriteColorDataClass) -> Unit,
+    saveFavoriteColor: (FavoriteColorDataClass) -> Unit,
     openDialogUpdate: () -> Unit,//openDialogをfalseに変更するメソッド
 ) {
     FindColorCodeTheme {
@@ -173,7 +173,7 @@ fun ColorSaveDialog(
                                     colorMemo = saveMemo.value,
                                     editDateTime = currentTimeMillis//1970/1/1からの経過時間をミリビョウで表す
                                 )
-                                insertFavoriteColor(saveData)
+                                saveFavoriteColor(saveData)
 
                             },
                             modifier = Modifier
