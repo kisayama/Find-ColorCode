@@ -101,7 +101,6 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
             },
             openDialogUpdate = {viewModel.updateOpenDialog(false) })
     }
-
     // 全体をColumnで囲んでレイアウトを縦方向に
     Column(
         modifier = Modifier
@@ -122,14 +121,24 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                ColorColumn(viewModel, selectedSquare, square1ColorData, square1Index)
+                ColorColumn(
+                    viewModel,
+                    selectedSquare,
+                    square1ColorData,
+                    square1Index,
+                )
             }
             Column(
                 modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                ColorColumn(viewModel, selectedSquare, square2ColorData, square2Index)
+                ColorColumn(
+                    viewModel,
+                    selectedSquare,
+                    square2ColorData,
+                    square2Index,
+                )
             }
         }
 
@@ -178,9 +187,9 @@ fun ColorColumn(
                 colorCode = colorData.colorCode,
                 //ColorSquare,ColorSaveBtnと同様に
                 onSquareSelected = { viewModel.changeSelectedSquare(squareIndex) },
-                onValueChanged = { newvalue ->
-                    viewModel.updateColorCode(squareIndex, newvalue)
-                    val colorCode = viewModel.convertToHexColorCode(newvalue)
+                onValueChanged = { newValue ->
+                    viewModel.updateColorCode(squareIndex, newValue)
+                    val colorCode = viewModel.convertToHexColorCode(newValue)
                     if (colorCode != null) {
                         //背景の色の変更とSeekBarの値の変更を行う
                         viewModel.updateBackgroundColorCode(squareIndex, colorCode)
@@ -188,7 +197,7 @@ fun ColorColumn(
                     } else {
                         //nullの場合(colorCodeに誤った値が入力されている時)は処理を行わない
                     }
-                }
+                },
             )
 
             ColorSaveBtn(
@@ -234,7 +243,8 @@ fun SeekBars(
                 viewModel.convertToColorCode(selectedSquare)
             }
         )
-        SeekBar(colorDataRGB = currentColorData.green,
+        SeekBar(
+            colorDataRGB = currentColorData.green,
             sliderColor = Color.Green,
             selectedSquare = selectedSquare,
             onValueChange = { newValue ->
@@ -248,7 +258,8 @@ fun SeekBars(
                 viewModel.convertToColorCode(selectedSquare)
             }
         )
-        SeekBar(colorDataRGB = currentColorData.blue,
+        SeekBar(
+            colorDataRGB = currentColorData.blue,
             sliderColor = Color.Blue,
             selectedSquare = selectedSquare,
             onValueChange = { newValue ->
@@ -288,7 +299,7 @@ fun ColorCodeText(
     modifier: Modifier = Modifier,
     colorCode: String,
     onSquareSelected: () -> Unit,
-    onValueChanged: (String) -> Unit
+    onValueChanged: (String) -> Unit,
 ) {
     TextField(
         value = colorCode,
@@ -301,9 +312,10 @@ fun ColorCodeText(
             //textFieldにフォーカスしたらselectedSquareを変更する
             .onFocusChanged { focusState ->
                 if (focusState.isFocused) onSquareSelected()
-            },
+            }
+        ,
         colors = customTextFieldColors(),
-        maxLines = 1,
+        maxLines = 1
     )
 }
 
