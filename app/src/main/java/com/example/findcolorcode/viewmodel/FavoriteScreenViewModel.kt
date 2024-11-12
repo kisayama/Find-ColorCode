@@ -23,12 +23,7 @@ class FavoriteScreenViewModel(
     //--データベース関連--
     private val _allColors =
         MutableLiveData<List<FavoriteColorDataClass>>(emptyList())   // データベースのデータ
-    val allColors: LiveData<List<FavoriteColorDataClass>> get() = _allColors
-
-
-    //選択した色のデータ
-    private val _chosenColor = MutableLiveData<FavoriteColorDataClass>()
-    val chosenColor: LiveData<FavoriteColorDataClass> get() = _chosenColor
+    private val allColors: LiveData<List<FavoriteColorDataClass>> get() = _allColors
 
     //--フィルター関連--
     private val _filterText = MutableLiveData("")   // フィルター用テキスト
@@ -38,24 +33,19 @@ class FavoriteScreenViewModel(
     private val _filteredColors = MutableLiveData<List<FavoriteColorDataClass>>(emptyList())
     val filteredColors: LiveData<List<FavoriteColorDataClass>> get() = _filteredColors
 
-
-    //FavoriteColorListの削除や変更の操作メニューを表示するドロップダウンメニューのフラグ
-    private val _menuExpand = MutableLiveData<Boolean>(false)
-    val menuExpand : LiveData<Boolean> get() = _menuExpand
-
     //色情報の変更ダイアログ
     //===ColorInfoChangeDialogの表示状態を表すフラグ===
-    private val _DialogOpen = MutableLiveData<Boolean>(false)
-    val isDialogOpen: LiveData<Boolean> get() = _DialogOpen
+    private val _dialogOpen = MutableLiveData(false)
+    val isDialogOpen: LiveData<Boolean> get() = _dialogOpen
     //======
 
     //トースト関連
     //===トーストメッセージ===
-    private val _toastMessage = MutableLiveData<String>("")
+    private val _toastMessage = MutableLiveData("")
     val toastMessage: LiveData<String> get() = _toastMessage
 
     //変更メソッド
-    fun updateToastMessage(message:String){
+    private fun updateToastMessage(message:String){
         _toastMessage.value = message
     }
     fun resetToast(){
@@ -72,16 +62,8 @@ class FavoriteScreenViewModel(
 
     // === メソッド ===
 
-    //==menu==
-    //menuの開閉フラグmenuExpandを更新する
-    fun updateMenuExpand(flag:Boolean){
-        _menuExpand.value = flag
-    }
-
-    //==Dialog==
-    //dialogの開閉フラグupdateDialogOpenを更新する
     fun updateDialogOpen(newDialogOpen:Boolean){
-        _DialogOpen.value = newDialogOpen
+        _dialogOpen.value = newDialogOpen
     }
 
     // データベースからデータを全て取得し_allColorsに格納する
@@ -110,13 +92,6 @@ class FavoriteScreenViewModel(
             val colorToDelete = favoriteColorRepository.getColorById(id).first()
             //削除する
             favoriteColorRepository.deleteColor(colorToDelete)
-        }
-    }
-
-    //IDから色を特定しFavoriteColorDataClass型のデータを返す
-    private fun searchColorById(id: String) {
-        viewModelScope.launch {
-            _chosenColor.value = favoriteColorRepository.getColorById(id).first()
         }
     }
 
