@@ -1,6 +1,5 @@
 package com.example.findcolorcode.components
 
-import android.util.Log
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
@@ -32,7 +31,7 @@ import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
                          //クリップボードにカラーコードをコピー 
                          0 -> viewModel.copyToClipBoard(context, colorItem.colorCode)
                          //色情報を変更するダイアログを表示
-                         1 -> viewModel.updateOpenDialog(true)
+                         1 -> viewModel.updateDialogOpen(true)
                          //色をデータベースから削除する
                          2 -> viewModel.deleteColors(colorItem.id)
                          else -> {}//その他は何もしない
