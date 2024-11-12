@@ -1,6 +1,6 @@
     package com.example.findcolorcode.view
 
-    import android.util.Log
+    import android.annotation.SuppressLint
     import androidx.compose.foundation.background
     import androidx.compose.foundation.layout.Arrangement
     import androidx.compose.foundation.layout.Box
@@ -29,6 +29,7 @@
     import androidx.compose.runtime.Composable
     import androidx.compose.runtime.getValue
     import androidx.compose.runtime.livedata.observeAsState
+    import androidx.compose.runtime.mutableIntStateOf
     import androidx.compose.runtime.mutableStateOf
     import androidx.compose.runtime.remember
     import androidx.compose.runtime.setValue
@@ -44,11 +45,13 @@
     import com.example.findcolorcode.R
     import com.example.findcolorcode.components.ShowToast
     import com.example.findcolorcode.components.favoriteColorScreenMenu
+    import com.example.findcolorcode.components.FavoriteColorScreenSortMenu
     import com.example.findcolorcode.model.FavoriteColorDataClass
     import com.example.findcolorcode.ui.theme.Dimensions
     import com.example.findcolorcode.ui.theme.customTextFieldColors
     import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
 
+    @SuppressLint("RememberReturnType")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun FavoriteColorList(
@@ -65,20 +68,37 @@
         val toastMessage by viewModel.toastMessage.observeAsState("")
 
         //色情報変更用Dialogの開閉状態
-        val isOpenDialog by viewModel.isOpenDialog.observeAsState(false)
+        val isDialogOpen by viewModel.isDialogOpen.observeAsState(false)
 
         //LazyColumnで選択したアイテム
         var selectedColorItem:FavoriteColorDataClass? by remember { mutableStateOf(null) }
 
-        //変更用ダイアログ
-        if (isOpenDialog && selectedColorItem != null){
+        //ソートメニュー開閉状態
+        var isSortMenuOpen by remember { mutableStateOf(false) }
+
+        //0が日付降順（新しい順), 0が日付降順
+        var currentSortOrder  by remember { mutableIntStateOf(0) }
+
+        //変更用ダイアログ表示ロジック
+        if (isDialogOpen && selectedColorItem != null){
             com.example.findcolorcode.components.ColorUpdateDialog(
                 currentColorData = selectedColorItem!!,
                 updateFavoriteColor = {
                         favoriteColorData ->
                     viewModel.updateColors(favoriteColorData)
                 },
-                openDialogUpdate = {viewModel.updateOpenDialog(false) })
+                openDialogUpdate = {viewModel.updateDialogOpen(false) })
+        }
+
+        //displayColors,sortOrderのどちらかが変更された時に並び替えを行う
+        val sortedContacts = remember (displayColors,currentSortOrder){
+            val comparator:Comparator<FavoriteColorDataClass> =
+                when(currentSortOrder){
+                0 -> compareByDescending { it.editDateTime }
+                1 -> compareBy { it.editDateTime }
+                else -> {compareByDescending { it.editDateTime }}
+            }
+            displayColors.sortedWith(comparator)
         }
 
         Column(
@@ -140,7 +160,7 @@
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxSize(),
-                        onClick = {}/*TODO　並び替えメニューを表示*/,
+                        onClick = {isSortMenuOpen = true}/*TODO　並び替えメニューを表示*/,
                     ) {
                         Icon(
                             modifier = Modifier.fillMaxSize(),
@@ -148,12 +168,23 @@
                             contentDescription = "ソート",
                             tint = AppColors.Black
                         )
+                        //ソートメニュー表示ロジック
+                        if (isSortMenuOpen) {
+                            FavoriteColorScreenSortMenu(
+                                openSortMenuExpand = true,
+                                //ソートを閉じる時の処理
+                                closeSortMenuCallBack = {isSortMenuOpen = false },
+                                //選択されたメニューのインデックスを受け取る
+                                sortTypeCallBack = {index -> currentSortOrder = index},
+                                currentSortOrder = currentSortOrder
+                            )
+                        }
                     }
                 }
             }
             //データベースに含まれるカラーデータを表示する
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(displayColors) { color ->
+                    items(sortedContacts) { color ->
 
                         //メニューの開閉状態と、現在選択されているアイテムのIDを管理する
                         var isMenuExpand:Boolean by remember { mutableStateOf(false) }
