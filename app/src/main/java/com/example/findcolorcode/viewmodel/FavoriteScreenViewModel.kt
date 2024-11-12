@@ -45,8 +45,8 @@ class FavoriteScreenViewModel(
 
     //色情報の変更ダイアログ
     //===ColorInfoChangeDialogの表示状態を表すフラグ===
-    private val _openDialog = MutableLiveData<Boolean>(false)
-    val isOpenDialog: LiveData<Boolean> get() = _openDialog
+    private val _DialogOpen = MutableLiveData<Boolean>(false)
+    val isDialogOpen: LiveData<Boolean> get() = _DialogOpen
     //======
 
     //トースト関連
@@ -79,9 +79,9 @@ class FavoriteScreenViewModel(
     }
 
     //==Dialog==
-    //dialogの開閉フラグupdateOpenDialogを更新する
-    fun updateOpenDialog(newOpenDialog:Boolean){
-        _openDialog.value = newOpenDialog
+    //dialogの開閉フラグupdateDialogOpenを更新する
+    fun updateDialogOpen(newDialogOpen:Boolean){
+        _DialogOpen.value = newDialogOpen
     }
 
     // データベースからデータを全て取得し_allColorsに格納する
