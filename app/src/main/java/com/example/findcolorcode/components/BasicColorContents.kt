@@ -18,90 +18,83 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 
-
+//1行に4つのBOXを配置するBasicColorRowコンポーネントを
+//縦に3つ並べるコンポーネント
 @Composable
 fun BasicColorContents(
- viewModel: ColorChoiceViewModel,
- selectedSquare: Int,
- colorList1: List<String>,
- colorList2: List<String>,
- colorList3: List<String>
+    viewModel: ColorChoiceViewModel,
+    selectedSquare: Int,
+    colorList1: List<String>,
+    colorList2: List<String>,
+    colorList3: List<String>
 ) {
- Column(
-  modifier = Modifier
-   .fillMaxWidth()
-   .padding(top = 72.dp) ,
-  verticalArrangement = Arrangement.Center,
-  horizontalAlignment = Alignment.CenterHorizontally
- ) {
-  Column(
-   verticalArrangement = Arrangement.spacedBy(12.dp),//オブジェクトごとに垂直方向に間隔を入れる
-  ) {
-   //BasicSquareが選択された時の処理
-   val onBasicSquareSelected: (String) -> Unit = {
-    //選択されたBasicSquareのカラーコードを取得する。
-    // updateColorメソッドを使用して現在選択しているsquareの背景の色を書き換える
-     selectedColorCode ->
-    //TextFieldの表示を変更
-    viewModel.updateColorCode(selectedSquare, selectedColorCode)
-    //squareの背景色を変更
-    viewModel.updateBackgroundColorCode(selectedSquare, selectedColorCode)
-    //RGB値を変更
-    viewModel.convertToRGB(selectedSquare)
-   }
-   //縦に3つ並べる
-   BasicColorRow(modifier = Modifier.weight(1f), colorList = colorList1, onBasicSquareSelected)
-   BasicColorRow(modifier = Modifier.weight(1f), colorList = colorList2, onBasicSquareSelected)
-   BasicColorRow(modifier = Modifier.weight(1f), colorList = colorList3, onBasicSquareSelected)
-  }
- }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 72.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Column(
+            //各オブジェクト(BasicRow)間に垂直方向の間隔を設定
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            //BasicSquareが選択された時に呼び出される処理
+            val onBasicSquareSelected: (String) -> Unit = { selectedColorCode ->
+                //TextFieldの表示を変更
+                viewModel.updateColorCode(selectedSquare, selectedColorCode)
+                //squareの背景色を変更
+                viewModel.updateBackgroundColorCode(selectedSquare, selectedColorCode)
+                //シークバーのRGB値を変更
+                viewModel.convertToRGB(selectedSquare)
+            }
+            //縦に3つ並べる
+            BasicColorRow(colorList = colorList1, onBasicSquareSelected)
+            BasicColorRow(colorList = colorList2, onBasicSquareSelected)
+            BasicColorRow(colorList = colorList3, onBasicSquareSelected)
+        }
+    }
 }
 
+//4つのBoxコンポーネントのBasicColorSquareを一行に並べるコンポーネント
 @Composable
 private fun BasicColorRow(
- modifier: Modifier = Modifier,
- colorList: List<String>,
- onBasicSquareSelected: (String) -> Unit
+    colorList: List<String>,
+    onBasicSquareSelected: (String) -> Unit
 ) {
- Row(
-  modifier = Modifier
-   .fillMaxWidth()
-   .padding(start = 8.dp, end = 8.dp),
-  horizontalArrangement = Arrangement.SpaceEvenly,
- ) {
-  BasicColorSquare(
-   colorCode = colorList[0],
-   onBasicSquareSelected = onBasicSquareSelected
-  )
-  BasicColorSquare(
-   colorCode = colorList[1],
-   onBasicSquareSelected = onBasicSquareSelected
-  )
-  BasicColorSquare(
-   colorCode = colorList[2],
-   onBasicSquareSelected = onBasicSquareSelected
-  )
-  BasicColorSquare(
-   colorCode = colorList[3],
-   onBasicSquareSelected = onBasicSquareSelected
-  )
- }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp, end = 8.dp),
+        //Row内の要素を水平方向に均等に配置する
+        horizontalArrangement = Arrangement.SpaceEvenly,
+    ) {
+        //colorListは常に4つの要素を含む(要素はカラーコード)
+        //各カラーコードをBasicColorSquareに引き渡す
+        colorList.forEach { colorCode ->
+            BasicColorSquare(
+                colorCode = colorCode,
+                onBasicSquareSelected = onBasicSquareSelected
+            )
+        }
+    }
 }
 
 
-
 @Composable
- private fun BasicColorSquare(
- modifier: Modifier = Modifier,
- colorCode:String,
- onBasicSquareSelected: (String)->Unit){
-  Box (
-   modifier = modifier
-    .padding(end = 8.dp)
-    .size(70.dp)
-    .clickable { onBasicSquareSelected(colorCode) }
-    .background(Color(android.graphics.Color.parseColor(colorCode)))
-    .border(1.dp, Color.LightGray)
-    .aspectRatio(1f)//1:1比率
-  )
- }
+private fun BasicColorSquare(
+    modifier: Modifier = Modifier,
+    colorCode: String,
+    onBasicSquareSelected: (String) -> Unit
+) {
+    Box(
+        modifier = modifier
+            .padding(end = 8.dp)
+            .size(70.dp)
+            //Boxをクリックすると選択されたカラーコードをonBasicSquareSelectedに引き渡す
+            .clickable { onBasicSquareSelected(colorCode) }
+            .background(Color(android.graphics.Color.parseColor(colorCode)))
+            .border(1.dp, Color.LightGray)
+            .aspectRatio(1f)//1:1の比率で正方形にする
+    )
+}
