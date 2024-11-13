@@ -14,11 +14,13 @@ enum class BottomBarTab (
     val label:String,
     val route: String
 ){
+    //色選択画面
     ColorChoice(
         iconId = R.drawable.ic_brush_24,
         label = "ColorChoice",
         route = "colorChoice"
     ),
+    //色保存画面
     FavoriteList(
         iconId = R.drawable.ic_bookmarks,
         label = "FavoriteList",
