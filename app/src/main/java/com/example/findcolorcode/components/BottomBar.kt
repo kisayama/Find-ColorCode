@@ -13,8 +13,8 @@ import androidx.navigation.NavController
 
 @Composable
 //selectedItemは現在選択しているアイテムのインデックス
-fun BottomBar(navController: NavController,selectedItem:Int,onItemSelected : (Int) -> Unit) {
-    NavigationBar() {
+fun BottomBar(navController: NavController, selectedItem: Int, onItemSelected: (Int) -> Unit) {
+    NavigationBar {
         BottomBarTab.values().forEachIndexed { index, item ->
             NavigationBarItem(
                 //タブが選択されているかを判定
@@ -25,12 +25,15 @@ fun BottomBar(navController: NavController,selectedItem:Int,onItemSelected : (In
                     navController.navigate(item.route)
                 },
                 //Iconとlabelを指定
-                icon = { Icon(painter = painterResource(id = item.iconId),
-                    contentDescription = item.label,
-                    modifier = Modifier.size(40.dp))
+                icon = {
+                    Icon(
+                        painter = painterResource(id = item.iconId),
+                        contentDescription = item.label,
+                        modifier = Modifier.size(40.dp)
+                    )
                 }
             )
         }
 
-}
+    }
 }
