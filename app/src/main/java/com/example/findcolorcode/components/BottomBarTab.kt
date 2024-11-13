@@ -15,7 +15,7 @@ enum class BottomBarTab (
     val route: String
 ){
     ColorChoice(
-        iconId = R.drawable.ic_brush,
+        iconId = R.drawable.ic_brush_24,
         label = "ColorChoice",
         route = "colorChoice"
     ),
