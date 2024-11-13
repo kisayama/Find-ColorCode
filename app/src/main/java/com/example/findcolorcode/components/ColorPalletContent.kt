@@ -26,14 +26,18 @@ import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 
 @Composable
-    fun SelectedColorPalletContent(
+fun SelectedColorPalletContent(
     modifier: Modifier,
-    viewModel:ColorChoiceViewModel,
-    square1ColorData:ColorDataForColorChoice,
-    square2ColorData:ColorDataForColorChoice,
-    selectedSquare:Int) {
+    viewModel: ColorChoiceViewModel,
+    square1ColorData: ColorDataForColorChoice,
+    square2ColorData: ColorDataForColorChoice,
+    selectedSquare: Int
+) {
 
-    val initialColorPalletList = listOf("#FFFFFF","#FFFFFF","#FFFFFF","#FFFFFF","#FFFFFF")//初期値のリスト
+    val initialColorPalletList =
+        //初期値のリスト
+        listOf("#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF")
+
     //viewModelのcolorPalletListをobserveAsStateで取得する
     val colorPalletList by viewModel.colorPalletList.observeAsState(initialColorPalletList)
 
@@ -41,7 +45,7 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
     val currentColorData = if (1 == selectedSquare) square1ColorData else square2ColorData
 
     //Pallet選択時の処理
-    val palletSquareSelected : (String) -> Unit = { palletColorCode ->
+    val palletSquareSelected: (String) -> Unit = { palletColorCode ->
         //TextFieldの表示を変更
         viewModel.updateColorCode(selectedSquare, palletColorCode)
         //squareの背景色を変更
@@ -49,59 +53,62 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
         //RGB値を変更
         viewModel.convertToRGB(selectedSquare)
     }
-        Column(modifier = modifier
+    Column(
+        modifier = modifier
             .fillMaxSize()
             .padding(top = 66.dp, bottom = 10.dp, end = 1.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),//パレットカラースクエアとボタンのの間のスペース
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp)){
-                PalletColorSquare(
-                    //colorPalletListの要素一つずつをcolorCodeとして渡す
-                    colorCode = colorPalletList[0],
-                    onPalletSquareSelected = palletSquareSelected
-                )
-                PalletColorSquare(
-                    colorCode = colorPalletList[1],
-                    onPalletSquareSelected = palletSquareSelected
-                )
-                PalletColorSquare(
-                    colorCode = colorPalletList[2],
-                    onPalletSquareSelected = palletSquareSelected
-                )
-                PalletColorSquare(
-                    colorCode = colorPalletList[3],
-                    onPalletSquareSelected = palletSquareSelected
-                )
-                PalletColorSquare(
-                    colorCode = colorPalletList[4],
-                    onPalletSquareSelected = palletSquareSelected
-                )
-            }
-
-            PalletCreateButton(
-                onButtonClicked = {
-                    //API通信を行う　ViewModel自身の動作でcolorPalletListを更新するのでここでは操作を行わない
-                    //現在背景色に使用されている色をAPIに引き渡す
-                    //念の為正しいHEXが入力されているか検証する
-                    //パースできない値が入力されていない場合はトーストを表示する
-                    val currentColorCode = currentColorData.backgroundColorCode
-                    val colorCode = viewModel.convertToHexColorCode(currentColorCode)
-                    if (colorCode != null){
-                        viewModel.fetchColorScheme(colorCode)
-                    }else {
-                        viewModel.updateToastMessage("正しい色を入力してください。（例: #FFFFFF または whiteなど）")
-                    }
-                }
+        verticalArrangement = Arrangement.spacedBy(20.dp),//パレットカラースクエアとボタンのの間のスペース
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            PalletColorSquare(
+                //colorPalletListの要素一つずつをcolorCodeとして渡す
+                colorCode = colorPalletList[0],
+                onPalletSquareSelected = palletSquareSelected
             )
+            PalletColorSquare(
+                colorCode = colorPalletList[1],
+                onPalletSquareSelected = palletSquareSelected
+            )
+            PalletColorSquare(
+                colorCode = colorPalletList[2],
+                onPalletSquareSelected = palletSquareSelected
+            )
+            PalletColorSquare(
+                colorCode = colorPalletList[3],
+                onPalletSquareSelected = palletSquareSelected
+            )
+            PalletColorSquare(
+                colorCode = colorPalletList[4],
+                onPalletSquareSelected = palletSquareSelected
+            )
+        }
 
-        }
-        }
+        PalletCreateButton(
+            onButtonClicked = {
+                //API通信を行う　ViewModel自身の動作でcolorPalletListを更新するのでここでは操作を行わない
+                //現在背景色に使用されている色をAPIに引き渡す
+                //念の為正しいHEXが入力されているか検証する
+                //パースできない値が入力されていない場合はトーストを表示する
+                val currentColorCode = currentColorData.backgroundColorCode
+                val colorCode = viewModel.convertToHexColorCode(currentColorCode)
+                if (colorCode != null) {
+                    viewModel.fetchColorScheme(colorCode)
+                } else {
+                    viewModel.updateToastMessage("正しい色を入力してください。（例: #FFFFFF または whiteなど）")
+                }
+            }
+        )
+
+    }
+}
 
 @Composable
 private fun PalletCreateButton(
-    onButtonClicked: () -> Unit) {
+    onButtonClicked: () -> Unit
+) {
     OutlinedButton(
         onClick = { onButtonClicked() }
     ) {
@@ -111,10 +118,11 @@ private fun PalletCreateButton(
 
 //APIから受け取ったカラーコードを表示するSquare
 @Composable
-    private fun PalletColorSquare(
+private fun PalletColorSquare(
     modifier: Modifier = Modifier,
-    colorCode:String,
-    onPalletSquareSelected: (String) -> Unit){
+    colorCode: String,
+    onPalletSquareSelected: (String) -> Unit
+) {
     Box(
         modifier = modifier
             .size(65.dp)
@@ -129,12 +137,12 @@ private fun PalletCreateButton(
             .aspectRatio(1f) //1:1比率
             .clickable { onPalletSquareSelected(colorCode) }
     )
-    }
+}
 
 @Preview
 @Composable
-fun PreviewPallet(){
-    PalletColorSquare(modifier = Modifier,colorCode = "#FFFFFF", onPalletSquareSelected = {})
+fun PreviewPallet() {
+    PalletColorSquare(modifier = Modifier, colorCode = "#FFFFFF", onPalletSquareSelected = {})
 }
 
 
