@@ -2,7 +2,6 @@ package com.example.findcolorcode.repository
 
 import android.util.Log
 import com.example.findcolorcode.api.TheColorApiService
-import com.example.findcolorcode.model.ColorSchemeResponse
 import com.squareup.moshi.Moshi
 import retrofit2.HttpException
 import retrofit2.Retrofit
