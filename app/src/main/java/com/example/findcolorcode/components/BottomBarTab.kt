@@ -1,8 +1,5 @@
 package com.example.findcolorcode.components
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.findcolorcode.R
 
 
