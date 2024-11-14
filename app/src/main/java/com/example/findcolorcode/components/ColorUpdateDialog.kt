@@ -42,7 +42,7 @@ import com.example.findcolorcode.ui.theme.customTextFieldColors
 
 //色情報（名前、メモ）を変更するときに表示するダイアログ
 fun ColorUpdateDialog(
-    currentColorData: FavoriteColorDataClass,//ボタンごとのカラーデータ
+    currentColorData: FavoriteColorDataClass,//現在のカラーデータ
     updateFavoriteColor: (FavoriteColorDataClass) -> Unit,//データベースを変更するメソッド
     //viewModelのopenDialogプロパティをfalseに変更するメソッド
     dismissDialog: () -> Unit,
@@ -145,8 +145,8 @@ fun ColorUpdateDialog(
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
+                    //左側にキャンセルボタン、右側に決定ボタンを配置する
                     Row {
-
                         //キャンセルボタン
                         TextButton(
                             onClick = { dismissDialog() },// ダイアログの状態フラグを変更
