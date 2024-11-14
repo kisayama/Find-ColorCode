@@ -14,9 +14,12 @@ import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
 //選択しているお気に入りの色に関連する操作を行う
 @Composable
  fun FavoriteColorActionsMenu(
+    //現在選択している色
     colorItem:FavoriteColorDataClass,
     viewModel: FavoriteScreenViewModel,
+    //呼び出し元からtrueが引き渡される
     openMenuExpand:Boolean,
+    //menuを閉じるメソッド
     closeMenuExpand:()->Unit
  ){
      //トーストとクリップボードへの保存に使用するContext
