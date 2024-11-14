@@ -99,7 +99,7 @@ fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewMo
                 favoriteColorData ->
                 viewModel.insertColor(favoriteColorData)
             },
-            openDialogUpdate = {viewModel.updateOpenDialog(false) })
+            dismissDialog = {viewModel.updateOpenDialog(false) })
     }
     // 全体をColumnで囲んでレイアウトを縦方向に
     Column(
