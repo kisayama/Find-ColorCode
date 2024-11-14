@@ -44,16 +44,20 @@ import com.example.findcolorcode.ui.theme.customTextFieldColors
 fun ColorSaveDialog(
     currentColorData: ColorDataForColorChoice,//ボタンごとのカラーデータ
     saveFavoriteColor: (FavoriteColorDataClass) -> Unit,
-    openDialogUpdate: () -> Unit,//openDialogをfalseに変更するメソッド
+    //viewModelのopenDialogプロパティをfalseに変更するメソッド
+    dismissDialog: () -> Unit,
 ) {
     FindColorCodeTheme {
         val dialogTextStyle = TextStyle(fontSize = 14.sp)
+
         //Roomのデータベース追加メソッドに引き渡すためにコンポーネント内で状態管理を行う
         val saveName = remember { mutableStateOf("") }
         val saveMemo = remember { mutableStateOf("") }
+
         BasicAlertDialog(
             modifier = Modifier.wrapContentWidth(),
-            onDismissRequest = { openDialogUpdate() }, // ダイアログが閉じられたときに、フラグの更新処理を実行する
+            // ダイアログが閉じられたときに、フラグの更新処理を実行する
+            onDismissRequest = { dismissDialog() },
         ) {
             Surface(
                 color = Color.White,//ダイアログの背景の色
@@ -151,7 +155,7 @@ fun ColorSaveDialog(
 
                         //キャンセルボタン
                         TextButton(
-                            onClick = { openDialogUpdate() },// ダイアログの状態フラグを変更
+                            onClick = { dismissDialog() },// ダイアログの状態フラグを変更
                             modifier = Modifier
                                 .weight(1f)
                                 .background(AppColors.gainsboro)
@@ -164,7 +168,7 @@ fun ColorSaveDialog(
                         //決定ボタン
                         TextButton(
                             onClick = {
-                                openDialogUpdate()//openDialogをfalseに変更する（閉じた状態）
+                                dismissDialog()//openDialogをfalseに変更する（閉じた状態にする）
                                 val currentTimeMillis = System.currentTimeMillis()//現在の日時
 
                                 val saveData = FavoriteColorDataClass(
