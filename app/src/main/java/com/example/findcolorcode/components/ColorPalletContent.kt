@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 
+//
 @Composable
 fun SelectedColorPalletContent(
     modifier: Modifier,

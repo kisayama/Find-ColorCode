@@ -45,6 +45,7 @@ import com.example.findcolorcode.ui.theme.Dimensions
 import com.example.findcolorcode.ui.theme.customTextFieldColors
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 
+//スライダーを調節することによって色を作成、保存するためのダイアログを呼び出すView
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorChoiceScreen(viewModel: ColorChoiceViewModel) {
