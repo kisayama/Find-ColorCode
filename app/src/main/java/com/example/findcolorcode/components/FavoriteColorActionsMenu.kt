@@ -5,7 +5,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import com.example.findcolorcode.data.favoriteColorScreenMenuList
+import com.example.findcolorcode.data.favoriteColorActionsMenuList
 import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
 
@@ -28,7 +28,7 @@ import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
          expanded = openMenuExpand,
          onDismissRequest = {closeMenuExpand()}//メニューを閉じる
      ) {
-         favoriteColorScreenMenuList.forEachIndexed{index, menu ->
+         favoriteColorActionsMenuList.forEachIndexed{ index, menu ->
              DropdownMenuItem(
                  text = {Text(text = menu)},
                  onClick = {
