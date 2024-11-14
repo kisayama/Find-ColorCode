@@ -9,8 +9,11 @@ import com.example.findcolorcode.data.favoriteColorScreenMenuList
 import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
 
+
+//FavoriteColorScreen内のリストのmoreボタンを押すと表示されるメニュー
+//選択しているお気に入りの色に関連する操作を行う
 @Composable
- fun favoriteColorScreenMenu(
+ fun FavoriteColorActionsMenu(
     colorItem:FavoriteColorDataClass,
     viewModel: FavoriteScreenViewModel,
     openMenuExpand:Boolean,
