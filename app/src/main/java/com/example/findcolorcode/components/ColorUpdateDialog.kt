@@ -43,7 +43,8 @@ import com.example.findcolorcode.ui.theme.customTextFieldColors
 fun ColorUpdateDialog(
     currentColorData: FavoriteColorDataClass,//ボタンごとのカラーデータ
     updateFavoriteColor: (FavoriteColorDataClass) -> Unit,//データベースを変更するメソッド
-    openDialogUpdate: () -> Unit,//openDialogをfalseに変更するメソッド
+    //viewModelのopenDialogプロパティをfalseに変更するメソッド
+    dismissDialog: () -> Unit,
 ) {
     //Roomのデータベース変更メソッドに引き渡すためにコンポーネント内で状態管理を行う
     val saveName = remember { mutableStateOf(currentColorData.colorName) }
@@ -54,7 +55,7 @@ fun ColorUpdateDialog(
         //Roomのデータベース追加メソッドに引き渡すだけなのでコンポーネント内で状態管理を行う
         BasicAlertDialog(
             modifier = Modifier.wrapContentWidth(),
-            onDismissRequest = { openDialogUpdate() }, // ダイアログが閉じられたときに、フラグの更新処理を実行する
+            onDismissRequest = { dismissDialog() }, // ダイアログが閉じられたときに、フラグの更新処理を実行する
         ) {
             Surface(
                 color = Color.White,//ダイアログの背景の色
@@ -148,7 +149,7 @@ fun ColorUpdateDialog(
 
                         //キャンセルボタン
                         TextButton(
-                            onClick = { openDialogUpdate() },// ダイアログの状態フラグを変更
+                            onClick = { dismissDialog() },// ダイアログの状態フラグを変更
                             modifier = Modifier
                                 .weight(1f)
                                 .background(AppColors.gainsboro)
@@ -161,7 +162,7 @@ fun ColorUpdateDialog(
                         //決定ボタン
                         TextButton(
                             onClick = {
-                                openDialogUpdate()//openDialogをfalseに変更する（閉じた状態）
+                                dismissDialog()//openDialogをfalseに変更する（閉じた状態）
                                 val currentTimeMillis = System.currentTimeMillis()//現在の日時
 
                                 val saveData = FavoriteColorDataClass(
@@ -172,7 +173,6 @@ fun ColorUpdateDialog(
                                     editDateTime = currentTimeMillis//1970/1/1からの経過時間をミリビョウで表す
                                 )
                                 updateFavoriteColor(saveData)
-
                             },
                             modifier = Modifier
                                 .weight(1f)
