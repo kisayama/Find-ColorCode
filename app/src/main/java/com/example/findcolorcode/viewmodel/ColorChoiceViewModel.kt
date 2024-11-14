@@ -17,8 +17,8 @@ import java.net.UnknownHostException
 class ColorChoiceViewModel(
     //APIとデータベースのRepositoryの依存性を注入
     private val apiRepository: ColorSchemeRepository,
-    private val favoriteColorRepository :FavoriteColorRepository
-) :ViewModel() {
+    private val favoriteColorRepository: FavoriteColorRepository
+) : ViewModel() {
 
     //==プロパティ==
 
@@ -61,9 +61,10 @@ class ColorChoiceViewModel(
 
     //===ColorPalletContentに表示するカラーパレットのリスト===
     // カラーコードは#付きのHex形式、リストサイズは5
-    private val initialColorPalletList = listOf("#FFFFFF","#FFFFFF","#FFFFFF","#FFFFFF","#FFFFFF")//初期値のリスト
+    //カラーパレットに表示するカラーコードの初期値のリスト
+    private val initialColorPalletList = listOf("#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF")
     private val _colorPalletList = MutableLiveData(initialColorPalletList)
-    val colorPalletList:LiveData<List<String>> get() = _colorPalletList
+    val colorPalletList: LiveData<List<String>> get() = _colorPalletList
 
     //======
 
@@ -73,11 +74,12 @@ class ColorChoiceViewModel(
     //======
 
     //===ColorSveDialogの表示状態を表すフラグ===
-    private val _openDialog = MutableLiveData(false)
-    val openDialog: LiveData<Boolean> get() = _openDialog
+    private val _isSaveDialogOpen = MutableLiveData(false)
+    val isSaveDialogOpen: LiveData<Boolean> get() = _isSaveDialogOpen
+
     //変更メソッド
-    fun updateOpenDialog(newOpenDialog:Boolean){
-        _openDialog.value = newOpenDialog
+    fun updateDialogOpen(newDialogOpen: Boolean) {
+        _isSaveDialogOpen.value = newDialogOpen
     }
     //======
 
@@ -129,10 +131,10 @@ class ColorChoiceViewModel(
     //色名→Hex、Hex検証
     //ユーザーが入力した色名をHexに変換する
     //Hexが正しい値か検証する際にも使用する
-    fun convertToHexColorCode(text:String):String?{
+    fun convertToHexColorCode(text: String): String? {
         //TextFieldが空の時はnullを返し呼び出し元で処理を行わないようにする
         val trimText = text.trim()//スペースを削除
-        if (trimText.isEmpty()){
+        if (trimText.isEmpty()) {
             return null
         }
         return try {
@@ -142,7 +144,7 @@ class ColorChoiceViewModel(
             //0xはプレフィックスで数値が16進数であることを示す
             val rgbColorCode = intColorCode and 0x00FFFFFF
             String.format("#%06X", rgbColorCode)
-        }catch (e:IllegalArgumentException){
+        } catch (e: IllegalArgumentException) {
             //入力されたtextからColorCodeが見つからない場合nullを返す
             null
         }
@@ -179,9 +181,9 @@ class ColorChoiceViewModel(
             val green = Color.green(adjustColorCode)
             val blue = Color.blue(adjustColorCode)
             Triple(red, green, blue)// R,G,BをTripleで返す
-        } catch (e:IllegalStateException){
+        } catch (e: IllegalStateException) {
             //エラーが起きた場合デフォルトのRGB値を返す
-            Triple(255,255,255)
+            Triple(255, 255, 255)
         }
     }
     //=============
@@ -219,10 +221,11 @@ class ColorChoiceViewModel(
 
     //====Toast関連====
     //変更メソッド
-    fun updateToastMessage(message:String){
+    fun updateToastMessage(message: String) {
         _toastMessage.value = message
     }
-    fun resetToast(){
+
+    fun resetToast() {
         _toastMessage.value = ""
     }
     //=====
@@ -230,32 +233,34 @@ class ColorChoiceViewModel(
     //====API関連====
 
     //selectedColorPalletContentに表示するpalletColorListを取得するためのAPI通信を行う
-    fun fetchColorScheme(colorCode: String){
+    fun fetchColorScheme(colorCode: String) {
         viewModelScope.launch {
             try {
                 val response = apiRepository.getColorScheme(
                     colorCode.removePrefix("#")//#を取り除いたHex値を引き渡す
                 )
                 //リストのサイズが5かつ全てのカラーコードが正しい形式であることを確認
-                if (response.size == 5&&
-                    response.all {convertToHexColorCode(it) != null}
-                ){
+                if (response.size == 5 &&
+                    response.all { convertToHexColorCode(it) != null }
+                ) {
                     _colorPalletList.value = response //APIから取得したレスポンスをカラーパレットリストに保存
                     _toastMessage.value = "カラーパレットが作成できました！"
-                }else{
+                } else {
                     //RepositoryImplからのレスポンスが誤った形式で他の通信エラーと同様のタグを設定する
-                    Log.e("RepositoryImpl","リストサイズ:${response.size},colorCodeHex:${response}　サイズが5以外,colorCodeHexの形式エラー")
+                    Log.e(
+                        "RepositoryImpl",
+                        "リストサイズ:${response.size},colorCodeHex:${response}　サイズが5以外,colorCodeHexの形式エラー"
+                    )
                     _toastMessage.value = "無効なレスポンスが含まれています。再度お試しください"
                 }
-            }
-            catch (e: SocketTimeoutException){
-                _toastMessage.value = "通信がタイムアウトしました。ネットワーク接続を確認してください"
-            }
-            catch (e: UnknownHostException){
+            } catch (e: SocketTimeoutException) {
+                _toastMessage.value =
+                    "通信がタイムアウトしました。ネットワーク接続を確認してください"
+            } catch (e: UnknownHostException) {
                 _toastMessage.value = "インターネット接続エラー　ネットワーク接続を確認してください"
-            }
-            catch (e:Exception){
-                _toastMessage.value = "予期しないエラーが発生しました。ネットワーク接続を確認してください"
+            } catch (e: Exception) {
+                _toastMessage.value =
+                    "予期しないエラーが発生しました。ネットワーク接続を確認してください"
             }
 
         }
@@ -264,7 +269,7 @@ class ColorChoiceViewModel(
     //=======
 
     //データベース挿入メソッド
-    fun insertColor(color:FavoriteColorDataClass) {
+    fun insertColor(color: FavoriteColorDataClass) {
         viewModelScope.launch {
             favoriteColorRepository.insertColor(color)
         }
@@ -275,17 +280,17 @@ class ColorChoiceViewModel(
 //廃止OR今後実装するかもしれないコード置き場
 
 //今後
-    /*可読性を高めるためにDataClassにまとめてもいいかも。
-     データクラス内のデータに一つでも変更があるとデータクラス内を全て再描写しないといけないから注意（RGBならいいかも）
-     //square1の各シークバーの値とその初期値
-    val square1ColorDataValues = MutableLiveData(ColorRGBValues(255,255,255))
+/*可読性を高めるためにDataClassにまとめてもいいかも。
+ データクラス内のデータに一つでも変更があるとデータクラス内を全て再描写しないといけないから注意（RGBならいいかも）
+ //square1の各シークバーの値とその初期値
+val square1ColorDataValues = MutableLiveData(ColorRGBValues(255,255,255))
 
-    //square2の各シークバーの値とその初期値
-    val square2ColorDataValues = MutableLiveData(ColorRGBValues(255,255,255))
+//square2の各シークバーの値とその初期値
+val square2ColorDataValues = MutableLiveData(ColorRGBValues(255,255,255))
 
-    data class ColorRGBValues(
-    val red:Int,
-    val green :Int,
-    val blue :Int
-    )
-    */
+data class ColorRGBValues(
+val red:Int,
+val green :Int,
+val blue :Int
+)
+*/

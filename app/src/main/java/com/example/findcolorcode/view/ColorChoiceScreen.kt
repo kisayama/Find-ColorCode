@@ -45,8 +45,6 @@ import com.example.findcolorcode.ui.theme.Dimensions
 import com.example.findcolorcode.ui.theme.customTextFieldColors
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 
-//TODO 時間があればSliderのthumbを調整するためにカスタムに変更するか検討する
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorChoiceScreen(viewModel: ColorChoiceViewModel) {
@@ -66,7 +64,8 @@ fun ColorChoiceScreen(viewModel: ColorChoiceViewModel) {
     val square1ColorCode by viewModel.square1ColorCode.observeAsState("#FFFFFF")
     //ユーザーがテキスト入力中に背景色が変わらないように squareColorCodeとは別に背景色を管理する変数を用意しておく
     val square1BackgroundColorCode by viewModel.square1BackgroundColorCode.observeAsState("#FFFFFF")
-    val square1ColorData = ColorDataForColorChoice(square1ColorCode, square1BackgroundColorCode, red1, green1, blue1)
+    val square1ColorData =
+        ColorDataForColorChoice(square1ColorCode, square1BackgroundColorCode, red1, green1, blue1)
     //========
 
     // ===== Square2 Color Data =====
@@ -85,20 +84,21 @@ fun ColorChoiceScreen(viewModel: ColorChoiceViewModel) {
     val toastMessage by viewModel.toastMessage.observeAsState("")
 
     //selectedSquareに応じて使用するColorDataを決定する
-    val currentColorData = if (square1Index == selectedSquare) square1ColorData else square2ColorData
+    val currentColorData =
+        if (square1Index == selectedSquare) square1ColorData else square2ColorData
 
     //ダイアログ開閉状態(trueなら開く falseなら閉じる)
-    val isOpenDialog  by viewModel.openDialog.observeAsState(false)
+    val isSaveDialogOpen by viewModel.isSaveDialogOpen.observeAsState(false)
 
-    if (isOpenDialog){
+    if (isSaveDialogOpen) {
         com.example.findcolorcode.components.ColorSaveDialog(
             currentColorData = currentColorData,
             saveFavoriteColor = {
                 //データベースインサート用メソッドを引き渡す
-                favoriteColorData ->
+                    favoriteColorData ->
                 viewModel.insertColor(favoriteColorData)
             },
-            dismissDialog = {viewModel.updateOpenDialog(false) })
+            dismissDialog = { viewModel.updateDialogOpen(false) })
     }
     // 全体をColumnで囲んでレイアウトを縦方向に
     Column(
@@ -170,7 +170,8 @@ fun ColorColumn(
         ColorSquare(
             backgroundColor = colorData.backgroundColorCode,
             isSelected = isSelected,
-            //クリック時にselectedSquareをColorSquareの親コンポーネントのColorColumnの引数squareIndexの値に変更する
+            //クリック時にselectedSquareをColorSquareの
+            //親コンポーネントのColorColumnの引数squareIndexの値に変更する
             //同様の処理をColorCodeText,ColorSaveBtnでも行う
             onSquareSelected = {
                 viewModel.changeSelectedSquare(squareIndex)
@@ -203,10 +204,9 @@ fun ColorColumn(
                 modifier = Modifier.weight(1f),
                 onClicked = {
                     viewModel.changeSelectedSquare(squareIndex)
-                    viewModel.updateOpenDialog(true) }
+                    viewModel.updateDialogOpen(true)
+                }
             )
-
-
         }
     }
 }
@@ -214,7 +214,7 @@ fun ColorColumn(
 @Composable
 //TODO Sliderの操作についての簡便化　数値ラベルの表示、+-ボタンの追加
 fun SeekBars(
-    selectedSquare: Int, viewModel: ColorChoiceViewModel, currentColorData:ColorDataForColorChoice
+    selectedSquare: Int, viewModel: ColorChoiceViewModel, currentColorData: ColorDataForColorChoice
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(), // 幅を親コンポーネントに合わせる
@@ -311,8 +311,7 @@ fun ColorCodeText(
             //textFieldにフォーカスしたらselectedSquareを変更する
             .onFocusChanged { focusState ->
                 if (focusState.isFocused) onSquareSelected()
-            }
-        ,
+            },
         colors = customTextFieldColors(),
         maxLines = 1
     )
