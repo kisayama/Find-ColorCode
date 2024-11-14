@@ -41,6 +41,8 @@ import com.example.findcolorcode.ui.theme.customTextFieldColors
 @ExperimentalMaterial3Api
 @Composable
 
+//ColorChoiceScreenで作成した色を保存する時に表示するダイアログ
+//ダイアログ内で名前とメモを設定しデータベースに追加する
 fun ColorSaveDialog(
     currentColorData: ColorDataForColorChoice,//ボタンごとのカラーデータ
     saveFavoriteColor: (FavoriteColorDataClass) -> Unit,
@@ -50,7 +52,7 @@ fun ColorSaveDialog(
     FindColorCodeTheme {
         val dialogTextStyle = TextStyle(fontSize = 14.sp)
 
-        //Roomのデータベース追加メソッドに引き渡すためにコンポーネント内で状態管理を行う
+        //データベース登録用のNameとMemoを保持する
         val saveName = remember { mutableStateOf("") }
         val saveMemo = remember { mutableStateOf("") }
 
