@@ -45,7 +45,7 @@ import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.R
 import com.example.findcolorcode.components.ShowToast
 import com.example.findcolorcode.components.FavoriteColorActionsMenu
-import com.example.findcolorcode.components.FavoriteColorScreenSortMenu
+import com.example.findcolorcode.components.FavoriteColorSortMenu
 import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.ui.theme.Dimensions
 import com.example.findcolorcode.ui.theme.customTextFieldColors
@@ -170,7 +170,7 @@ fun FavoriteColorList(
                     )
                     //ソートメニュー表示ロジック
                     if (isSortMenuOpen) {
-                        FavoriteColorScreenSortMenu(
+                        FavoriteColorSortMenu(
                             openSortMenuExpand = true,
                             //ソートを閉じる時の処理
                             closeSortMenuCallBack = { isSortMenuOpen = false },

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -20,11 +19,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.findcolorcode.data.favoriteColorScreenSortMenuList
 
+//FavoriteListScreenのソートボタンをクリックしたら表示するコンポーネント
+//並び替えの種類を設定する
 @Composable
- fun FavoriteColorScreenSortMenu(
-    //昇順または降順の選択をViewに渡すためのメソッド
+ fun FavoriteColorSortMenu(
+    //メニュー開閉フラグ
     openSortMenuExpand:Boolean,
+    //メニューを閉じるメソッド
     closeSortMenuCallBack:()-> Unit,
+    //昇順または降順の選択を呼び出しもとに渡すためのメソッド
     sortTypeCallBack:(Int) -> Unit,
     currentSortOrder:Int//現在のソート
  ){
