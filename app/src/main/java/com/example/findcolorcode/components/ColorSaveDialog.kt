@@ -153,6 +153,7 @@ fun ColorSaveDialog(
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
+                    //左側にキャンセルボタン、右側に決定ボタンを配置する
                     Row {
 
                         //キャンセルボタン
