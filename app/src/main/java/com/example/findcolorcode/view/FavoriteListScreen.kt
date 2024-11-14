@@ -44,7 +44,7 @@ import androidx.navigation.NavController
 import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.R
 import com.example.findcolorcode.components.ShowToast
-import com.example.findcolorcode.components.favoriteColorScreenMenu
+import com.example.findcolorcode.components.FavoriteColorActionsMenu
 import com.example.findcolorcode.components.FavoriteColorScreenSortMenu
 import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.ui.theme.Dimensions
@@ -159,7 +159,8 @@ fun FavoriteColorList(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxSize(),
-                    onClick = { isSortMenuOpen = true },/*TODO　並び替えメニューを表示*/
+                    //ソートメニューを表示する
+                    onClick = { isSortMenuOpen = true },
                 ) {
                     Icon(
                         modifier = Modifier.fillMaxSize(),
@@ -264,7 +265,7 @@ fun FavoriteColorList(
                                             tint = AppColors.Black
                                         )
                                         if (isMenuExpand && selectedColorItem == color) {
-                                            favoriteColorScreenMenu(
+                                            FavoriteColorActionsMenu(
                                                 colorItem = selectedColorItem!!,
                                                 viewModel = viewModel,
                                                 openMenuExpand = true,
