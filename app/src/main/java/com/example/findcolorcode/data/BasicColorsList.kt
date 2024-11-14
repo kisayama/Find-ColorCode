@@ -1,4 +1,6 @@
 package com.example.findcolorcode.data
+//BasicColorContents内に表示する色のリスト
+//1行につき４色　×　3行
 val basicColorsList1 = listOf(
     Pair("#FF0000", "赤"),    // Red
     Pair("#FFA500", "オレンジ"), // Orange
