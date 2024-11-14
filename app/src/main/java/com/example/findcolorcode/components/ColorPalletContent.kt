@@ -24,7 +24,8 @@ import androidx.compose.ui.unit.dp
 import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 
-//
+// 選択した色のカラーコードを基に、APIからカラーパレットを取得するView
+// ViewModelで処理した結果を受け取り、取得したカラーパレットを表示する
 @Composable
 fun SelectedColorPalletContent(
     modifier: Modifier,
@@ -38,7 +39,8 @@ fun SelectedColorPalletContent(
         //初期値のリスト
         listOf("#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF")
 
-    //viewModelのcolorPalletListをobserveAsStateで取得する
+    //viewModelのcolorPalletListをobserveAsStateで取得しUIに反映する
+    //APIからのレスポンスで取得したカラーコードを保持する
     val colorPalletList by viewModel.colorPalletList.observeAsState(initialColorPalletList)
 
     //selectedSquareに応じて使用するColorDataを決定する
@@ -63,35 +65,22 @@ fun SelectedColorPalletContent(
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            PalletColorSquare(
-                //colorPalletListの要素一つずつをcolorCodeとして渡す
-                colorCode = colorPalletList[0],
-                onPalletSquareSelected = palletSquareSelected
-            )
-            PalletColorSquare(
-                colorCode = colorPalletList[1],
-                onPalletSquareSelected = palletSquareSelected
-            )
-            PalletColorSquare(
-                colorCode = colorPalletList[2],
-                onPalletSquareSelected = palletSquareSelected
-            )
-            PalletColorSquare(
-                colorCode = colorPalletList[3],
-                onPalletSquareSelected = palletSquareSelected
-            )
-            PalletColorSquare(
-                colorCode = colorPalletList[4],
-                onPalletSquareSelected = palletSquareSelected
-            )
+            colorPalletList.forEach { colorCode ->
+                PalletColorSquare(
+                    colorCode = colorCode,
+                    onPalletSquareSelected = palletSquareSelected
+                )
+            }
         }
 
+        //API通信を行うトリガーボタン
         PalletCreateButton(
+            //ボタン押下時の処理
             onButtonClicked = {
-                //API通信を行う　ViewModel自身の動作でcolorPalletListを更新するのでここでは操作を行わない
                 //現在背景色に使用されている色をAPIに引き渡す
                 //念の為正しいHEXが入力されているか検証する
                 //パースできない値が入力されていない場合はトーストを表示する
+                //API通信を行う　ViewModel自身の動作でcolorPalletListを更新するのでここでは操作を行わない
                 val currentColorCode = currentColorData.backgroundColorCode
                 val colorCode = viewModel.convertToHexColorCode(currentColorCode)
                 if (colorCode != null) {
@@ -105,6 +94,7 @@ fun SelectedColorPalletContent(
     }
 }
 
+//API通信を行うトリガーボタン
 @Composable
 private fun PalletCreateButton(
     onButtonClicked: () -> Unit
@@ -138,11 +128,4 @@ private fun PalletColorSquare(
             .clickable { onPalletSquareSelected(colorCode) }
     )
 }
-
-@Preview
-@Composable
-fun PreviewPallet() {
-    PalletColorSquare(modifier = Modifier, colorCode = "#FFFFFF", onPalletSquareSelected = {})
-}
-
 
