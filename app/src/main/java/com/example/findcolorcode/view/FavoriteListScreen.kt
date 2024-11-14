@@ -51,6 +51,7 @@ import com.example.findcolorcode.ui.theme.Dimensions
 import com.example.findcolorcode.ui.theme.customTextFieldColors
 import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
 
+//保存した色を閲覧、色情報を変更するためのダイアログを呼び出すView
 @SuppressLint("RememberReturnType")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
