@@ -40,22 +40,23 @@ import com.example.findcolorcode.ui.theme.customTextFieldColors
 @ExperimentalMaterial3Api
 @Composable
 
+//色情報（名前、メモ）を変更するときに表示するダイアログ
 fun ColorUpdateDialog(
     currentColorData: FavoriteColorDataClass,//ボタンごとのカラーデータ
     updateFavoriteColor: (FavoriteColorDataClass) -> Unit,//データベースを変更するメソッド
     //viewModelのopenDialogプロパティをfalseに変更するメソッド
     dismissDialog: () -> Unit,
 ) {
-    //Roomのデータベース変更メソッドに引き渡すためにコンポーネント内で状態管理を行う
+    //データベース変更メソッドに引き渡すためにcurrentColorDataの名前とメモを保持する
     val saveName = remember { mutableStateOf(currentColorData.colorName) }
     val saveMemo = remember { mutableStateOf(currentColorData.colorMemo) }
 
     FindColorCodeTheme {
         val dialogTextStyle = TextStyle(fontSize = 14.sp)
-        //Roomのデータベース追加メソッドに引き渡すだけなのでコンポーネント内で状態管理を行う
         BasicAlertDialog(
             modifier = Modifier.wrapContentWidth(),
-            onDismissRequest = { dismissDialog() }, // ダイアログが閉じられたときに、フラグの更新処理を実行する
+            // ダイアログが閉じられたときに、フラグの更新処理を実行する
+            onDismissRequest = { dismissDialog() },
         ) {
             Surface(
                 color = Color.White,//ダイアログの背景の色
@@ -75,7 +76,6 @@ fun ColorUpdateDialog(
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
