@@ -33,7 +33,6 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.findcolorcode.R
 import com.example.findcolorcode.components.BasicColorContents
 import com.example.findcolorcode.components.SelectedColorPalletContent
@@ -50,7 +49,7 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ColorChoiceScreen(navController: NavController, viewModel: ColorChoiceViewModel) {
+fun ColorChoiceScreen(viewModel: ColorChoiceViewModel) {
 
     //==squareIndex==
     //選択されたsquareのインデックスを取得

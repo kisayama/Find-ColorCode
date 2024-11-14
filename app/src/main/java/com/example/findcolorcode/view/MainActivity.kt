@@ -3,14 +3,12 @@ package com.example.findcolorcode.view
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -18,14 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.findcolorcode.components.BottomBar
 import com.example.findcolorcode.components.BottomBarTab
-import com.example.findcolorcode.components.ShowToast
 import com.example.findcolorcode.data.ColorDatabase
 import com.example.findcolorcode.repository.ColorSchemeRepositoryImpl
 import com.example.findcolorcode.repository.FavoriteColorRepositoryImpl
@@ -106,7 +102,6 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel, color
                 //RouteはenumClassのBottomBarTabから取得
                 composable(BottomBarTab.ColorChoice.route) {
                     ColorChoiceScreen(
-                        navController,
                         ColorChoiceViewModel(
                             apiRepository = ColorSchemeRepositoryImpl(),
                             favoriteColorRepository = FavoriteColorRepositoryImpl(colorDao =colorDatabase.colorDao())
