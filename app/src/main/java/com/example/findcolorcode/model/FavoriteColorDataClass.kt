@@ -9,6 +9,7 @@ import java.util.UUID
 @Entity(tableName = "FavoriteColorDataClass")//エンティティとして指定
 data class FavoriteColorDataClass(
     @PrimaryKey val id:String = UUID.randomUUID().toString(),
+    //backgroundColorCode
     val colorCode:String,
     var colorName:String,
     var colorMemo: String,
