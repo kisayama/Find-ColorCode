@@ -1,5 +1,6 @@
 package com.example.findcolorcode.view
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -35,12 +36,6 @@ import com.squareup.moshi.Moshi
 //エントリーポイント
 class MainActivity : ComponentActivity(){
 
-    //Moshiをコンパニオンオブジェクトにする TODO　消す予定
-    companion object {
-        lateinit var moshi: Moshi
-            private set
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -64,9 +59,19 @@ class MainActivity : ComponentActivity(){
         }
     }
 
-
 @Composable
 fun MainScreen(navController: NavHostController, viewModel: MainViewModel, colorDatabase: ColorDatabase) {
+
+    val colorChoiceViewModel = remember {
+        ColorChoiceViewModel(
+            apiRepository = ColorSchemeRepositoryImpl(),
+            favoriteColorRepository = FavoriteColorRepositoryImpl(colorDao = colorDatabase.colorDao())
+        )
+    }
+
+    val favoriteScreenViewModel = FavoriteScreenViewModel(
+        favoriteColorRepository = FavoriteColorRepositoryImpl(colorDao = colorDatabase.colorDao()),
+    )
     //初期選択アイテムを指定する
     var selectedItem by remember { mutableStateOf(0) }
     Scaffold(
@@ -100,20 +105,17 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel, color
 
                 //MainActivityに表示するのは以下のフラグメント
                 //RouteはenumClassのBottomBarTabから取得
-                composable(BottomBarTab.ColorChoice.route) {
+                composable("${BottomBarTab.ColorChoice.route}?direction={direction}&colorCode={colorCode}"
+                    ) {
                     ColorChoiceScreen(
-                        ColorChoiceViewModel(
-                            apiRepository = ColorSchemeRepositoryImpl(),
-                            favoriteColorRepository = FavoriteColorRepositoryImpl(colorDao =colorDatabase.colorDao())
-                        )
+                        navController,
+                        colorChoiceViewModel
                     )
                 }
                 composable(BottomBarTab.FavoriteList.route) {
                     FavoriteColorList(
                         navController,
-                        FavoriteScreenViewModel(
-                            favoriteColorRepository = FavoriteColorRepositoryImpl(colorDao = colorDatabase.colorDao()),
-                        )
+                        favoriteScreenViewModel
                     )
                 }
             }
