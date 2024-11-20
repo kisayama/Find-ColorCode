@@ -1,12 +1,10 @@
 package com.example.findcolorcode.components
 
-import android.annotation.SuppressLint
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavDestination.Companion.createRoute
 import androidx.navigation.NavHostController
 import com.example.findcolorcode.data.favoriteColorActionsMenuList
 import com.example.findcolorcode.model.FavoriteColorDataClass
@@ -66,11 +64,12 @@ import java.net.URLEncoder
              }
          }
      }
-@SuppressLint("RestrictedApi")
 fun moveToColorChoice(navController:NavHostController, direction:String, colorCode:String){
+    //色コードに含まれる＃がURLに正しく変換できないからエンコードする
     val encodedColorCode = URLEncoder.encode(colorCode,"UTF-8")
+    //URL形式で出力し指定したViewに遷移する（移動先：route colorChoice（ColorChoiceScreen））
+    //directionとencodedColorCodeパラメータを引き渡す
      navController.navigate("colorChoice?direction=${direction}&colorCode=${encodedColorCode}")
-    val route = createRoute("colorChoice?direction=${direction}&colorCode=${encodedColorCode}")
 }
 
 

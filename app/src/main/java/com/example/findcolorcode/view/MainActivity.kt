@@ -1,6 +1,5 @@
 package com.example.findcolorcode.view
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,7 +29,6 @@ import com.example.findcolorcode.ui.theme.FindColorCodeTheme
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
 import com.example.findcolorcode.viewmodel.MainViewModel
-import com.squareup.moshi.Moshi
 
 
 //エントリーポイント
@@ -41,7 +39,7 @@ class MainActivity : ComponentActivity(){
         setContent {
             FindColorCodeTheme {
                 //ViewModelのインスタンスを取得
-                val viewModel: MainViewModel = MainViewModel()
+                val viewModel = MainViewModel()
 
                 //navController（ナビゲーションの操作を管理する）を取得
                 val navController:NavHostController = rememberNavController()
