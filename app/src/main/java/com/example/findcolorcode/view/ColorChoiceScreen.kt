@@ -1,5 +1,6 @@
 package com.example.findcolorcode.view
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,6 +23,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -33,6 +35,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.findcolorcode.R
 import com.example.findcolorcode.components.BasicColorContents
 import com.example.findcolorcode.components.SelectedColorPalletContent
@@ -48,8 +51,10 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 //スライダーを調節することによって色を作成、保存するためのダイアログを呼び出すView
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ColorChoiceScreen(viewModel: ColorChoiceViewModel) {
-
+fun ColorChoiceScreen(
+    navController: NavController,
+    viewModel: ColorChoiceViewModel
+) {
     //==squareIndex==
     //選択されたsquareのインデックスを取得
     val selectedSquare by viewModel.selectedSquare.observeAsState(1)
@@ -80,6 +85,29 @@ fun ColorChoiceScreen(viewModel: ColorChoiceViewModel) {
     val square2ColorData =
         ColorDataForColorChoice(square2ColorCode, square2BackgroundColorCode, red2, green2, blue2)
     //========
+
+    //初回のみ実行する
+    LaunchedEffect(navController.currentBackStackEntry) {
+        //ColorFavoriteScreenから遷移した時にnavHostに保存されてるデータを取得する
+        val receiveDirection =
+            navController.currentBackStackEntry?.arguments?.getString("direction") ?: "left"
+        val receiveColorCode =
+            navController.currentBackStackEntry?.arguments?.getString("colorCode") ?: "#FFFFFF"
+        if (receiveDirection == "left"&&receiveColorCode == "#FFFFFF") {Log.d("RECEIVE", "exceptionalData")}
+        else{
+            // 必要な処理
+            //receiveSquareIndexを宣言する(selectedSquareのルールに従い左のSquareに1、右に2)
+            val receiveSquareIndex = if (receiveDirection == "left") 1 else 2
+            //選択Squareを変更する
+            viewModel.changeSelectedSquare(receiveSquareIndex)
+            //BackgroundColorCodeを変更する（Squareの背景色を変更）
+            viewModel.updateBackgroundColorCode(receiveSquareIndex, receiveColorCode)
+            //ColorCodeを表示しているTextFieldの文字を変更する
+            viewModel.updateColorCode(receiveSquareIndex, receiveColorCode)
+            //シークバーの値を変更する
+            viewModel.convertToRGB(selectedSquare)
+        }
+    }
 
     //トーストメッセージを取得
     val toastMessage by viewModel.toastMessage.observeAsState("")
@@ -283,6 +311,8 @@ fun ColorSquare(
     isSelected: Boolean,
     onSquareSelected: () -> Unit
 ) {
+    Log.d("RECEIVE","COLORsquare COmposed")
+    Log.d("RECEIVE","${backgroundColor}ColorSquareComposedColor")
     val borderColor = if (isSelected) Color.Black else Color.Gray
     Box(
         modifier = Modifier
