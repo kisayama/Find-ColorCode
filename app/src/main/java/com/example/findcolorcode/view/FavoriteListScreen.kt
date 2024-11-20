@@ -2,6 +2,7 @@ package com.example.findcolorcode.view
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -52,13 +55,13 @@ import com.example.findcolorcode.ui.theme.customTextFieldColors
 import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
 
 //保存した色を閲覧、色情報を変更するためのダイアログを呼び出すView
-@SuppressLint("RememberReturnType")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteColorList(
     navController: NavHostController,
     viewModel: FavoriteScreenViewModel
 ) {
+    val context = LocalContext.current
     // filter後のリストを取得する　filterTextが空ならデータベースの全てのデータ
     val displayColors by viewModel.filteredColors.observeAsState(emptyList())
 
@@ -211,7 +214,15 @@ fun FavoriteColorList(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(top = 13.dp, bottom = 8.dp, start = 10.dp, end = 10.dp),
+                            .padding(top = 13.dp, bottom = 8.dp, start = 10.dp, end = 10.dp)
+                            .pointerInput(Unit){
+                                detectTapGestures (
+                                    //長押ししたらクリップボードにカラーコードをコピーする
+                                    onLongPress = {//クリップボードにカラーコードをコピー
+                                        viewModel.copyToClipBoard(context, color.colorCode)
+                                    }
+                                )
+                            },
                         verticalArrangement = Arrangement.spacedBy(4.dp) // Box等のRowとカラーコード、日付Rowの間にスペース
                     ) {
                         /*TODO 本当はROW内に２Column　カラーボックスとカラーコード　名前、メモ、日付　のに列を１Rowとして表示したかったけど
