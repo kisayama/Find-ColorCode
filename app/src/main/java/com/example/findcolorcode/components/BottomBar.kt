@@ -1,5 +1,6 @@
 package com.example.findcolorcode.components
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -16,7 +17,7 @@ fun BottomBar(
     navController: NavController,
     selectedItem: Int,
     onItemSelected: (Int) -> Unit) {
-    NavigationBar {
+    NavigationBar (modifier = Modifier.height(80.dp)){
         //表示項目をenumClassで列挙する
         BottomBarTab.entries.forEachIndexed { index, item ->
             NavigationBarItem(
