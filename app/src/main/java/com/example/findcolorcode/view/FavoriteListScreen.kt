@@ -99,7 +99,9 @@ fun FavoriteColorList(
             when (currentSortOrder) {
                 0 -> compareByDescending { it.editDateTime }
                 1 -> compareBy { it.editDateTime }
-                else -> {compareByDescending { it.editDateTime } }
+                else -> {
+                    compareByDescending { it.editDateTime }
+                }
             }
         displayColors.sortedWith(comparator)
     }
@@ -215,8 +217,8 @@ fun FavoriteColorList(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(top = 13.dp, bottom = 8.dp, start = 10.dp, end = 10.dp)
-                            .pointerInput(Unit){
-                                detectTapGestures (
+                            .pointerInput(Unit) {
+                                detectTapGestures(
                                     //長押ししたらクリップボードにカラーコードをコピーする
                                     onLongPress = {//クリップボードにカラーコードをコピー
                                         viewModel.copyToClipBoard(context, color.colorCode)
