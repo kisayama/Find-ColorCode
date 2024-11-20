@@ -40,12 +40,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.R
-import com.example.findcolorcode.components.ShowToast
 import com.example.findcolorcode.components.FavoriteColorActionsMenu
 import com.example.findcolorcode.components.FavoriteColorSortMenu
+import com.example.findcolorcode.components.ShowToast
 import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.ui.theme.Dimensions
 import com.example.findcolorcode.ui.theme.customTextFieldColors
@@ -56,7 +56,7 @@ import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteColorList(
-    navController: NavController,
+    navController: NavHostController,
     viewModel: FavoriteScreenViewModel
 ) {
     // filter後のリストを取得する　filterTextが空ならデータベースの全てのデータ
@@ -267,6 +267,7 @@ fun FavoriteColorList(
                                         )
                                         if (isMenuExpand && selectedColorItem == color) {
                                             FavoriteColorActionsMenu(
+                                                navController = navController,
                                                 colorItem = selectedColorItem!!,
                                                 viewModel = viewModel,
                                                 openMenuExpand = true,
