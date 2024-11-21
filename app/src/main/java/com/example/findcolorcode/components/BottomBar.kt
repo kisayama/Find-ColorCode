@@ -15,17 +15,17 @@ import androidx.navigation.NavController
 //selectedItemは選択中のタブのインデックスを示す
 fun BottomBar(
     navController: NavController,
-    selectedItem: Int,
-    onItemSelected: (Int) -> Unit) {
-    NavigationBar (modifier = Modifier.height(80.dp)){
+    selectedItem: Int
+) {
+    NavigationBar(modifier = Modifier.height(80.dp)) {
         //表示項目をenumClassで列挙する
         BottomBarTab.entries.forEachIndexed { index, item ->
             NavigationBarItem(
                 //タブが選択されているかを判定
+                //trueの時自動でバー上に強調表示される
                 selected = selectedItem == index,
                 //クリック時の動作を定義
                 onClick = {
-                    onItemSelected(index)//indexを呼び出し元コンポーネントに渡す
                     navController.navigate(item.route)
                 },
                 //Iconとlabelを指定
