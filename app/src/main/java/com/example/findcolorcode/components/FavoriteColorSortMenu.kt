@@ -38,8 +38,10 @@ import com.example.findcolorcode.data.favoriteColorScreenSortMenuList
          favoriteColorScreenSortMenuList.forEachIndexed{index, menu ->
              DropdownMenuItem(
                  text = {
-                     Row(verticalAlignment = Alignment.CenterVertically,
-                         horizontalArrangement = Arrangement.End) {
+                     Row(
+                         verticalAlignment = Alignment.CenterVertically,
+                         horizontalArrangement = Arrangement.End
+                     ) {
 
                          //現在選択中のメニューの丸は青、そうでなければ透明
                              Box(
