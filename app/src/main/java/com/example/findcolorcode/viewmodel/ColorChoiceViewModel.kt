@@ -108,21 +108,34 @@ class ColorChoiceViewModel(
     }
 
     //selectedSquare別のシークバー3種類の値を取得する
-    fun setSquareRGB(selectedSquare: Int, rgbColorType: String, value: Int) {
+    fun setSquareRGB(selectedSquare: Int,
+                     rgbColorType: String,
+                     value: Int = 1,
+                     isAdjustment: Boolean = false) {
+        //isAdjustmentがtrueなら増減値が引き渡される(マイナスの時は負の値)
+        val updateValue :(Int) -> (Int) = { currentValue ->
+            if(isAdjustment){
+                (currentValue + value).coerceIn(0,255)
+        }else {
+            //falseならvalueにはRGB値自体が引き渡される
+            value
+        }
+
+        }
         when (selectedSquare) {
             1 -> {
                 when (rgbColorType) {
-                    "red" -> red1.value = value
-                    "green" -> green1.value = value
-                    "blue" -> blue1.value = value
+                    "red" -> red1.value = red1.value?.let { updateValue(it) }
+                    "green" -> green1.value = green1.value?.let { updateValue(it) }
+                    "blue" -> blue1.value = blue1.value?.let { updateValue(it) }
                 }
             }
 
             2 -> {
                 when (rgbColorType) {
-                    "red" -> red2.value = value
-                    "green" -> green2.value = value
-                    "blue" -> blue2.value = value
+                    "red" -> red2.value = red2.value?.let { updateValue(it) }
+                    "green" -> green2.value = green2.value?.let { updateValue(it) }
+                    "blue" -> blue2.value = blue2.value?.let { updateValue(it) }
                 }
             }
         }
