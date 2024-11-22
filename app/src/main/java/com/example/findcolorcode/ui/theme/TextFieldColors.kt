@@ -1,10 +1,8 @@
 package com.example.findcolorcode.ui.theme
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import com.example.app.ui.theme.AppColors
 
 
