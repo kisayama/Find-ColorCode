@@ -9,3 +9,7 @@ val favoriteColorActionsMenuList = listOf(
 val favoriteColorScreenSortMenuList = listOf(
     "日付:新しい順","日付：古い順"
 )
+//色調整ボタンの変更単位を定義したメニューリスト
+val adjustValueChangeMenuList = listOf(
+    1,5,10,50,100
+)
