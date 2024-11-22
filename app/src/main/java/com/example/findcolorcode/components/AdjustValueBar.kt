@@ -23,7 +23,6 @@ fun AdjustValueBar(
     adjustValue: (Int) -> Unit
 ) {
     var value by remember { mutableIntStateOf(5) }
-    var isAdjustValueChangeMenuOpen by remember { mutableStateOf(false) }
 
     //マイナスボタン
     Row(
@@ -41,8 +40,6 @@ fun AdjustValueBar(
 
         //調整メニュー
         AdjustValueChangeMenu(
-            openMenuExpand = true,
-            closeMenuExpand = { isAdjustValueChangeMenuOpen = false },
             value = value,
             updateValue = {newValue -> value = newValue}
         )
