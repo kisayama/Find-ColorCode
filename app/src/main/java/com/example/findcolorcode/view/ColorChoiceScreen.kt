@@ -37,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.findcolorcode.R
+import com.example.findcolorcode.components.AdjustValueBar
 import com.example.findcolorcode.components.BasicColorContents
 import com.example.findcolorcode.components.SelectedColorPalletContent
 import com.example.findcolorcode.components.ShowToast
@@ -93,8 +94,9 @@ fun ColorChoiceScreen(
             navController.currentBackStackEntry?.arguments?.getString("direction") ?: "left"
         val receiveColorCode =
             navController.currentBackStackEntry?.arguments?.getString("colorCode") ?: "#FFFFFF"
-        if (receiveDirection == "left"&&receiveColorCode == "#FFFFFF") {Log.d("RECEIVE", "exceptionalData")}
-        else{
+        if (receiveDirection == "left" && receiveColorCode == "#FFFFFF") {
+            Log.d("RECEIVE", "exceptionalData")
+        } else {
             // 必要な処理
             //receiveSquareIndexを宣言する(selectedSquareのルールに従い左のSquareに1、右に2)
             val receiveSquareIndex = if (receiveDirection == "left") 1 else 2
@@ -176,7 +178,22 @@ fun ColorChoiceScreen(
             selectedSquare = selectedSquare,
             viewModel = viewModel,
         )
+        //±ボタンと調節単位変更用ボタンを表示する
+        //TODO シークバー選択ボタンを追加し現在選択中のシークバーを管理する
+        AdjustValueBar(adjustValue = { value ->
+            viewModel.setSquareRGB(
+                selectedSquare = selectedSquare,
+                rgbColorType = {},//TODO ここを指定
+                value = value,
+                isAdjustment = true
+            )
+        }
+        )
+
+        //基本の色、カラーパレットをまとめたタブ
         ColorPalletTab(viewModel, selectedSquare, square1ColorData, square2ColorData)
+
+        //メッセージを変更するとトーストが表示される
         ShowToast(toastMessage = toastMessage, resetMessage = { viewModel.resetToast() })
     }
 
@@ -311,8 +328,8 @@ fun ColorSquare(
     isSelected: Boolean,
     onSquareSelected: () -> Unit
 ) {
-    Log.d("RECEIVE","COLORsquare COmposed")
-    Log.d("RECEIVE","${backgroundColor}ColorSquareComposedColor")
+    Log.d("RECEIVE", "COLORsquare COmposed")
+    Log.d("RECEIVE", "${backgroundColor}ColorSquareComposedColor")
     val borderColor = if (isSelected) Color.Black else Color.Gray
     Box(
         modifier = Modifier
