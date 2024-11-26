@@ -83,6 +83,7 @@ fun SelectedColorPalletContent(
                 val currentColorCode = currentColorData.backgroundColorCode
                 val colorCode = viewModel.convertToHexColorCode(currentColorCode)
                 if (colorCode != null) {
+                    viewModel.updateToastMessage("カラーパレット作成中...")
                     viewModel.fetchColorScheme(colorCode)
                 } else {
                     viewModel.updateToastMessage("正しい色を入力してください。（例: #FFFFFF または whiteなど）")
