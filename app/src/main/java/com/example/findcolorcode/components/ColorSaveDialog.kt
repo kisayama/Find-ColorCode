@@ -50,7 +50,7 @@ fun ColorSaveDialog(
     dismissDialog: () -> Unit,
 ) {
     FindColorCodeTheme {
-        val dialogTextStyle = TextStyle(fontSize = 14.sp)
+        val dialogTextStyle = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize)
 
         //データベース登録用のNameとMemoを保持する
         val saveName = remember { mutableStateOf("") }
@@ -112,7 +112,7 @@ fun ColorSaveDialog(
                                     .border(3.dp, AppColors.gainsboro)
                                     .padding(8.dp),
                                 text = currentColorData.backgroundColorCode,
-                                style = TextStyle(fontSize = 16.sp)
+                                style = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize)
                             )
                             Spacer(modifier = Modifier.height(10.dp))
                             //色の名前入力フォーム
