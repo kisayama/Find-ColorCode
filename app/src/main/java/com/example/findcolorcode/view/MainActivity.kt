@@ -11,7 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -95,6 +101,8 @@ fun MainScreen(
     ) { padding ->
         //画面をタッチしたらキーボードを非表示にする
         val keyboardController = LocalSoftwareKeyboardController.current
+        //画面をタッチした時にフォーカスを解除する
+        val focusManager = LocalFocusManager.current
         Surface(
             //ポインタの入力を処理する
             modifier = Modifier.pointerInput(Unit) {
@@ -102,9 +110,20 @@ fun MainScreen(
                 detectTapGestures(onTap = {
                     //キーボードを隠す
                     keyboardController?.hide()
+                    //フォーカスを解除する
+                    focusManager.clearFocus()
                 }
                 )
-            },
+            }
+                .onKeyEvent { keyEvent ->
+                    //KeyBoardを離した時かつそのキーボードがエンターキーの時に
+                    if (keyEvent.type == KeyEventType.KeyUp && keyEvent.key == Key.Enter){
+                        focusManager.clearFocus()
+                        true
+                    }else{
+                        false
+                    }
+                },
             color = Color.Transparent
         ) {
             NavHost( //ルートに基づいて他のコンポーサブルのデスティネーション（フラグメント）を表示する
