@@ -26,6 +26,10 @@ class ColorChoiceViewModel(
     private val _selectedSquare = MutableLiveData(1)
     val selectedSquare: LiveData<Int> = _selectedSquare
 
+    //直近で操作したシークバーの色 初期値はred (red,blue,green)
+    private val _currentRGBSeekBar = MutableLiveData("red")
+    val currentRGBSeekBar: LiveData<String> = _currentRGBSeekBar
+
     //===colorCodeプロパティ====
     //・テキストフィールドに表示するカラーコード
     //・ユーザーがテキストフィールドに入力した文字列
@@ -88,6 +92,13 @@ class ColorChoiceViewModel(
     //選択squareを変更する
     fun changeSelectedSquare(newNumber: Int) {
         _selectedSquare.value = newNumber
+        //操作スクエアを変更したら操作シークバーを赤色に変更する
+        changeCurrentRGBSeekBar("red")
+    }
+
+    //選択シークバーを変更する
+    fun changeCurrentRGBSeekBar(rgb: String) {
+        _currentRGBSeekBar.value = rgb
     }
 
     //テキストフィールド表示用のカラーコードを変更するメソッド
@@ -107,39 +118,52 @@ class ColorChoiceViewModel(
         }
     }
 
-    //selectedSquare別のシークバー3種類の値を取得する
-    fun setSquareRGB(selectedSquare: Int,
-                     rgbColorType: String,
-                     value: Int = 1,
-                     isAdjustment: Boolean = false) {
-        //isAdjustmentがtrueなら増減値が引き渡される(マイナスの時は負の値)
-        val updateValue :(Int) -> (Int) = { currentValue ->
-            if(isAdjustment){
-                (currentValue + value).coerceIn(0,255)
-        }else {
-            //falseならvalueにはRGB値自体が引き渡される
-            value
-        }
-
-        }
-        when (selectedSquare) {
-            1 -> {
-                when (rgbColorType) {
-                    "red" -> red1.value = red1.value?.let { updateValue(it) }
-                    "green" -> green1.value = green1.value?.let { updateValue(it) }
-                    "blue" -> blue1.value = blue1.value?.let { updateValue(it) }
-                }
-            }
-
-            2 -> {
-                when (rgbColorType) {
-                    "red" -> red2.value = red2.value?.let { updateValue(it) }
-                    "green" -> green2.value = green2.value?.let { updateValue(it) }
-                    "blue" -> blue2.value = blue2.value?.let { updateValue(it) }
-                }
-            }
-        }
+    fun validAndUpdateRGBValue(
+        inputValue: String?,
+        selectedSquare: Int,
+        rgbColorType: String,
+        //falseなら値引き渡し,trueなら増減値を引き渡し
+        isAdjustment: Boolean){
+        val value  = inputValue?.toIntOrNull()?:0
+        currentRGBValueChange(selectedSquare,rgbColorType, value,isAdjustment)
     }
+
+    //selectedSquare別のシークバー3種類の値を更新する
+    fun currentRGBValueChange(
+        selectedSquare: Int,
+        rgbColorType: String,
+        value: Int,
+        isAdjustment: Boolean = false) {
+            //isAdjustmentがtrueなら増減値が引き渡される(マイナスの時は負の値)
+            val updateValue: (Int) -> (Int) = { currentValue ->
+                if (isAdjustment) {
+                    (currentValue + value).coerceIn(0, 255)
+                } else {
+                    val updateValue = value.coerceIn(0, 255)
+                    //falseならvalueにはRGB値自体が引き渡される
+                    updateValue
+                }
+            }
+            when (selectedSquare) {
+                1 -> {
+                    when (rgbColorType) {
+                        "red" -> red1.value = red1.value?.let { updateValue(it) }
+                        "green" -> green1.value = green1.value?.let { updateValue(it) }
+                        "blue" -> blue1.value = blue1.value?.let { updateValue(it) }
+                    }
+                }
+
+                2 -> {
+                    when (rgbColorType) {
+                        "red" -> red2.value = red2.value?.let { updateValue(it) }
+                        "green" -> green2.value = green2.value?.let { updateValue(it) }
+                        "blue" -> blue2.value = blue2.value?.let { updateValue(it) }
+                    }
+                }
+            }
+            //rgb値からカラーコードを更新する
+            convertToColorCode(selectedSquare)
+        }
 
     //色名→Hex、Hex検証
     //ユーザーが入力した色名をHexに変換する
