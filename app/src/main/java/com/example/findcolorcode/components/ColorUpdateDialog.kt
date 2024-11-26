@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.ui.theme.FindColorCodeTheme
@@ -52,7 +51,7 @@ fun ColorUpdateDialog(
     val saveMemo = remember { mutableStateOf(currentColorData.colorMemo) }
 
     FindColorCodeTheme {
-        val dialogTextStyle = TextStyle(fontSize = 14.sp)
+        val dialogTextStyle = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize)
         BasicAlertDialog(
             modifier = Modifier.wrapContentWidth(),
             // ダイアログが閉じられたときに、フラグの更新処理を実行する
@@ -104,7 +103,7 @@ fun ColorUpdateDialog(
                                     .border(3.dp, AppColors.gainsboro)
                                     .padding(8.dp),
                                 text = currentColorData.colorCode,
-                                style = TextStyle(fontSize = 16.sp)
+                                style = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize)
                             )
                             Spacer(modifier = Modifier.height(10.dp))
                             //色の名前入力フォーム
