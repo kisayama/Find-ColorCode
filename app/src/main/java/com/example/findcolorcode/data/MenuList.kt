@@ -11,5 +11,5 @@ val favoriteColorScreenSortMenuList = listOf(
 )
 //色調整ボタンの変更単位を定義したメニューリスト
 val adjustValueChangeMenuList = listOf(
-    1,5,10,50,100
+    1,50,100,255
 )
