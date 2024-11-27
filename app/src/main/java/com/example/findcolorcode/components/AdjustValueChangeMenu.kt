@@ -1,6 +1,5 @@
 package com.example.findcolorcode.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenuItem
@@ -40,7 +39,6 @@ fun AdjustValueChangeMenu(
     var isMenuOpen by remember { mutableStateOf(false) }
     //TextFieldの制限文字数
     val limit = 4
-    Log.d("AdjustValueChangeMenu", isMenuOpen.toString())
 
     ExposedDropdownMenuBox(
         modifier = modifier.wrapContentHeight(),
@@ -48,10 +46,8 @@ fun AdjustValueChangeMenu(
         //Menu開閉状態を変更する
         onExpandedChange = {
             isMenuOpen = !isMenuOpen
-            Log.d("AdjustValueChangeMenu", "onExpandChanged${isMenuOpen}")
         }
     ) {
-        Log.d("AdjustValueChangeMenu", isMenuOpen.toString())
         TextField(
             modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable),
             value = value?.toString() ?: "",
@@ -83,7 +79,6 @@ fun AdjustValueChangeMenu(
             //開閉状態をfalseに変更する
             onDismissRequest = { isMenuOpen = false }
         ) {
-            Log.d("AdjustValueChangeMenu", adjustValueChangeMenuList.toString())
             adjustValueChangeMenuList.forEach { menu ->
                 DropdownMenuItem(
                     text = { Text(menu.toString()) },
