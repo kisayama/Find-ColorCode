@@ -29,9 +29,9 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 fun SelectedColorPalletContent(
     modifier: Modifier,
     viewModel: ColorChoiceViewModel,
-    square1ColorData: ColorDataForColorChoice,
+    currentSquareIndex: Int,
     square2ColorData: ColorDataForColorChoice,
-    selectedSquare: Int
+    square1ColorData: ColorDataForColorChoice
 ) {
 
     val initialColorPalletList =
@@ -42,17 +42,17 @@ fun SelectedColorPalletContent(
     //APIからのレスポンスで取得したカラーコードを保持する
     val colorPalletList by viewModel.colorPalletList.observeAsState(initialColorPalletList)
 
-    //selectedSquareに応じて使用するColorDataを決定する
-    val currentColorData = if (1 == selectedSquare) square1ColorData else square2ColorData
+    //currentSquareIndexに応じて使用するColorDataを決定する
+    val currentColorData = if (1 == currentSquareIndex) square1ColorData else square2ColorData
 
     //Pallet選択時の処理
     val palletSquareSelected: (String) -> Unit = { palletColorCode ->
         //TextFieldの表示を変更
-        viewModel.updateColorCode(selectedSquare, palletColorCode)
+        viewModel.updateColorCode(currentSquareIndex, palletColorCode)
         //squareの背景色を変更
-        viewModel.updateBackgroundColorCode(selectedSquare, palletColorCode)
+        viewModel.updateBackgroundColorCode(currentSquareIndex, palletColorCode)
         //RGB値を変更
-        viewModel.convertToRGB(selectedSquare)
+        viewModel.convertToRGB(currentSquareIndex)
     }
     Column(
         modifier = modifier
