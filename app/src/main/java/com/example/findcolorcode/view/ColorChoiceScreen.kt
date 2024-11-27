@@ -437,9 +437,6 @@ fun RGBSlier(
                 .focusable(),
             value = currentSquareRGB.toString(),
             onValueChange = { newValue:String? ->
-                /*viewModel.validAndUpdateRGBValue(
-                    newValue,currentSquareIndex, colorName,false
-                )*/
                     //選択しているスライダーの色を変更しボタンの色を変更する
                     viewModel.changeCurrentRGBSeekBar(sliderColorName)
                     value = newValue
