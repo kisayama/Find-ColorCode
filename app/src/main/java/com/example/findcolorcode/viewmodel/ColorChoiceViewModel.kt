@@ -23,12 +23,12 @@ class ColorChoiceViewModel(
     //==プロパティ==
 
     //選択squareのインデックス
-    private val _selectedSquare = MutableLiveData(1)
-    val selectedSquare: LiveData<Int> = _selectedSquare
+    private val _currentSquareIndex = MutableLiveData(1)
+    val currentSquareIndex: LiveData<Int> = _currentSquareIndex
 
-    //直近で操作したシークバーの色 初期値はred (red,blue,green)
-    private val _currentRGBSeekBar = MutableLiveData("red")
-    val currentRGBSeekBar: LiveData<String> = _currentRGBSeekBar
+    //直近で操作したスライダーの色 初期値はred (red,blue,green)
+    private val _currentSliderColorName = MutableLiveData("red")
+    val currentSliderColorName: LiveData<String> = _currentSliderColorName
 
     //===colorCodeプロパティ====
     //・テキストフィールドに表示するカラーコード
@@ -52,13 +52,13 @@ class ColorChoiceViewModel(
     val square2BackgroundColorCode: LiveData<String> get() = _square2BackgroundColorCode
     //=====
 
-    //====シークバーのRGB値を保存する変数square1,square2====
+    //====スライダーのRGB値を保存する変数square1,square2====
     //rememberはデバイスの回転などのアクティビティの破棄をされると状態が保存されないことに注意
-    val red1 = MutableLiveData(255)//square1の各シークバーの値を保存する変数とその初期値
+    val red1 = MutableLiveData(255)//square1の各スライダーの値を保存する変数とその初期値
     val green1 = MutableLiveData(255)
     val blue1 = MutableLiveData(255)
 
-    val red2 = MutableLiveData(255)//square2の各シークバーの値を保存する変数とその初期値
+    val red2 = MutableLiveData(255)//square2の各スライダーの値を保存する変数とその初期値
     val green2 = MutableLiveData(255)
     val blue2 = MutableLiveData(255)
     //===================
@@ -90,15 +90,15 @@ class ColorChoiceViewModel(
     //==メソッド==
 
     //選択squareを変更する
-    fun changeSelectedSquare(newNumber: Int) {
-        _selectedSquare.value = newNumber
-        //操作スクエアを変更したら操作シークバーを赤色に変更する
+    fun changeCurrentSquareIndex(newNumber: Int) {
+        _currentSquareIndex.value = newNumber
+        //操作スクエアを変更したら操作スライダーを赤色に変更する
         changeCurrentRGBSeekBar("red")
     }
 
-    //選択シークバーを変更する
+    //選択スライダーを変更する
     fun changeCurrentRGBSeekBar(rgb: String) {
-        _currentRGBSeekBar.value = rgb
+        _currentSliderColorName.value = rgb
     }
 
     //テキストフィールド表示用のカラーコードを変更するメソッド
@@ -112,57 +112,73 @@ class ColorChoiceViewModel(
 
     //背景色のカラーコードを変更するメソッド
     fun updateBackgroundColorCode(squareIndex: Int, validColorCode: String) {
+        Log.d("ColorChoiceScreen","${squareIndex}validColorCode${validColorCode}")
         when (squareIndex) {
             1 -> _square1BackgroundColorCode.value = validColorCode
             2 -> _square2BackgroundColorCode.value = validColorCode
         }
     }
 
+    //現在選択しているRGB値を変更するために値の検査を行い
+    //メソッド内で上記変更メソッドを呼び出す
+    //ユーザーがRGB値をTextFieldに直接入力したときやボタンで調整を行った時に使用するメソッド
     fun validAndUpdateRGBValue(
         inputValue: String?,
-        selectedSquare: Int,
+        currentSquareIndex: Int,
         rgbColorType: String,
         //falseなら値引き渡し,trueなら増減値を引き渡し
-        isAdjustment: Boolean){
+        isAdjustment: Boolean= false
+    ){
         val value  = inputValue?.toIntOrNull()?:0
-        currentRGBValueChange(selectedSquare,rgbColorType, value,isAdjustment)
+        currentRGBValueChange(currentSquareIndex,rgbColorType, value,isAdjustment)
     }
-
-    //selectedSquare別のシークバー3種類の値を更新する
+    //currentSquareIndex別のスライダー3種類の値を更新する
     fun currentRGBValueChange(
-        selectedSquare: Int,
+        currentSquareIndex: Int,
         rgbColorType: String,
         value: Int,
-        isAdjustment: Boolean = false) {
-            //isAdjustmentがtrueなら増減値が引き渡される(マイナスの時は負の値)
-            val updateValue: (Int) -> (Int) = { currentValue ->
+        isAdjustment: Boolean = false
+    ) {
+        val updateValue: (Int) -> (Int) = { currentValue ->
                 if (isAdjustment) {
+                    //isAdjustmentがtrueなら増減値が渡される(マイナスの時は負の値)
                     (currentValue + value).coerceIn(0, 255)
                 } else {
                     val updateValue = value.coerceIn(0, 255)
-                    //falseならvalueにはRGB値自体が引き渡される
+                    //falseならvalueにはRGB値自体が渡される
                     updateValue
                 }
             }
-            when (selectedSquare) {
-                1 -> {
-                    when (rgbColorType) {
-                        "red" -> red1.value = red1.value?.let { updateValue(it) }
-                        "green" -> green1.value = green1.value?.let { updateValue(it) }
-                        "blue" -> blue1.value = blue1.value?.let { updateValue(it) }
+        when (currentSquareIndex) {
+            1 -> {
+                when (rgbColorType) {
+                    "red" -> {
+                        red1.value = red1.value?.let { updateValue(it) }
                     }
-                }
-
-                2 -> {
-                    when (rgbColorType) {
-                        "red" -> red2.value = red2.value?.let { updateValue(it) }
-                        "green" -> green2.value = green2.value?.let { updateValue(it) }
-                        "blue" -> blue2.value = blue2.value?.let { updateValue(it) }
+                    "green" -> {
+                        green1.value = green1.value?.let { updateValue(it) }
+                    }
+                    "blue" -> {
+                        blue1.value = blue1.value?.let { updateValue(it) }
                     }
                 }
             }
+            2 -> {
+                when (rgbColorType) {
+                    "red" -> {
+                        red2.value = red2.value?.let { updateValue(it) }
+                    }
+                    "green" -> {
+                        green2.value = green2.value?.let { updateValue(it) }
+                    }
+                    "blue" -> {
+                        blue2.value = blue2.value?.let { updateValue(it) }
+                    }
+                }
+            }
+        }
             //rgb値からカラーコードを更新する
-            convertToColorCode(selectedSquare)
+            convertToColorCode(currentSquareIndex)
         }
 
     //色名→Hex、Hex検証
@@ -189,10 +205,12 @@ class ColorChoiceViewModel(
 
     //====カラーコード→RGB=====
 
-    fun convertToRGB(selectedSquare: Int) {
-        when (selectedSquare) {
-            //selectedSquareに応じて現在のcolorCodeを取得しRGBを計算する
+    fun convertToRGB(currentSquareIndex: Int) {
+        when (currentSquareIndex) {
+            //currentSquareIndexに応じて現在のcolorCodeを取得しRGBを計算する
+
             1 -> {
+                Log.d("ColorChoiceScreen","convertToRGB square1ColorCode${square1ColorCode.value}")
                 val colorCode = _square1ColorCode.value
                 val (red, green, blue) = calConvertToRGB(colorCode.toString())
                 red1.value = red
@@ -201,6 +219,7 @@ class ColorChoiceViewModel(
             }
 
             2 -> {
+                Log.d("ColorChoiceScreen","convertToRGB square2ColorCode${square2ColorCode.value}")
                 val colorCode = _square2ColorCode.value
                 val (red, green, blue) = calConvertToRGB(colorCode.toString())
                 red2.value = red
@@ -208,6 +227,7 @@ class ColorChoiceViewModel(
                 blue2.value = blue
             }
         }
+        Log.d("ColorChoiceScreen","viewModelSideVewModel${this}")
     }
 
     //ColorCodeを受け取り10進数に変換しRGB値を返す
@@ -226,9 +246,9 @@ class ColorChoiceViewModel(
     //=============
 
     //====RGB→カラーコード=====
-    fun convertToColorCode(selectedSquare: Int) {
-        when (selectedSquare) {
-            //selectedSquareに応じて現在のcolorCodeを取得しRGBを計算する
+    private fun convertToColorCode(currentSquareIndex: Int) {
+        when (currentSquareIndex) {
+            //currentSquareIndexに応じて現在のcolorCodeを取得しRGBを計算する
             1 -> {
                 val red = red1.value ?: 0
                 val green = green1.value ?: 0
@@ -319,10 +339,10 @@ class ColorChoiceViewModel(
 //今後
 /*可読性を高めるためにDataClassにまとめてもいいかも。
  データクラス内のデータに一つでも変更があるとデータクラス内を全て再描写しないといけないから注意（RGBならいいかも）
- //square1の各シークバーの値とその初期値
+ //square1の各スライダーの値とその初期値
 val square1ColorDataValues = MutableLiveData(ColorRGBValues(255,255,255))
 
-//square2の各シークバーの値とその初期値
+//square2の各スライダーの値とその初期値
 val square2ColorDataValues = MutableLiveData(ColorRGBValues(255,255,255))
 
 data class ColorRGBValues(
