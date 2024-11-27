@@ -18,7 +18,6 @@ import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import com.example.findcolorcode.ui.theme.FindColorCodeTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -32,10 +31,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.model.FavoriteColorDataClass
+import com.example.findcolorcode.ui.theme.FindColorCodeTheme
 import com.example.findcolorcode.ui.theme.customTextFieldColors
 
 @ExperimentalMaterial3Api
