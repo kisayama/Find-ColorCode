@@ -23,7 +23,7 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 @Composable
 fun BasicColorContents(
     viewModel: ColorChoiceViewModel,
-    selectedSquare: Int,
+    currentSquareIndex: Int,
     colorList1: List<String>,
     colorList2: List<String>,
     colorList3: List<String>
@@ -42,11 +42,11 @@ fun BasicColorContents(
             //BasicSquareが選択された時に呼び出される処理
             val onBasicSquareSelected: (String) -> Unit = { selectedColorCode ->
                 //TextFieldの表示を変更
-                viewModel.updateColorCode(selectedSquare, selectedColorCode)
+                viewModel.updateColorCode(currentSquareIndex, selectedColorCode)
                 //squareの背景色を変更
-                viewModel.updateBackgroundColorCode(selectedSquare, selectedColorCode)
-                //シークバーのRGB値を変更
-                viewModel.convertToRGB(selectedSquare)
+                viewModel.updateBackgroundColorCode(currentSquareIndex, selectedColorCode)
+                //スライダーのRGB値を変更
+                viewModel.convertToRGB(currentSquareIndex)
             }
             //縦に3つ並べる
             BasicColorRow(colorList = colorList1, onBasicSquareSelected)
@@ -79,7 +79,6 @@ private fun BasicColorRow(
         }
     }
 }
-
 
 @Composable
 private fun BasicColorSquare(
