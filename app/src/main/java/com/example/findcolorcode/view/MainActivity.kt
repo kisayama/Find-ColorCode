@@ -89,7 +89,7 @@ fun MainScreen(
             BottomBar(
                 navController = navController,
                 //routeでselectedItemを判定する
-                selectedItem = when (currentDestination) {
+                currentBottomBarItem = when (currentDestination) {
                     "colorChoice" -> 0
                     "favoriteList" -> 1
                     else -> 0
