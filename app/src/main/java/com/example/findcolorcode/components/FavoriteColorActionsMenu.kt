@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
+import androidx.navigation.navOptions
 import com.example.findcolorcode.data.favoriteColorActionsMenuList
 import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
@@ -39,18 +40,19 @@ import java.net.URLEncoder
                      closeMenuExpand()//メニューを閉じる
                      when(index){
                          //ColorChoiceScreenに遷移する
-                         //同時に左フラグ、色コードを引き渡す
+                         //左フラグ、色コードを引き渡す
                          0 -> moveToColorChoice(
                              navController,
                              "left",
                              colorItem.colorCode
                          )
                          //ColorChoiceScreenに遷移する
-                         //同時に右フラグ、色コードを引き渡す
+                         //右フラグ、色コードを引き渡す
                          1 -> moveToColorChoice(
                              navController,
                              "right",
-                             colorItem.colorCode)
+                             colorItem.colorCode
+                         )
                          //クリップボードにカラーコードをコピー
                          2 -> viewModel.copyToClipBoard(context, colorItem.colorCode)
                          //色情報を変更するダイアログを表示
@@ -69,7 +71,10 @@ fun moveToColorChoice(navController:NavHostController, direction:String, colorCo
     val encodedColorCode = URLEncoder.encode(colorCode,"UTF-8")
     //URL形式で出力し指定したViewに遷移する（移動先：route colorChoice（ColorChoiceScreen））
     //directionとencodedColorCodeパラメータを引き渡す
-     navController.navigate("colorChoice?direction=${direction}&colorCode=${encodedColorCode}")
+     navController.navigate(
+         route = "colorChoice?direction=${direction}&colorCode=${encodedColorCode}",
+         navOptions = navOptions { popUpTo("favoriteList") {saveState = true} },
+    )
 }
 
 
