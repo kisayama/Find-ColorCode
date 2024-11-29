@@ -104,21 +104,16 @@ fun ColorChoiceScreen(
     //FavoriteListScreenでユーザーが選択した色をColorChoiceScreenのカラーパレット(左右いずれか)に表示する
     //View間の移動を行った初回のみ実行する
     LaunchedEffect(navController.currentBackStackEntry) {
-        Log.d("ColorChoiceScreen","LaunchedEffect発火${navController.currentBackStackEntry}")
-        Log.d("ColorChoiceScreen","square1ColorCode${square1ColorCode}")
-        Log.d("ColorChoiceScreen","square2ColorCode${square2ColorCode}")
-
         //ColorFavoriteScreenから遷移した時にnavHostに保存されてるデータを取得する
         val receiveDirection =
-            navController.currentBackStackEntry?.arguments?.getString("direction") ?: "left"
+            navController.currentBackStackEntry?.arguments?.getString("direction")
         val receiveColorCode =
-            navController.currentBackStackEntry?.arguments?.getString("colorCode") ?: "#FFFFFF"
+            navController.currentBackStackEntry?.arguments?.getString("colorCode")
 
-            Log.d("ColorChoiceScreen","処理開始${navController.currentBackStackEntry}")
-            Log.d("ColorChoiceScreen","処理開始${receiveDirection}")
-            Log.d("ColorChoiceScreen","処理開始${receiveColorCode}")
-            //ユーザーが選択したパレットに保存した色を表示する
-            //receiveSquareIndexを宣言する(ColorChoiceScreenの左のSquareに1、右に2が割り振られている)
+        if (receiveDirection == null || receiveColorCode == null) {
+        } else {
+            // 必要な処理
+            //receiveSquareIndexを宣言する(selectedSquareのルールに従い左のSquareに1、右に2)
             val receiveSquareIndex = if (receiveDirection == "left") 1 else 2
             //選択Squareを変更する
             viewModel.changeCurrentSquareIndex(receiveSquareIndex)
@@ -126,12 +121,9 @@ fun ColorChoiceScreen(
             viewModel.updateBackgroundColorCode(receiveSquareIndex, receiveColorCode)
             //ColorCodeを表示しているTextFieldの文字を変更する
             viewModel.updateColorCode(receiveSquareIndex, receiveColorCode)
-            //スライダーの値を変更する
+            //シークバーの値を変更する
             viewModel.convertToRGB(currentSquareIndex)
-            Log.d("ColorChoiceScreen","処理終了${navController.currentBackStackEntry}")
-            Log.d("ColorChoiceScreen","square1ColorCode${square1ColorCode}")
-            Log.d("ColorChoiceScreen","square2ColorCode${square2ColorCode}")
-            Log.d("ColorChoiceScreen","sqreenSideVewModel${viewModel}")
+        }
     }
 
     //トーストメッセージを取得
@@ -248,8 +240,12 @@ fun ColorColumn(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.Bottom
-        ) {
+                verticalAlignment = Alignment.Bottom
+            ) {
+
+            //ユーザーに表示するカラーコードテキスト
+            //ユーザーが値を入力するなどしてvalueが変更されるとcolorCodeの変更を行い、
+            // 検査後にバッグラウンドカラーコードとRGB値の更新を行う
             ColorCodeText(
                 modifier = Modifier.weight(2f),
                 colorCode = colorData.colorCode,
@@ -328,7 +324,6 @@ fun ColorSquare(
     isSelected: Boolean,
     onSquareSelected: () -> Unit
 ) {
-    Log.d("ColorChoiceScreen","colorSquare${isSelected}${backgroundColor}")
     val borderColor = if (isSelected) Color.Black else Color.Gray
     Box(
         modifier = Modifier
@@ -421,15 +416,9 @@ fun RGBSlier(
         Spacer(modifier = Modifier.width(3.dp))
 
         //BasicTextFieldとSliderで使用する
-        var value by remember { mutableStateOf<String?>(currentSquareRGB.toString()) }
-
-        //Sliderコンポーネント内でvalueが変更された時にviewModelで保持しているRGB値の更新を行う
-        LaunchedEffect(value) {
-            viewModel.validAndUpdateRGBValue(value,currentSquareIndex,sliderColorName, false)
-        }
+        var value by remember { mutableStateOf<String?>("255") }
 
 
-        //RGB値表記・編集用のTextField
         BasicTextField(
             modifier = Modifier
                 .width(50.dp)
@@ -448,20 +437,27 @@ fun RGBSlier(
             maxLines = 1,
             textStyle = TextStyle(
                 color = Color.Black,
-                fontSize = MaterialTheme.typography.bodyLarge.fontSize,// テキストのサイズ
+                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                 textAlign = TextAlign.Center
-                ),
-            decorationBox = { TextField ->
+            ),
+            decorationBox = { innerTextField ->
                 Box(
                     modifier = Modifier
                         .background(Color.White)
                         .border(1.dp, Color.Black, RectangleShape)
                         .padding(4.dp)
                 ) {
-                    TextField()
+                    innerTextField()
                 }
             }
         )
+
+        //valueが255の場合は無視して再コンポーネントを防ぐ
+        LaunchedEffect(value) {
+            if (value?.toIntOrNull() in 0..255 && value != "255") { // 初期値255は無視
+                viewModel.validAndUpdateRGBValue(value, currentSquareIndex, sliderColorName, false)
+            }
+        }
 
         Spacer(modifier = Modifier.width(3.dp))
 
