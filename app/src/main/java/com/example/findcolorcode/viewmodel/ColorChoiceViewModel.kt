@@ -112,7 +112,6 @@ class ColorChoiceViewModel(
 
     //背景色のカラーコードを変更するメソッド
     fun updateBackgroundColorCode(squareIndex: Int, validColorCode: String) {
-        Log.d("ColorChoiceScreen","${squareIndex}validColorCode${validColorCode}")
         when (squareIndex) {
             1 -> _square1BackgroundColorCode.value = validColorCode
             2 -> _square2BackgroundColorCode.value = validColorCode
@@ -140,15 +139,14 @@ class ColorChoiceViewModel(
         isAdjustment: Boolean = false
     ) {
         val updateValue: (Int) -> (Int) = { currentValue ->
-                if (isAdjustment) {
-                    //isAdjustmentがtrueなら増減値が渡される(マイナスの時は負の値)
-                    (currentValue + value).coerceIn(0, 255)
-                } else {
-                    val updateValue = value.coerceIn(0, 255)
-                    //falseならvalueにはRGB値自体が渡される
-                    updateValue
-                }
+            if (isAdjustment) {
+                //isAdjustmentがtrueなら増減値が渡される(マイナスの時は負の値)
+                (currentValue + value).coerceIn(0, 255)
+            } else {
+                //falseならvalueにはRGB値自体が渡される
+                value.coerceIn(0, 255)
             }
+        }
         when (currentSquareIndex) {
             1 -> {
                 when (rgbColorType) {
@@ -177,9 +175,9 @@ class ColorChoiceViewModel(
                 }
             }
         }
-            //rgb値からカラーコードを更新する
-            convertToColorCode(currentSquareIndex)
-        }
+        //rgb値からカラーコードを更新する
+        convertToColorCode(currentSquareIndex)
+    }
 
     //色名→Hex、Hex検証
     //ユーザーが入力した色名をHexに変換する
@@ -210,7 +208,6 @@ class ColorChoiceViewModel(
             //currentSquareIndexに応じて現在のcolorCodeを取得しRGBを計算する
 
             1 -> {
-                Log.d("ColorChoiceScreen","convertToRGB square1ColorCode${square1ColorCode.value}")
                 val colorCode = _square1ColorCode.value
                 val (red, green, blue) = calConvertToRGB(colorCode.toString())
                 red1.value = red
@@ -219,7 +216,6 @@ class ColorChoiceViewModel(
             }
 
             2 -> {
-                Log.d("ColorChoiceScreen","convertToRGB square2ColorCode${square2ColorCode.value}")
                 val colorCode = _square2ColorCode.value
                 val (red, green, blue) = calConvertToRGB(colorCode.toString())
                 red2.value = red
@@ -227,7 +223,6 @@ class ColorChoiceViewModel(
                 blue2.value = blue
             }
         }
-        Log.d("ColorChoiceScreen","viewModelSideVewModel${this}")
     }
 
     //ColorCodeを受け取り10進数に変換しRGB値を返す
