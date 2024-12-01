@@ -11,5 +11,5 @@ object AppColors {
     val Gray = Color(0xFFB0B0B0)
     val lightGray = Color(0xFFE7E7E7)
     val gainsboro = Color(0xFFDCDCDC)
-
+    val mutedGray = Color(0xFFF1F1F1)
 }
