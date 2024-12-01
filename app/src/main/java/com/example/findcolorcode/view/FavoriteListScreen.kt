@@ -1,7 +1,7 @@
 package com.example.findcolorcode.view
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -110,7 +110,7 @@ fun FavoriteColorList(
         modifier = Modifier
             .fillMaxSize()
             .background(AppColors.White)
-            .padding(Dimensions.screenPadding),
+            .padding(Dimensions.screenVerticalPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         //フィルター用の入力フォーム
@@ -241,6 +241,7 @@ fun FavoriteColorList(
                                 modifier = Modifier
                                     .size(100.dp)
                                     .aspectRatio(1f)
+                                    .border(1.dp,AppColors.mutedGray)
                                     .background(
                                         Color(
                                             android.graphics.Color.parseColor(
@@ -258,7 +259,8 @@ fun FavoriteColorList(
                             ) {
                                 Row {
                                     Text(
-                                        modifier = Modifier.weight(1f),// 色の名前
+                                        // 色の名前
+                                        modifier = Modifier.weight(1f),
                                         text = color.colorName,
                                         fontSize = MaterialTheme.typography.titleLarge.fontSize,
                                     )
@@ -290,10 +292,11 @@ fun FavoriteColorList(
                                     }
 
                                 }
+                                // 色のメモ
                                 Text(
                                     text = color.colorMemo,
                                     fontSize = MaterialTheme.typography.bodyLarge.fontSize
-                                ) // 色のメモ
+                                )
                             }
                         }
 
