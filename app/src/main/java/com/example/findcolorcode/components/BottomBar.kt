@@ -18,7 +18,7 @@ fun BottomBar(
     navController: NavController,
     currentBottomBarItem: Int
 ) {
-    NavigationBar(modifier = Modifier.height(80.dp)) {
+    NavigationBar(modifier = Modifier.height(60.dp)) {
         //表示項目をenumClassで列挙する
         BottomBarTab.entries.forEachIndexed { index, item ->
             NavigationBarItem(
