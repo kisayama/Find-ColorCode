@@ -73,7 +73,7 @@ fun ColorPickerTabs(
                     allBasicColorList
                 )
 
-                1 -> currentColorPalletContent(
+                1 -> CurrentColorPalletContent(
                     modifier = Modifier
                         .padding(paddingValues)
                         .fillMaxSize()
