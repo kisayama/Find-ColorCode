@@ -7,9 +7,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -26,8 +27,8 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 // 選択した色のカラーコードを基に、APIからカラーパレットを取得するView
 // ViewModelで処理した結果を受け取り、取得したカラーパレットを表示する
 @Composable
-fun SelectedColorPalletContent(
-    modifier: Modifier,
+fun CurrentColorPalletContent(
+    modifier: Modifier = Modifier,
     viewModel: ColorChoiceViewModel,
     currentSquareIndex: Int,
     square2ColorData: ColorDataForColorChoice,
@@ -55,14 +56,13 @@ fun SelectedColorPalletContent(
         viewModel.convertToRGB(currentSquareIndex)
     }
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(top = 66.dp, bottom = 10.dp, end = 1.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),//パレットカラースクエアとボタンのの間のスペース
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             colorPalletList.forEach { colorCode ->
                 PalletColorSquare(
@@ -71,6 +71,9 @@ fun SelectedColorPalletContent(
                 )
             }
         }
+
+        //パレットカラースクエアとボタンのの間のスペース
+        Spacer(modifier = Modifier.height(10.dp))
 
         //API通信を行うトリガーボタン
         PalletCreateButton(
