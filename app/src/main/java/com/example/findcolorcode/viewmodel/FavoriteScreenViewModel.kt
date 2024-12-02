@@ -10,6 +10,7 @@ import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.repository.FavoriteColorRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.text.Normalizer
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -45,10 +46,11 @@ class FavoriteScreenViewModel(
     val toastMessage: LiveData<String> get() = _toastMessage
 
     //変更メソッド
-    private fun updateToastMessage(message:String){
+    private fun updateToastMessage(message: String) {
         _toastMessage.value = message
     }
-    fun resetToast(){
+
+    fun resetToast() {
         _toastMessage.value = ""
     }
     //======
@@ -62,7 +64,7 @@ class FavoriteScreenViewModel(
 
     // === メソッド ===
 
-    fun updateDialogOpen(newDialogOpen:Boolean){
+    fun updateDialogOpen(newDialogOpen: Boolean) {
         _isChangeDialogOpen.value = newDialogOpen
     }
 
@@ -96,7 +98,7 @@ class FavoriteScreenViewModel(
 
     //選択した色を更新する
     //_chosenColorを変更したものを引数colorに渡す
-     fun updateColors(color: FavoriteColorDataClass) {
+    fun updateColors(color: FavoriteColorDataClass) {
         viewModelScope.launch {
             //カラーデータの更新を行う　
             favoriteColorRepository.updateColor(color)
@@ -113,7 +115,7 @@ class FavoriteScreenViewModel(
       　　キーワードごとに個別にフィルタリングを行い、
          各キーワードすべてに一致した色全てを検索結果として出力する
      */
-     fun filter() {
+    fun filter() {
         val filterText = _filterText.value ?: ""
         _filteredColors.value = if (filterText.isEmpty() || filterText == "") {
             //filterText（検索欄）が空なら全てのデータを表示する
@@ -121,59 +123,80 @@ class FavoriteScreenViewModel(
         } else {
             //フィルタリング後に同じ色を保持しないように一時保持用のSetを定義する
             val filteredColorList: MutableList<FavoriteColorDataClass> = mutableListOf()
+
+            //フィルタリング対象リスト
+            val allColorsList = allColors.value ?: emptyList()
+
             //全角スペースまたは半角スペース区切りで分割する
             val keywords = filterText.split(" ", "　")
-            val allColorsList = allColors.value ?: emptyList()
+            //keywordsのカタカナはひらがなに、全角英数字を半角英数字に変換する
+            val normalizedKeyWords = keywords.map { word -> convertToFilterWard(word) }
+
             //キーワードごとにフィルタリングしたリスト
             for (color in allColorsList) {
+                //Long型の日付をStringに変更する
+                val editeDate:String = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(Date(color.editDateTime))
                 //各キーワードはAND条件で絞り込みを行う
-                //（例　2024　赤　ならどちらも以下の検索対象にのいずれかに当てはまるものを抽出する)
-                val filteredAllKeyWords = keywords.all { word ->
-                    color.colorCode.contains(word, ignoreCase = true) ||
-                            color.colorMemo.contains(word, ignoreCase = true) ||
-                            color.colorName.contains(word, ignoreCase = true) ||
-                            SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
-                                .format(Date(color.editDateTime))
-                                .contains(word, ignoreCase = true)
+                //（例　2024　赤　が検索キーワードなら　2024 赤　どちらも検索対象に入っていれば表示する)
+                //検索対象を「カタカナ→ひらがな」、「全角英数字→半角英数字」に変換する（検索キーワードは変換済み）
+                val filteredAllKeyWords = normalizedKeyWords.all { word ->
+                        convertToFilterWard(color.colorCode).contains(word, ignoreCase = true) ||
+                        convertToFilterWard(color.colorName).contains(word, ignoreCase = true) ||
+                        convertToFilterWard(color.colorMemo).contains(word, ignoreCase = true) ||
+                        convertToFilterWard(editeDate).contains(word, ignoreCase = true)
                 }
                 if (filteredAllKeyWords) {
                     filteredColorList.add(color)
                 }
             }
+            //フィルタリング後のリストを表示する
             filteredColorList
         }
     }
 
-        // フィルター用テキストを更新する
-         fun updateFilterText(newFilterText: String) {
-            _filterText.value = newFilterText
-        }
+    // フィルター用テキストを更新する
+    fun updateFilterText(newFilterText: String) {
+        _filterText.value = newFilterText
+    }
 
-        //Filter用テキストを空にするメソッド
-         fun clearFilterText() {
-            _filterText.value = ""
-            // フィルターテキストがクリアされた後、onValueChangeが適用されないため
-            // allColorsから全てのデータを取得し、_filteredColorsに設定することで
-            // 表示される色のリストを更新する
-            _filteredColors.value = allColors.value
-        }
+    //Filter用テキストを空にするメソッド
+    fun clearFilterText() {
+        _filterText.value = ""
+        // フィルターテキストがクリアされた後、onValueChangeが適用されないため
+        // allColorsから全てのデータを取得し、_filteredColorsに設定することで
+        // 表示される色のリストを更新する
+        _filteredColors.value = allColors.value
+    }
     //=====
 
     //その他
 
-        // ミリ秒を"yyyy/MM/dd"形式の日付に変換する
-         fun convertCurrentTimeMillisToYYYYMMDD(millis: Long): String {
-            val formatter = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
-            val date = Date(millis)
-            return formatter.format(date)
-        }
+    // ミリ秒を"yyyy/MM/dd"形式の日付に変換する
+    fun convertCurrentTimeMillisToYYYYMMDD(millis: Long): String {
+        val formatter = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
+        val date = Date(millis)
+        return formatter.format(date)
+    }
 
-        //クリップボードにカラーコードをコピーする
-        fun copyToClipBoard(context:Context,colorCode:String){
-            val clipBoard = context.getSystemService(Context.CLIPBOARD_SERVICE)as ClipboardManager
-            val clip = android.content.ClipData.newPlainText("カラーコード",colorCode)
-            clipBoard.setPrimaryClip(clip)
-            updateToastMessage("カラーコードをクリップボードにコピーしました")
-        }
+    //クリップボードにカラーコードをコピーする
+    fun copyToClipBoard(context: Context, colorCode: String) {
+        val clipBoard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = android.content.ClipData.newPlainText("カラーコード", colorCode)
+        clipBoard.setPrimaryClip(clip)
+        updateToastMessage("カラーコードをクリップボードにコピーしました")
+    }
 
+    //カタカナをひらがなに変換しNormalizerクラスを使用し
+    private fun convertToFilterWard(keyWord: String): String {
+        val returnWord = keyWord.map { char ->
+            when (char) {
+                //カタカナが渡された場合ひらがなに変換する
+                in 'ァ'..'ヺ' -> (char.code - 0x60).toChar()
+                else -> char
+            }
+        }.joinToString("")
+        return Normalizer.normalize(returnWord, Normalizer.Form.NFKC)
+    }
 }
+
+
