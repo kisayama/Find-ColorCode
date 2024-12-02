@@ -426,7 +426,6 @@ fun RGBSlier(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
-        val interactionSource = remember { MutableInteractionSource() }
 
         //現在選択中のメニューの丸はグレー、そうでなければ透明
         Box(
