@@ -2,10 +2,9 @@ package com.example.findcolorcode.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -22,15 +21,15 @@ import com.example.findcolorcode.R
 //色調整ボタンと単位調整用ボタンを1行に配置するためのコンポーネント
 @Composable
 fun AdjustValueBar(
+    modifier:Modifier = Modifier,
     adjustValue: (Int) -> Unit,
 ) {
     var value by remember { mutableStateOf<Int?>(5) }
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-            .padding(start = 75.dp, end = 75.dp),
+        modifier = modifier
+            .wrapContentHeight()
+            .padding(start = 75.dp, end = 75.dp, bottom = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
