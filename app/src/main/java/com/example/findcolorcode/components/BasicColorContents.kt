@@ -5,12 +5,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,22 +23,16 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 //縦に3つ並べるコンポーネント
 @Composable
 fun BasicColorContents(
+    modifier: Modifier,
     viewModel: ColorChoiceViewModel,
     currentSquareIndex: Int,
-    colorList1: List<String>,
-    colorList2: List<String>,
-    colorList3: List<String>
+    allColorList: List<List<Pair<String,String>>>
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 72.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Column(
-            //各オブジェクト(BasicRow)間に垂直方向の間隔を設定
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+    //親コンポーネントのTabから画面の四割を割り当てられている
+        LazyColumn(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             //BasicSquareが選択された時に呼び出される処理
             val onBasicSquareSelected: (String) -> Unit = { selectedColorCode ->
@@ -48,24 +43,28 @@ fun BasicColorContents(
                 //スライダーのRGB値を変更
                 viewModel.convertToRGB(currentSquareIndex)
             }
-            //縦に3つ並べる
-            BasicColorRow(colorList = colorList1, onBasicSquareSelected)
-            BasicColorRow(colorList = colorList2, onBasicSquareSelected)
-            BasicColorRow(colorList = colorList3, onBasicSquareSelected)
+            val colorCodeList:List<List<String>> = allColorList.map { it->it.map { it.first } }
+            items(colorCodeList) { list ->
+
+                    BasicColorRow(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        colorList =list,
+                        onBasicSquareSelected
+                    )
+                }
+            }
         }
-    }
-}
 
 //4つのBoxコンポーネントのBasicColorSquareを一行に並べるコンポーネント
 @Composable
 private fun BasicColorRow(
+    modifier: Modifier = Modifier,
     colorList: List<String>,
     onBasicSquareSelected: (String) -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 8.dp, end = 8.dp),
+        modifier = modifier.fillMaxHeight(0.3f),
         //Row内の要素を水平方向に均等に配置する
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
@@ -73,6 +72,7 @@ private fun BasicColorRow(
         //各カラーコードをBasicColorSquareに引き渡す
         colorList.forEach { colorCode ->
             BasicColorSquare(
+                modifier =modifier.weight(1f),
                 colorCode = colorCode,
                 onBasicSquareSelected = onBasicSquareSelected
             )
@@ -88,9 +88,8 @@ private fun BasicColorSquare(
 ) {
     Box(
         modifier = modifier
-            .padding(end = 8.dp)
-            .size(70.dp)
             //Boxをクリックすると選択されたカラーコードをonBasicSquareSelectedに引き渡す
+            .padding(start = 5.dp, end = 5.dp )
             .clickable { onBasicSquareSelected(colorCode) }
             .background(Color(android.graphics.Color.parseColor(colorCode)))
             .border(1.dp, Color.LightGray)
