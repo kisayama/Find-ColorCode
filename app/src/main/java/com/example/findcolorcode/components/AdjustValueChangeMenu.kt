@@ -77,7 +77,7 @@ fun AdjustValueChangeMenu(
                 fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                 textAlign = TextAlign.Center
             ),
-            maxLines = 1,
+            singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
     { textField ->

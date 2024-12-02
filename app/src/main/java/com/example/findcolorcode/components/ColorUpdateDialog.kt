@@ -122,7 +122,7 @@ fun ColorUpdateDialog(
                                     )
                                 },
                                 textStyle = dialogTextStyle,
-                                maxLines = 1
+                                singleLine = true
                             )
                             Spacer(modifier = Modifier.height(10.dp))
                             //色のメモ入力フォーム

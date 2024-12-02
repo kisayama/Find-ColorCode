@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -158,7 +159,7 @@ fun FavoriteColorList(
                         viewModel.updateFilterText(newText)
                         viewModel.filter()
                     },
-                    maxLines = 1
+                    singleLine = true
                 )
                 //ソートボタン
                 IconButton(
@@ -241,7 +242,7 @@ fun FavoriteColorList(
                                 modifier = Modifier
                                     .size(100.dp)
                                     .aspectRatio(1f)
-                                    .border(1.dp,AppColors.mutedGray)
+                                    .border(1.dp, AppColors.mutedGray)
                                     .background(
                                         Color(
                                             android.graphics.Color.parseColor(

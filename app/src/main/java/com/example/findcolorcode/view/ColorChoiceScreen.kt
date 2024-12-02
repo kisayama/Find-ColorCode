@@ -383,7 +383,7 @@ fun ColorCodeText(
                 if (focusState.isFocused) onSquareSelected()
             },
         colors = customTextFieldColors(),
-        maxLines = 1
+        singleLine = true
     )
 }
 
@@ -465,7 +465,7 @@ fun RGBSlier(
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number
             ),
-            maxLines = 1,
+            singleLine = true,
             textStyle = TextStyle(
                 color = Color.Black,
                 fontSize = MaterialTheme.typography.bodyLarge.fontSize,
