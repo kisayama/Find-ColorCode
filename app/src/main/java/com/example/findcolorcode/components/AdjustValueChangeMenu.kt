@@ -1,6 +1,9 @@
 package com.example.findcolorcode.components
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -8,7 +11,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,7 +20,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.example.findcolorcode.data.adjustValueChangeMenuList
 import com.example.findcolorcode.ui.theme.customTextFieldColors
 
@@ -39,6 +44,7 @@ fun AdjustValueChangeMenu(
     var isMenuOpen by remember { mutableStateOf(false) }
     //TextFieldの制限文字数
     val limit = 4
+    val interactionSource = remember { MutableInteractionSource()    }
 
     ExposedDropdownMenuBox(
         modifier = modifier.wrapContentHeight(),
@@ -48,8 +54,10 @@ fun AdjustValueChangeMenu(
             isMenuOpen = !isMenuOpen
         }
     ) {
-        TextField(
-            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable),
+        //調節単位入力フォーム
+        BasicTextField(
+            modifier = Modifier
+                .menuAnchor(MenuAnchorType.PrimaryEditable),
             value = value?.toString() ?: "",
             onValueChange = { newValue: String ->
                 //空白の場合はnullでupdateValueを更新する
@@ -69,11 +77,21 @@ fun AdjustValueChangeMenu(
                 fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                 textAlign = TextAlign.Center
             ),
-            //数字入力用キーボード
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             maxLines = 1,
-            colors = customTextFieldColors()
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
+    { textField ->
+              TextFieldDefaults.DecorationBox(
+                  value = value?.toString() ?: "",
+                  innerTextField =  textField ,
+                  enabled = true,
+                  singleLine = true,
+                  visualTransformation = VisualTransformation.None,
+                  interactionSource = interactionSource,
+                  colors = customTextFieldColors(),
+                  contentPadding = PaddingValues(2.dp)
+              )
+      }
         ExposedDropdownMenu(
             expanded = isMenuOpen,
             //開閉状態をfalseに変更する
