@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--API31以上のスマホでアプリアイコンがスプラッシュスクリーンとして自動的に表示される-->
+    <!--以下はスプラッシュスクリーンの背景を白色に設定している。-->
+    <!--API30以下のスマホではスプラッシュは表示しない-->
+    <style name="Base.Theme.FindColorCode" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:windowSplashScreenBackground">@color/white</item>
+    </style>
+</resources>
