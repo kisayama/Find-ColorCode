@@ -28,10 +28,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -81,8 +79,8 @@ fun FavoriteColorList(
     //ソートメニュー開閉状態
     var isSortMenuOpen by remember { mutableStateOf(false) }
 
-    //0が日付降順（新しい順), 0が日付降順
-    var currentSortOrder by remember { mutableIntStateOf(0) }
+    //0が日付降順（新しい順), 1が昇順（古い順）
+    val currentSortOrder by viewModel.currentSortOrder.observeAsState(0)
 
     //変更用ダイアログ表示ロジック
     if (isChangeDialogOpen && selectedColorItem != null) {
@@ -182,7 +180,7 @@ fun FavoriteColorList(
                             //ソートを閉じる時の処理
                             closeSortMenuCallBack = { isSortMenuOpen = false },
                             //選択されたメニューのインデックスを受け取る
-                            sortTypeCallBack = { index -> currentSortOrder = index },
+                            sortTypeCallBack = { index -> viewModel.updateCurrentSortOrder(index) },
                             currentSortOrder = currentSortOrder
                         )
                     }

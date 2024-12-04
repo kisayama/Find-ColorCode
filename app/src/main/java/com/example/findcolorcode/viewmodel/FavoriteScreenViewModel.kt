@@ -40,20 +40,14 @@ class FavoriteScreenViewModel(
     val isChangeDialogOpen: LiveData<Boolean> get() = _isChangeDialogOpen
     //======
 
-    //トースト関連
     //===トーストメッセージ===
     private val _toastMessage = MutableLiveData("")
     val toastMessage: LiveData<String> get() = _toastMessage
 
-    //変更メソッド
-    private fun updateToastMessage(message: String) {
-        _toastMessage.value = message
-    }
+    //lazyColumn内の並び替えインデックス　0が日付降順（新しい順), １が昇順
+    private val _currentSortOrder = MutableLiveData(0)
+    val currentSortOrder: LiveData<Int> get() = _currentSortOrder
 
-    fun resetToast() {
-        _toastMessage.value = ""
-    }
-    //======
 
     // === 初期化処理 ===
     init {
@@ -63,9 +57,21 @@ class FavoriteScreenViewModel(
 
 
     // === メソッド ===
+    fun updateCurrentSortOrder(orderType:Int){
+        _currentSortOrder.value = orderType
+    }
 
     fun updateDialogOpen(newDialogOpen: Boolean) {
         _isChangeDialogOpen.value = newDialogOpen
+    }
+
+    //トースト変更メソッド
+    private fun updateToastMessage(message: String) {
+        _toastMessage.value = message
+    }
+
+    fun resetToast() {
+        _toastMessage.value = ""
     }
 
     // データベースからデータを全て取得し_allColorsに格納する
@@ -75,7 +81,11 @@ class FavoriteScreenViewModel(
             //collectは.flowで流された各データに{}内の処理を行う
             favoriteColorRepository.getAllColors().collect { colorList ->
                 //新しく作成・編集をされた順にリストを並び替える（editDateTimeはUNIXTIMEスタンプ）
-                val sortedColorList = colorList.sortedByDescending { it.editDateTime }
+                val sortedColorList = when(_currentSortOrder.value){
+                    0 -> colorList.sortedByDescending { it.editDateTime }
+                    1 -> colorList.sortedBy { it.editDateTime }
+                    else -> colorList.sortedByDescending { it.editDateTime }
+                }
                 _allColors.value = sortedColorList
                 //filteredColorsの初期設定
                 _filteredColors.value = _allColors.value
