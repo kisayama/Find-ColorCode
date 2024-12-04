@@ -32,7 +32,7 @@ fun BottomBar(
                         navOptions = navOptions {
                             //現在開いているViewのrouteをpopUpToに渡しそのビューをバックスタックから削除する
                             // 削除Viewの状態保存をしておくことで再度表示した時に前回の状態の復元する
-                            popUpTo(BottomBarTab.entries[currentBottomBarItem].route){saveState= true }
+                            popUpTo(BottomBarTab.entries[currentBottomBarItem].route){ saveState= true }
                         }
                     )
                 },
@@ -46,6 +46,5 @@ fun BottomBar(
                 }
             )
         }
-
     }
 }
