@@ -32,7 +32,6 @@ import com.example.findcolorcode.repository.FavoriteColorRepositoryImpl
 import com.example.findcolorcode.ui.theme.FindColorCodeTheme
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
-import com.example.findcolorcode.viewmodel.MainViewModel
 
 
 //エントリーポイント
@@ -42,9 +41,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FindColorCodeTheme {
-                //ViewModelのインスタンスを取得
-                val viewModel = MainViewModel()
-
                 //navController（ナビゲーションの操作を管理する）を取得
                 val navController: NavHostController = rememberNavController()
 
@@ -55,7 +51,7 @@ class MainActivity : ComponentActivity() {
                 val colorDatabase = ColorDatabase.getDatabase(applicationContext)
 
                 //MainScreenを呼び出し
-                MainScreen(navController, viewModel, colorDatabase = colorDatabase)
+                MainScreen(navController, colorDatabase = colorDatabase)
             }
         }
     }
@@ -64,7 +60,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen(
     navController: NavHostController,
-    viewModel: MainViewModel,
     colorDatabase: ColorDatabase
 ) {
 
@@ -75,9 +70,11 @@ fun MainScreen(
         )
     }
 
-    val favoriteScreenViewModel = FavoriteScreenViewModel(
-        favoriteColorRepository = FavoriteColorRepositoryImpl(colorDao = colorDatabase.colorDao()),
-    )
+    val favoriteScreenViewModel = remember {
+        FavoriteScreenViewModel(
+            favoriteColorRepository = FavoriteColorRepositoryImpl(colorDao = colorDatabase.colorDao()),
+        )
+    }
 
     //現在の画面のrouteを取得する
     val currentDestination =
@@ -97,7 +94,7 @@ fun MainScreen(
             )
         }
 
-        //paddingはbottombarとかさならないようにscalffoldから提供される
+        //paddingはbottomBarとかさならないようにscalffoldから提供される
     ) { padding ->
         //画面をタッチしたらキーボードを非表示にする
         val keyboardController = LocalSoftwareKeyboardController.current
@@ -105,22 +102,23 @@ fun MainScreen(
         val focusManager = LocalFocusManager.current
         Surface(
             //ポインタの入力を処理する
-            modifier = Modifier.pointerInput(Unit) {
-                //入力リスナーの種類を設定する　この場合はタップ
-                detectTapGestures(onTap = {
-                    //キーボードを隠す
-                    keyboardController?.hide()
-                    //フォーカスを解除する
-                    focusManager.clearFocus()
+            modifier = Modifier
+                .pointerInput(Unit) {
+                    //入力リスナーの種類を設定する　この場合はタップ
+                    detectTapGestures(onTap = {
+                        //キーボードを隠す
+                        keyboardController?.hide()
+                        //フォーカスを解除する
+                        focusManager.clearFocus()
+                    }
+                    )
                 }
-                )
-            }
                 .onKeyEvent { keyEvent ->
                     //KeyBoardを離した時かつそのキーボードがエンターキーの時に
-                    if (keyEvent.type == KeyEventType.KeyUp && keyEvent.key == Key.Enter){
+                    if (keyEvent.type == KeyEventType.KeyUp && keyEvent.key == Key.Enter) {
                         focusManager.clearFocus()
                         true
-                    }else{
+                    } else {
                         false
                     }
                 },
