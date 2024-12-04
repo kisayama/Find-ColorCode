@@ -449,18 +449,24 @@ fun RGBSlier(
         //BasicTextFieldとSliderで使用する
         var value by remember { mutableStateOf<String?>("255") }
 
+        val editValue by remember (currentSquareRGB){ mutableStateOf(currentSquareRGB.toString()) }
+
         //スライダーの横に設置するRGB表示用のテキストフィールド
         BasicTextField(
             modifier = Modifier
                 .weight(0.15f)
                 .padding(3.dp)
                 .focusable(),
-            value = currentSquareRGB.toString(),
-            onValueChange = { newValue:String? ->
-                    //選択しているスライダーの色を変更しボタンの色を変更する
+            value = editValue,
+            onValueChange = { newValue: String? ->
+                //選択しているスライダーの色を変更しボタンの色を変更する
+                if (newValue.isNullOrEmpty()) {
+                    value = "0"
+                } else {
                     viewModel.changeCurrentRGBSeekBar(sliderColorName)
                     value = newValue
                 }
+            }
         ,
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number
