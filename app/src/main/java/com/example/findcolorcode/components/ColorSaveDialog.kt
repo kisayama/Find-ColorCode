@@ -43,7 +43,7 @@ import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.ui.theme.FindColorCodeTheme
-import com.example.findcolorcode.ui.theme.GetDynamicTypography
+import com.example.findcolorcode.ui.theme.getDynamicTypography
 import com.example.findcolorcode.ui.theme.customTextFieldColors
 
 @ExperimentalMaterial3Api
@@ -58,7 +58,7 @@ fun ColorSaveDialog(
     dismissDialog: () -> Unit,
 ) {
     FindColorCodeTheme {
-        val dialogTextStyle = TextStyle(fontSize = GetDynamicTypography().bodyLarge.fontSize)
+        val dialogTextStyle = TextStyle(fontSize = getDynamicTypography().bodyLarge.fontSize)
 
         //データベース登録用のNameとMemoを保持する
         val saveName = remember { mutableStateOf("") }
@@ -107,7 +107,7 @@ fun ColorSaveDialog(
                     //ダイアログのタイトル
                     Text(
                         text = "色を保存",
-                        style = GetDynamicTypography().titleLarge,
+                        style = getDynamicTypography().titleLarge,
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -144,7 +144,7 @@ fun ColorSaveDialog(
                                     .border(3.dp, AppColors.gainsboro)
                                     .padding(8.dp),
                                 text = currentColorData.backgroundColorCode,
-                                style = TextStyle(fontSize = GetDynamicTypography().bodyLarge.fontSize)
+                                style = TextStyle(fontSize = getDynamicTypography().bodyLarge.fontSize)
                             )
                             Spacer(modifier = Modifier.height(10.dp))
                             //色の名前入力フォーム

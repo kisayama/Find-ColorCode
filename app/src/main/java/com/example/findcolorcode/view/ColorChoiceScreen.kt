@@ -56,7 +56,7 @@ import com.example.findcolorcode.components.ColorPickerTabs
 import com.example.findcolorcode.components.ShowToast
 import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.ui.theme.Dimensions
-import com.example.findcolorcode.ui.theme.GetDynamicTypography
+import com.example.findcolorcode.ui.theme.getDynamicTypography
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 
 //スライダーを調節することによって色を作成、保存するためのダイアログを呼び出すView
@@ -402,7 +402,7 @@ fun ColorCodeText(
                         text = "カラーコードを入力",
                         style = TextStyle(
                             color = Color.Gray,
-                            fontSize = GetDynamicTypography().labelSmall.fontSize
+                            fontSize = getDynamicTypography().labelSmall.fontSize
                         )
                     )
                 }
@@ -505,7 +505,7 @@ fun ColorCodeText(
                 singleLine = true,
                 textStyle = TextStyle(
                     color = Color.Black,
-                    fontSize = GetDynamicTypography().bodyLarge.fontSize,
+                    fontSize = getDynamicTypography().bodyLarge.fontSize,
                     textAlign = TextAlign.Center
                 ),
                 decorationBox = { innerTextField ->

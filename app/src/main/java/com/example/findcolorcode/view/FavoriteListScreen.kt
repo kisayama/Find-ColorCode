@@ -49,7 +49,7 @@ import com.example.findcolorcode.components.FavoriteColorSortMenu
 import com.example.findcolorcode.components.ShowToast
 import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.ui.theme.Dimensions
-import com.example.findcolorcode.ui.theme.GetDynamicTypography
+import com.example.findcolorcode.ui.theme.getDynamicTypography
 import com.example.findcolorcode.ui.theme.customTextFieldColors
 import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
 
@@ -124,7 +124,7 @@ fun FavoriteColorList(
                         .weight(6f),
                     value = filterText,
                     //TextFieldの入力文字の大きさを設定
-                    textStyle = TextStyle(fontSize = GetDynamicTypography().bodyLarge.fontSize),
+                    textStyle = TextStyle(fontSize = getDynamicTypography().bodyLarge.fontSize),
                     //テキストフィールドの左端に虫眼鏡ボタンを設置
                     //目印なので押した時の処理は無し
                     leadingIcon = {
@@ -148,7 +148,7 @@ fun FavoriteColorList(
                     placeholder = {
                         Text(
                             text = "色の名前、メモ、日付など",
-                            fontSize = GetDynamicTypography().labelSmall.fontSize
+                            fontSize = getDynamicTypography().labelSmall.fontSize
                         )
                     },
                     //入力された値でfilterTextを更新する
@@ -261,7 +261,7 @@ fun FavoriteColorList(
                                         // 色の名前
                                         modifier = Modifier.weight(1f),
                                         text = color.colorName,
-                                        fontSize = GetDynamicTypography().titleLarge.fontSize,
+                                        fontSize = getDynamicTypography().titleLarge.fontSize,
                                     )
                                     IconButton(
                                         onClick = {
@@ -294,7 +294,7 @@ fun FavoriteColorList(
                                 // 色のメモ
                                 Text(
                                     text = color.colorMemo,
-                                    fontSize = GetDynamicTypography().bodyLarge.fontSize
+                                    fontSize = getDynamicTypography().bodyLarge.fontSize
                                 )
                             }
                         }
@@ -308,12 +308,12 @@ fun FavoriteColorList(
                             Text(
                                 modifier = Modifier.padding(start = 15.dp),
                                 text = color.colorCode,
-                                fontSize = GetDynamicTypography().bodyLarge.fontSize
+                                fontSize = getDynamicTypography().bodyLarge.fontSize
                             )
                             // 日付
                             Text(
                                 text = viewModel.convertCurrentTimeMillisToYYYYMMDD(color.editDateTime),
-                                fontSize = GetDynamicTypography().bodyLarge.fontSize,
+                                fontSize = getDynamicTypography().bodyLarge.fontSize,
                                 textAlign = TextAlign.End
                             )
                         }

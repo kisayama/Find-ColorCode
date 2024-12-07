@@ -23,7 +23,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.findcolorcode.data.adjustValueChangeMenuList
-import com.example.findcolorcode.ui.theme.GetDynamicTypography
+import com.example.findcolorcode.ui.theme.getDynamicTypography
 import com.example.findcolorcode.ui.theme.customTextFieldColors
 
 
@@ -74,7 +74,7 @@ fun AdjustValueChangeMenu(
                 }
             },
             textStyle = TextStyle(
-                fontSize = GetDynamicTypography().bodyLarge.fontSize,
+                fontSize = getDynamicTypography().bodyLarge.fontSize,
                 textAlign = TextAlign.Center
             ),
             singleLine = true,

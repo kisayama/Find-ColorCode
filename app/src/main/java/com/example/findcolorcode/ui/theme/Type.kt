@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun GetDynamicTypography(): Typography {
+fun getDynamicTypography(): Typography {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
     return when {
