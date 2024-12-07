@@ -2,6 +2,7 @@ package com.example.findcolorcode.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +28,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -57,11 +66,36 @@ fun ColorUpdateDialog(
             // ダイアログが閉じられたときに、フラグの更新処理を実行する
             onDismissRequest = { dismissDialog() },
         ) {
+            //画面をタッチしたらキーボードを非表示にする
+            val keyboardController = LocalSoftwareKeyboardController.current
+            //画面をタッチした時にフォーカスを解除する
+            val focusManager = LocalFocusManager.current
             Surface(
                 color = Color.White,//ダイアログの背景の色
                 shape = RoundedCornerShape(8.dp),//角の形状とその丸みを指定する
                 tonalElevation = AlertDialogDefaults.TonalElevation,//奥行きをつけるための影を設定
-            ) {
+                modifier = Modifier
+                    .pointerInput(Unit) {
+                        //入力リスナーの種類を設定する　この場合はタップ
+                        detectTapGestures(onTap = {
+                            //キーボードを隠す
+                            keyboardController?.hide()
+                            //フォーカスを解除する
+                            focusManager.clearFocus()
+                        }
+                        )
+                    }
+                    .onKeyEvent { keyEvent ->
+                        //KeyBoardを離した時かつそのキーボードがエンターキーの時にキーボードを閉じる
+                        if (keyEvent.type == KeyEventType.KeyUp && keyEvent.key == Key.Enter) {
+                            focusManager.clearFocus()
+                            true
+                        } else {
+                            false
+                        }
+                    }
+            )
+             {
                 Column(
                     modifier = Modifier
                         .padding(16.dp)
