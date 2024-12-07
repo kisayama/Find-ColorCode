@@ -114,7 +114,7 @@ fun MainScreen(
                     )
                 }
                 .onKeyEvent { keyEvent ->
-                    //KeyBoardを離した時かつそのキーボードがエンターキーの時に
+                    //KeyBoardを離した時かつそのキーボードがエンターキーの時にキーボードを閉じる
                     if (keyEvent.type == KeyEventType.KeyUp && keyEvent.key == Key.Enter) {
                         focusManager.clearFocus()
                         true
