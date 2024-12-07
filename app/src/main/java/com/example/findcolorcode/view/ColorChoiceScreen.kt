@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
@@ -24,11 +27,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,7 +46,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.findcolorcode.R
 import com.example.findcolorcode.components.AdjustValueBar
@@ -53,7 +56,7 @@ import com.example.findcolorcode.components.ColorPickerTabs
 import com.example.findcolorcode.components.ShowToast
 import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.ui.theme.Dimensions
-import com.example.findcolorcode.ui.theme.customTextFieldColors
+import com.example.findcolorcode.ui.theme.GetDynamicTypography
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 
 //スライダーを調節することによって色を作成、保存するためのダイアログを呼び出すView
@@ -130,6 +133,15 @@ fun ColorChoiceScreen(
 
     //ダイアログ開閉状態(trueなら開く falseなら閉じる)
     val isSaveDialogOpen by viewModel.isSaveDialogOpen.observeAsState(false)
+    val systemBarsPadding =  WindowInsets.systemBars.asPaddingValues()
+    val isSystemBarsPaddingZero = systemBarsPadding.run {
+            calculateTopPadding() == 0.dp &&
+            calculateBottomPadding() == 0.dp &&
+            //LTRはstart,endの方向が国によって違うのでLtrまたはRtlで指定する(Ltrは左がstart,右がend)
+            calculateStartPadding(LayoutDirection.Ltr) == 0.dp &&
+            calculateEndPadding(LayoutDirection.Ltr) == 0.dp
+    }
+    val topPadding = if (isSystemBarsPaddingZero)Dimensions.screenVerticalPadding else 0.dp
 
     if (isSaveDialogOpen) {
         com.example.findcolorcode.components.ColorSaveDialog(
@@ -144,16 +156,15 @@ fun ColorChoiceScreen(
     // 全体をColumnで囲んでレイアウトを縦方向に
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
+            .padding(systemBarsPadding)
             //実機のナビゲーションバーなどの高さ分パディングを入れる
-            .padding(WindowInsets.systemBars.asPaddingValues())
             .padding(
-                top = Dimensions.screenVerticalPadding,
+                top = topPadding,
                 start = Dimensions.screenHorizontalPadding,
                 end = Dimensions.screenHorizontalPadding
             )
-            .padding(top = 10.dp),
+            .fillMaxWidth()
+            .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 //[ColorColumn、RGBSlidersGroup,AdjustValueBar]をColumnで
@@ -238,31 +249,30 @@ fun ColorColumn(
     Column(
         modifier = modifier
             .fillMaxHeight(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         val isSelected: Boolean = squareIndex == currentSquareIndex
 
         //squareを表示
         ColorSquare(
-            modifier= Modifier
-                .weight(0.7f)
-                .fillMaxWidth()
-                .padding(bottom = 10.dp),
+            modifier = Modifier
+                .weight(0.6f)
+                .fillMaxWidth(),
             backgroundColor = colorData.backgroundColorCode,
             isSelected = isSelected,
             //クリック時にcurrentSquareIndexをColorSquareの
             //親コンポーネントのColorColumnの引数squareIndexの値に変更する
             onSquareSelected = {
                 viewModel.changeCurrentSquareIndex(squareIndex)
-            }
+            },
         )
         Row(
             modifier = Modifier
-                .weight(0.3f)
+                .weight(0.4f)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.Bottom
-            ) {
+            verticalAlignment = Alignment.Bottom
+        ) {
             //ユーザーに表示するカラーコードテキスト
             //ユーザーが値を入力するなどしてvalueが変更されるとcolorCodeの変更を行い、
             // 検査後にバッグラウンドカラーコードとRGB値の更新を行う
@@ -369,152 +379,179 @@ fun ColorCodeText(
     onSquareSelected: () -> Unit,
     onValueChanged: (String) -> Unit,
 ) {
-    TextField(
-        value = colorCode,
-        onValueChange = { newValue ->
-            onValueChanged(newValue)
-        },
-        label = { Text("カラーコード") },
+    BasicTextField(
         modifier = modifier
-            //clickableだとvalueChangeが優先され正しく処理されないのでonFocusChangeを使用する
-            //textFieldにフォーカスしたらcurrentSquareIndexを変更する
             .onFocusChanged { focusState ->
                 if (focusState.isFocused) onSquareSelected()
             },
-        colors = customTextFieldColors(),
-        singleLine = true
+        value = colorCode,
+        onValueChange = { newValue -> onValueChanged(newValue) },
+        singleLine = true,
+        textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
+        decorationBox = { innerTextField ->
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .padding(bottom = 4.dp)
+                ) {
+                    Text(
+                        text = "カラーコードを入力",
+                        style = TextStyle(
+                            color = Color.Gray,
+                            fontSize = GetDynamicTypography().labelSmall.fontSize
+                        )
+                    )
+                }
+                innerTextField()
+
+                Box(
+                    modifier = Modifier
+                        .height(1.dp)
+                        .fillMaxWidth()
+                        .background(Color.Gray) // 下線の色
+                )
+            }
+            }
     )
 }
 
-@Composable
+    @Composable
 //色を保存するためのボタン
-fun ColorSaveBtn(
-    modifier: Modifier = Modifier,
-    onClicked: () -> Unit
-) {
-    IconButton(
-        modifier = modifier,
-        onClick = {
-            onClicked()
-        },
+    fun ColorSaveBtn(
+        modifier: Modifier = Modifier,
+        onClicked: () -> Unit
     ) {
-        Icon(
-            painter = painterResource(
-                id = R.drawable.ic_save_btn
-            ),
-            contentDescription = "Save Color",
-            modifier = Modifier
-        )
-    }
-}
-
-// RGBの色を調整するスライダー、選択ボタン、値表示用のTextField
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun RGBSlier(
-    modifier: Modifier = Modifier,
-    currentSquareRGB: Int,
-    viewModel: ColorChoiceViewModel,
-    sliderColor: Color,
-    sliderColorName: String,
-    currentSliderColorName: String,
-    currentSquareIndex: Int
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End
-    ) {
-
-        //現在選択中のメニューの丸はグレー、そうでなければ透明
-        Box(
-            modifier = Modifier
-                .size(20.dp)
-                .background(
-                    if (sliderColorName == currentSliderColorName) Color.Gray else Color.Transparent,
-                    CircleShape
-                )
-                .border(
-                    width = 3.dp,
-                    color = Color.Gray,
-                    shape = CircleShape
-                )
-                //CircleShapeをユーザーがクリックしたときに現在選択しているスライダーの色を変更する(ボタンの状態を変更）
-                .clickable { viewModel.changeCurrentRGBSeekBar(sliderColorName) },
-        )
-        
-        Spacer(modifier = Modifier.width(3.dp))
-
-        //BasicTextFieldとSliderで使用する
-        var value by remember { mutableStateOf<String?>("255") }
-
-        val editValue by remember (currentSquareRGB){ mutableStateOf(currentSquareRGB.toString()) }
-
-        //スライダーの横に設置するRGB表示用のテキストフィールド
-        BasicTextField(
-            modifier = Modifier
-                .weight(0.15f)
-                .padding(3.dp)
-                .focusable(),
-            value = editValue,
-            onValueChange = { newValue: String? ->
-                //選択しているスライダーの色を変更しボタンの色を変更する
-                value = if (newValue.isNullOrEmpty()) {
-                    "0"
-                } else {
-                    viewModel.changeCurrentRGBSeekBar(sliderColorName)
-                    newValue
-                }
-            }
-        ,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number
-            ),
-            singleLine = true,
-            textStyle = TextStyle(
-                color = Color.Black,
-                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                textAlign = TextAlign.Center
-            ),
-            decorationBox = { innerTextField ->
-                Box(
-                    modifier = Modifier
-                        .background(Color.White)
-                        .border(1.dp, Color.Black, RectangleShape)
-                        .padding(4.dp)
-                ) {
-                    innerTextField()
-                }
-            }
-        )
-
-        //valueが255の場合は無視して再コンポーネントを防ぐ
-        LaunchedEffect(value) {
-            if (value?.toIntOrNull() in 0..255 && value != "255") { // 初期値255は無視
-                viewModel.validAndUpdateRGBValue(value, currentSquareIndex, sliderColorName, false)
-            }
-        }
-
-        Spacer(modifier = Modifier.width(3.dp))
-
-        //色調節のためのスライダー
-        Slider(
-            modifier = Modifier.weight(0.85f),//スライダーの横幅は最大値の75%
-            //あらかじめIf文でcurrentSquareIndexに対応するcolorDataを引き渡す
-            value = currentSquareRGB.toFloat(),//スライダーを滑らかに動かすためにfloatを指定
-            colors = SliderDefaults.colors(
-                thumbColor = sliderColor,
-                activeTrackColor = sliderColor,
-                activeTickColor = sliderColor //バーの動作中の色
-            ),
-            onValueChange = { newValue ->
-                //選択しているスライダーの色を変更しボタンの色を変更する
-                viewModel.changeCurrentRGBSeekBar(sliderColorName)
-                value = newValue.toInt().toString()
+        IconButton(
+            modifier = modifier,
+            onClick = {
+                onClicked()
             },
-            //スライダーの値Float型をIntに変換する
-            valueRange = 0f..255f
-        )
+        ) {
+            Icon(
+                painter = painterResource(
+                    id = R.drawable.ic_save_btn
+                ),
+                contentDescription = "Save Color",
+                modifier = Modifier
+            )
+        }
     }
-}
+
+    // RGBの色を調整するスライダー、選択ボタン、値表示用のTextField
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun RGBSlier(
+        modifier: Modifier = Modifier,
+        currentSquareRGB: Int,
+        viewModel: ColorChoiceViewModel,
+        sliderColor: Color,
+        sliderColorName: String,
+        currentSliderColorName: String,
+        currentSquareIndex: Int
+    ) {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+
+            //現在選択中のメニューの丸はグレー、そうでなければ透明
+            Box(
+                modifier = Modifier
+                    .size(20.dp)
+                    .background(
+                        if (sliderColorName == currentSliderColorName) Color.Gray else Color.Transparent,
+                        CircleShape
+                    )
+                    .border(
+                        width = 3.dp,
+                        color = Color.Gray,
+                        shape = CircleShape
+                    )
+                    //CircleShapeをユーザーがクリックしたときに現在選択しているスライダーの色を変更する(ボタンの状態を変更）
+                    .clickable { viewModel.changeCurrentRGBSeekBar(sliderColorName) },
+            )
+
+            Spacer(modifier = Modifier.width(3.dp))
+
+            //BasicTextFieldとSliderで使用する
+            var value by remember { mutableStateOf<String?>("255") }
+
+            val editValue by remember(currentSquareRGB) { mutableStateOf(currentSquareRGB.toString()) }
+
+            //スライダーの横に設置するRGB表示用のテキストフィールド
+            BasicTextField(
+                modifier = Modifier
+                    .weight(0.15f)
+                    .padding(3.dp)
+                    .focusable(),
+                value = editValue,
+                onValueChange = { newValue: String? ->
+                    //選択しているスライダーの色を変更しボタンの色を変更する
+                    value = if (newValue.isNullOrEmpty()) {
+                        "0"
+                    } else {
+                        viewModel.changeCurrentRGBSeekBar(sliderColorName)
+                        newValue
+                    }
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number
+                ),
+                singleLine = true,
+                textStyle = TextStyle(
+                    color = Color.Black,
+                    fontSize = GetDynamicTypography().bodyLarge.fontSize,
+                    textAlign = TextAlign.Center
+                ),
+                decorationBox = { innerTextField ->
+                    Box(
+                        modifier = Modifier
+                            .background(Color.White)
+                            .border(1.dp, Color.Black, RectangleShape)
+                            .padding(4.dp)
+                    ) {
+                        innerTextField()
+                    }
+                }
+            )
+
+            //valueが255の場合は無視して再コンポーネントを防ぐ
+            LaunchedEffect(value) {
+                if (value?.toIntOrNull() in 0..255 && value != "255") { // 初期値255は無視
+                    viewModel.validAndUpdateRGBValue(
+                        value,
+                        currentSquareIndex,
+                        sliderColorName,
+                        false
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(3.dp))
+
+            //色調節のためのスライダー
+            Slider(
+                modifier = Modifier.weight(0.85f),//スライダーの横幅は最大値の75%
+                //あらかじめIf文でcurrentSquareIndexに対応するcolorDataを引き渡す
+                value = currentSquareRGB.toFloat(),//スライダーを滑らかに動かすためにfloatを指定
+                colors = SliderDefaults.colors(
+                    thumbColor = sliderColor,
+                    activeTrackColor = sliderColor,
+                    activeTickColor = sliderColor //バーの動作中の色
+                ),
+                onValueChange = { newValue ->
+                    //選択しているスライダーの色を変更しボタンの色を変更する
+                    viewModel.changeCurrentRGBSeekBar(sliderColorName)
+                    value = newValue.toInt().toString()
+                },
+                //スライダーの値Float型をIntに変換する
+                valueRange = 0f..255f
+            )
+        }
+    }
 
