@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,6 +34,7 @@ import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.ui.theme.FindColorCodeTheme
+import com.example.findcolorcode.ui.theme.GetDynamicTypography
 import com.example.findcolorcode.ui.theme.customTextFieldColors
 
 @ExperimentalMaterial3Api
@@ -49,7 +49,7 @@ fun ColorSaveDialog(
     dismissDialog: () -> Unit,
 ) {
     FindColorCodeTheme {
-        val dialogTextStyle = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize)
+        val dialogTextStyle = TextStyle(fontSize = GetDynamicTypography().bodyLarge.fontSize)
 
         //データベース登録用のNameとMemoを保持する
         val saveName = remember { mutableStateOf("") }
@@ -74,7 +74,7 @@ fun ColorSaveDialog(
                     //ダイアログのタイトル
                     Text(
                         text = "色を保存",
-                        style = MaterialTheme.typography.titleLarge,
+                        style = GetDynamicTypography().titleLarge,
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -111,7 +111,7 @@ fun ColorSaveDialog(
                                     .border(3.dp, AppColors.gainsboro)
                                     .padding(8.dp),
                                 text = currentColorData.backgroundColorCode,
-                                style = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize)
+                                style = TextStyle(fontSize = GetDynamicTypography().bodyLarge.fontSize)
                             )
                             Spacer(modifier = Modifier.height(10.dp))
                             //色の名前入力フォーム
