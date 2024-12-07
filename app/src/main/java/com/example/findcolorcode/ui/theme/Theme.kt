@@ -55,7 +55,7 @@ fun FindColorCodeTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = GetDynamicTypography(),
         content = content
     )
 }
