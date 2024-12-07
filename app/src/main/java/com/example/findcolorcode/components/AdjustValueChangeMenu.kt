@@ -8,7 +8,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -24,6 +23,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.findcolorcode.data.adjustValueChangeMenuList
+import com.example.findcolorcode.ui.theme.GetDynamicTypography
 import com.example.findcolorcode.ui.theme.customTextFieldColors
 
 
@@ -74,7 +74,7 @@ fun AdjustValueChangeMenu(
                 }
             },
             textStyle = TextStyle(
-                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                fontSize = GetDynamicTypography().bodyLarge.fontSize,
                 textAlign = TextAlign.Center
             ),
             singleLine = true,
@@ -89,7 +89,7 @@ fun AdjustValueChangeMenu(
                   visualTransformation = VisualTransformation.None,
                   interactionSource = interactionSource,
                   colors = customTextFieldColors(),
-                  contentPadding = PaddingValues(2.dp)
+                  contentPadding = PaddingValues(0.dp)
               )
       }
         ExposedDropdownMenu(
