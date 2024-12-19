@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.findcolorcode.R
+import com.kisayama.findcolorcode.R
 
 //色調整ボタンと単位調整用ボタンを1行に配置するためのコンポーネント
 @Composable

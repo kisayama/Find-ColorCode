@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.findcolorcode.R
+import com.kisayama.findcolorcode.R
 import com.example.findcolorcode.components.AdjustValueBar
 import com.example.findcolorcode.components.ColorPickerTabs
 import com.example.findcolorcode.components.ShowToast

@@ -43,7 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.app.ui.theme.AppColors
-import com.example.findcolorcode.R
+import com.kisayama.findcolorcode.R
 import com.example.findcolorcode.components.FavoriteColorActionsMenu
 import com.example.findcolorcode.components.FavoriteColorSortMenu
 import com.example.findcolorcode.components.ShowToast

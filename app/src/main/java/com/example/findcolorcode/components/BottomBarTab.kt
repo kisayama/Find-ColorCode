@@ -1,6 +1,6 @@
 package com.example.findcolorcode.components
 
-import com.example.findcolorcode.R
+import com.kisayama.findcolorcode.R
 
 
 //enumでボトムバーに表示するタブのアイコンとラベル,ルートを列挙しておく

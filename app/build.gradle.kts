@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.findcolorcode"
+    namespace = "com.kisayama.findcolorcode"
     compileSdk = 34
 
     buildFeatures {
@@ -14,7 +14,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.findcolorcode"
+        applicationId = "com.kisayama.findcolorcode"
         minSdk = 23
         targetSdk = 34
         versionCode = 1
