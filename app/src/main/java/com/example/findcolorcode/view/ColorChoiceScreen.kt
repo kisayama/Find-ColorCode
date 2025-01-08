@@ -109,6 +109,7 @@ fun ColorChoiceScreen(
             navController.currentBackStackEntry?.arguments?.getString("colorCode")
 
         if (receiveDirection == null || receiveColorCode == null) {
+            //処理を行わない
         } else {
             // 必要な処理
             //receiveSquareIndexを宣言する(selectedSquareのルールに従い左のSquareに1、右に2)
