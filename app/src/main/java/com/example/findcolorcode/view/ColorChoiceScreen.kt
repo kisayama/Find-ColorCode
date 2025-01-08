@@ -50,7 +50,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.kisayama.findcolorcode.R
 import com.example.findcolorcode.components.AdjustValueBar
 import com.example.findcolorcode.components.ColorPickerTabs
 import com.example.findcolorcode.components.ShowToast
@@ -58,6 +57,7 @@ import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.ui.theme.Dimensions
 import com.example.findcolorcode.ui.theme.getDynamicTypography
 import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
+import com.kisayama.findcolorcode.R
 
 //スライダーを調節することによって色を作成、保存するためのダイアログを呼び出すView
 @OptIn(ExperimentalMaterial3Api::class)
