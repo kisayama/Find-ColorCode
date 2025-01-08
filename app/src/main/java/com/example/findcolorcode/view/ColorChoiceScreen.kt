@@ -171,16 +171,16 @@ fun ColorChoiceScreen(
 // 囲み画面全体の7割の高さを与える
     Column(
         modifier = Modifier
-            .weight(0.7f)
+            .weight(0.65f)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ){
+        Spacer(modifier = Modifier.weight(0.04f))
 
         // Boxを横一列に2つ並べる
         Row(
             modifier = Modifier
-                .weight(0.58f)
-                .padding(bottom = 10.dp),
+                .weight(0.4f),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.Top
         ) {
@@ -227,7 +227,7 @@ fun ColorChoiceScreen(
     }
         //ColorPickerTabsには画面の3割
         Column(
-            modifier = Modifier.weight(0.3f)
+            modifier = Modifier.weight(0.35f)
         ) {
             //基本の色、カラーパレットをまとめたタブ
             ColorPickerTabs(viewModel, currentSquareIndex, square1ColorData, square2ColorData)
@@ -268,7 +268,7 @@ fun ColorColumn(
         )
         Row(
             modifier = Modifier
-                .weight(0.4f)
+                .weight(0.45f)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.Bottom
@@ -277,7 +277,8 @@ fun ColorColumn(
             //ユーザーが値を入力するなどしてvalueが変更されるとcolorCodeの変更を行い、
             // 検査後にバッグラウンドカラーコードとRGB値の更新を行う
             ColorCodeText(
-                modifier = Modifier.weight(2f),
+                modifier = Modifier.weight(2f)
+                    .padding(top = 5.dp),
                 colorCode = colorData.colorCode,
                 onSquareSelected = { viewModel.changeCurrentSquareIndex(squareIndex) },
                 onValueChanged = { newValue ->
@@ -436,7 +437,7 @@ fun ColorCodeText(
                     id = R.drawable.ic_save_btn
                 ),
                 contentDescription = "Save Color",
-                modifier = Modifier
+                modifier = modifier
             )
         }
     }
@@ -519,10 +520,19 @@ fun ColorCodeText(
                     }
                 }
             )
+            //再コンポーネントのされた時に現在のRGB値を初期化しないようにフラグを設定する
+            val isInitialLoad = remember { mutableStateOf(true) }
 
-            //valueが255の場合は無視して再コンポーネントを防ぐ
+            //初回の255は無視する
+            //valueが255より大きい場合は無視して競合を防ぐ
             LaunchedEffect(value) {
-                if (value?.toIntOrNull() in 0..255 && value != "255") { // 初期値255は無視
+                if (isInitialLoad.value){
+                    if (value == "255") {
+                        isInitialLoad.value = false//初回だけ無視(再コンポーズの際に初期値の競合を防ぐ)
+                        return@LaunchedEffect //初回の場合処理終了
+                    }
+                }
+                if (value?.toIntOrNull() in 0..255) {
                     viewModel.validAndUpdateRGBValue(
                         value,
                         currentSquareIndex,
