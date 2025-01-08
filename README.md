@@ -30,10 +30,6 @@ FindColorCodeは、ユーザーがオリジナルカラーを作成し、その�
   compileSdkVersion:34
   minSdkVersion:23
 
-
-
-## インストール方法
-
 ### 必要なもの：
 - Android Studio
 - JDK 8以降
