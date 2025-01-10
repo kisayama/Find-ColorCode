@@ -1,13 +1,9 @@
 package com.example.findcolorcode.repository
 
-import com.example.findcolorcode.api.TheColorApiService
-import com.example.findcolorcode.model.ColorCode
-import com.example.findcolorcode.model.ColorSchemeResponse
-import com.example.findcolorcode.model.HexValue
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Test
-import org.mockito.Mockito.*
 
 class ColorSchemeRepositoryImplTest {
 
