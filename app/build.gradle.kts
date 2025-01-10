@@ -108,7 +108,6 @@ dependencies {
 
     //テスト用の依存関係
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:3.11.2")
 
     implementation("androidx.room:room-runtime:2.6.1") // Room
     ksp("androidx.room:room-compiler:2.6.1") // Room用のKSP

@@ -23,7 +23,7 @@ FindColorCodeは、ユーザーがオリジナルカラーを作成し、その�
   Room
   Navigation Compose
   Material3
-  Junit、Mockito
+  Junit
 
   ・SDKVersion
   targetSdkVersion:34
