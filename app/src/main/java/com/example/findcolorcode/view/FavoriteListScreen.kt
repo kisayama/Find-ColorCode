@@ -43,15 +43,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.app.ui.theme.AppColors
-import com.kisayama.findcolorcode.R
 import com.example.findcolorcode.components.FavoriteColorActionsMenu
 import com.example.findcolorcode.components.FavoriteColorSortMenu
-import com.example.findcolorcode.components.ShowToast
+import com.example.findcolorcode.components.FavoriteColorToast
 import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.ui.theme.Dimensions
-import com.example.findcolorcode.ui.theme.getDynamicTypography
 import com.example.findcolorcode.ui.theme.customTextFieldColors
+import com.example.findcolorcode.ui.theme.getDynamicTypography
 import com.example.findcolorcode.viewmodel.FavoriteScreenViewModel
+import com.kisayama.findcolorcode.R
 
 //保存した色を閲覧、色情報を変更するためのダイアログを呼び出すView
 @OptIn(ExperimentalMaterial3Api::class)
@@ -322,7 +322,7 @@ fun FavoriteColorList(
             }
         }
 
-        ShowToast(toastMessage = toastMessage, resetMessage = { viewModel.resetToast() })
+        FavoriteColorToast(viewModel)
     }
 }
 

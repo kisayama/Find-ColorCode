@@ -51,8 +51,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.findcolorcode.components.AdjustValueBar
+import com.example.findcolorcode.components.ColorChoiceShowToast
 import com.example.findcolorcode.components.ColorPickerTabs
-import com.example.findcolorcode.components.ShowToast
 import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.ui.theme.Dimensions
 import com.example.findcolorcode.ui.theme.getDynamicTypography
@@ -234,7 +234,7 @@ fun ColorChoiceScreen(
             ColorPickerTabs(viewModel, currentSquareIndex, square1ColorData, square2ColorData)
         }
         //メッセージを変更するとトーストが表示される
-        ShowToast(toastMessage = toastMessage, resetMessage = { viewModel.resetToast() })
+        ColorChoiceShowToast(viewModel)
     }
 
 }
