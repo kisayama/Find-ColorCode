@@ -62,6 +62,8 @@ fun CurrentColorPalletContent(
         modifier = modifier.fillMaxHeight(),
         verticalArrangement = Arrangement.Center
     ) {
+        
+        //カラーパレットプレビュー用の5つの四角
         Row(
             modifier = Modifier
                 .fillMaxWidth()
