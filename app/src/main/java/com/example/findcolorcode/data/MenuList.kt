@@ -13,3 +13,15 @@ val favoriteColorScreenSortMenuList = listOf(
 val adjustValueChangeMenuList = listOf(
     1,50,100,255
 )
+
+//getColorSchemeで使用するカラーパレット作成モードリスト
+val colorSchemeModeList = listOf(
+    Pair("調和的、穏やか", "analogic"),
+    Pair("コントラスト", "complement"),
+    Pair("バランス", "analogic-complement"),
+    Pair("鮮やか", "triad"),
+    Pair("とても鮮やか", "quad"),
+    Pair("モノクロ", "monochrome"),
+    Pair("モノクロライト", "monochrome-light"),
+    Pair("モノクロダーク", "monochrome-dark"),
+)
