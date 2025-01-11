@@ -1,6 +1,5 @@
 package com.example.findcolorcode.view
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -54,7 +53,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.findcolorcode.components.AdjustValueBar
-import com.example.findcolorcode.components.ColorChoiceShowToast
 import com.example.findcolorcode.components.ColorPickerTabs
 import com.example.findcolorcode.model.ColorDataForColorChoice
 import com.example.findcolorcode.ui.theme.Dimensions

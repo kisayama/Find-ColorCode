@@ -47,7 +47,6 @@ import androidx.navigation.NavHostController
 import com.example.app.ui.theme.AppColors
 import com.example.findcolorcode.components.FavoriteColorActionsMenu
 import com.example.findcolorcode.components.FavoriteColorSortMenu
-import com.example.findcolorcode.components.FavoriteColorToast
 import com.example.findcolorcode.model.FavoriteColorDataClass
 import com.example.findcolorcode.ui.theme.Dimensions
 import com.example.findcolorcode.ui.theme.customTextFieldColors
