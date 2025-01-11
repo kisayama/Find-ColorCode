@@ -114,7 +114,6 @@ private fun PalletCreateButton(
 //APIから受け取ったカラーコードを表示するSquare
 @Composable
 private fun PalletColorSquare(
-    modifier: Modifier = Modifier,
     colorCode: String,
     onPalletSquareSelected: (String) -> Unit
 ) {
