@@ -74,32 +74,42 @@ fun CurrentColorPalletContent(
                     onPalletSquareSelected = palletSquareSelected
                 )
             }
-        }
-
-        //パレットカラースクエアとボタンのの間のスペース
-        Spacer(modifier = Modifier.height(10.dp))
-
-        //API通信を行うトリガーボタン
-        PalletCreateButton(
-            //ボタン押下時の処理
-            onButtonClicked = {
-                //現在背景色に使用されている色をAPIに引き渡す
-                //念の為正しいHEXが入力されているか検証する
-                //パースできない値が入力されていない場合はトーストを表示する
-                //API通信を行う　ViewModel自身の動作でcolorPalletListを更新するのでここでは操作を行わない
-                val currentColorCode = currentColorData.backgroundColorCode
-                val colorCode = viewModel.convertToHexColorCode(currentColorCode)
-                if (colorCode != null) {
-                    viewModel.updateToastMessage("カラーパレット作成中...")
-                    viewModel.fetchColorScheme(colorCode)
-                } else {
-                    viewModel.updateToastMessage("正しい色を入力してください。（例: #FFFFFF または whiteなど）")
-                }
+         }
+        Spacer(modifier = Modifier.height(30.dp))
+        //モード変更ボタンと作成ボタン
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            horizontalArrangement = Arrangement.Center
+        ){
+            ChangePalletModeButton(
+                currentMode = viewModel.palletMode.value ?: "analogic"
+            ) {
+                viewModel.changePalletMode(it)
             }
-        )
-
+             Spacer(modifier = Modifier.width(20.dp))
+             //API通信を行うトリガーボタン
+                PalletCreateButton(
+                    //ボタン押下時の処理
+                    onButtonClicked = {
+                        //現在背景色に使用されている色をAPIに引き渡す
+                        //念の為正しいHEXが入力されているか検証する
+                        //パースできない値が入力されていない場合はトーストを表示する
+                        //API通信を行う　ViewModel自身の動作でcolorPalletListを更新するのでここでは操作を行わない
+                        val currentColorCode = currentColorData.backgroundColorCode
+                        val colorCode = viewModel.convertToHexColorCode(currentColorCode)
+                        if (colorCode != null) {
+                            viewModel.updateToastMessage("カラーパレット作成中...")
+                            viewModel.fetchColorScheme(colorCode)
+                        } else {
+                            viewModel.updateToastMessage("正しい色を入力してください。（例: #FFFFFF または whiteなど）")
+                        }
+                    }
+                )
+            }
+        }
     }
-}
 
 //API通信を行うトリガーボタン
 @Composable
