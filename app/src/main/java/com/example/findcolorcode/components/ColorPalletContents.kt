@@ -61,7 +61,9 @@ fun CurrentColorPalletContent(
         verticalArrangement = Arrangement.Center
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             colorPalletList.forEach { colorCode ->
