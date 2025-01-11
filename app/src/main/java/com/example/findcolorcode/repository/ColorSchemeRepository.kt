@@ -8,7 +8,7 @@ package com.example.findcolorcode.repository
 interface ColorSchemeRepository {
     suspend fun getColorScheme(
         colorCodeWithoutHash :String,
-        mode :String = "analogic",
+        mode :String,
         format :String = "json",
         count : Int = 5
     ):List<String> //戻り値のデータ型
