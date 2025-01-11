@@ -105,7 +105,9 @@ private fun PalletCreateButton(
     OutlinedButton(
         onClick = { onButtonClicked() }
     ) {
-        Text("選択した色からカラーパレットを作成します")
+        Text("カラーパレット作成",
+            fontSize = getDynamicTypography().bodyLarge.fontSize
+        )
     }
 }
 
@@ -117,7 +119,7 @@ private fun PalletColorSquare(
     onPalletSquareSelected: (String) -> Unit
 ) {
     Box(
-        modifier = modifier
+        modifier = Modifier
             .size(65.dp)
             .background(
                 try {
