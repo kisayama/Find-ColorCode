@@ -1,5 +1,6 @@
 package com.example.findcolorcode.view
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -27,6 +28,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -103,6 +105,13 @@ fun FavoriteColorList(
                 }
             }
         displayColors.sortedWith(comparator)
+    }
+
+    //toastMessageが変更されたらトーストを表示する
+    LaunchedEffect(toastMessage) {
+        if (toastMessage.isNotEmpty()) {
+            Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
+        }
     }
 
     Column(
@@ -321,8 +330,6 @@ fun FavoriteColorList(
                 }
             }
         }
-
-        FavoriteColorToast(viewModel)
     }
 }
 
