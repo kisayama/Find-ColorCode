@@ -1,8 +1,9 @@
 package com.example.findcolorcode.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -17,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.findcolorcode.data.colorSchemeModeList
 import com.example.findcolorcode.ui.theme.getDynamicTypography
@@ -49,21 +51,26 @@ fun ChangePalletModeButton(
     OutlinedButton(
         onClick = {isMenuOpen = true},
         modifier = Modifier
-            .width(180.dp)
+            .width(190.dp)
     ){
-        Row(
-            horizontalArrangement = Arrangement.Start, // アイコンを一番左に固定　動かないように
-        ) {
+        Row {
+
             Icon(
+                modifier = Modifier.size(25.dp),
                 painter = painterResource(id = R.drawable.ic_changed),
                 contentDescription = "モード変更",
                 tint = Color.Black
             )
-        }
+            Spacer(modifier = Modifier.width(10.dp))
             Text(
-                modifier = Modifier.padding(start = 3.dp), text = modeDescription,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(start = 3.dp)
+                    .weight(1f),//余ったスペースをテキストが全て使う
+                text = modeDescription,
                 fontSize = fontSize
             )
+        }
 
         DropdownMenu(
             expanded = isMenuOpen,
