@@ -56,8 +56,7 @@ fun CurrentColorPalletContent(
         viewModel.convertToRGB(currentSquareIndex)
     }
     Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.fillMaxHeight(),
         verticalArrangement = Arrangement.Center
     ) {
         Row(
