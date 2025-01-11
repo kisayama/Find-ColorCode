@@ -72,6 +72,10 @@ class ColorChoiceViewModel(
 
     //======
 
+    //getColorSchemeに引き渡すpalletMode
+    private val _palletMode = MutableLiveData("analogic")
+    val palletMode:LiveData<String> get() = _palletMode
+
     //===トーストメッセージ===
     private val _toastMessage = MutableLiveData<String>()
     val toastMessage: LiveData<String> get() = _toastMessage
@@ -282,14 +286,21 @@ class ColorChoiceViewModel(
     }
     //=====
 
+
     //====API関連====
+
+    //getColorSchemeに引き渡すpalletModeを変更
+    fun changePalletMode(mode:String){
+        _palletMode.value = mode
+    }
 
     //selectedColorPalletContentに表示するpalletColorListを取得するためのAPI通信を行う
     fun fetchColorScheme(colorCode: String) {
         viewModelScope.launch {
             try {
                 val response = apiRepository.getColorScheme(
-                    colorCode.removePrefix("#")//#を取り除いたHex値を引き渡す
+                    colorCode.removePrefix("#"),//#を取り除いたHex値を引き渡す,
+                    mode = _palletMode.value ?:"analogic"
                 )
                 //リストのサイズが5かつ全てのカラーコードが正しい形式であることを確認
                 if (response.size == 5 &&
@@ -329,20 +340,3 @@ class ColorChoiceViewModel(
 
     //==========
 }
-//廃止OR今後実装するかもしれないコード置き場
-
-//今後
-/*可読性を高めるためにDataClassにまとめてもいいかも。
- データクラス内のデータに一つでも変更があるとデータクラス内を全て再描写しないといけないから注意（RGBならいいかも）
- //square1の各スライダーの値とその初期値
-val square1ColorDataValues = MutableLiveData(ColorRGBValues(255,255,255))
-
-//square2の各スライダーの値とその初期値
-val square2ColorDataValues = MutableLiveData(ColorRGBValues(255,255,255))
-
-data class ColorRGBValues(
-val red:Int,
-val green :Int,
-val blue :Int
-)
-*/
