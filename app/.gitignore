@@ -1,3 +1,4 @@
 /build
 .idea/*
 app/src/main/res/xml/
+/release/release/app-release_ver1.1.aab
