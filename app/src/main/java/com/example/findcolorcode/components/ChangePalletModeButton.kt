@@ -29,7 +29,7 @@ fun ChangePalletModeButton(
     currentMode:String,
     updateValue: (String) -> Unit
 ){
-    var mode by remember { mutableStateOf(currentMode) }
+    val mode by remember { mutableStateOf(currentMode) }
     var modeDescription by remember(mode) {
         mutableStateOf(when(mode){
             "analogic" -> "調和的、穏やか"
