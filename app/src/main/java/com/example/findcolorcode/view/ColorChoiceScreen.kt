@@ -454,7 +454,6 @@ fun ColorCodeText(
     }
 
     // RGBの色を調整するスライダー、選択ボタン、値表示用のTextField
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun RGBSlier(
         modifier: Modifier = Modifier,
