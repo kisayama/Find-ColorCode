@@ -30,7 +30,7 @@ import com.example.findcolorcode.viewmodel.ColorChoiceViewModel
 // 選択した色のカラーコードを基に、APIからカラーパレットを取得するView
 // ViewModelで処理した結果を受け取り、取得したカラーパレットを表示する
 @Composable
-fun CurrentColorPalletContent(
+fun ColorPalletContents(
     modifier: Modifier = Modifier,
     viewModel: ColorChoiceViewModel,
     currentSquareIndex: Int,

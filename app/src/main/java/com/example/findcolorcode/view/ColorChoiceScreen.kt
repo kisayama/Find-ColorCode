@@ -112,6 +112,8 @@ fun ColorChoiceScreen(
     //ダイアログ開閉状態(trueなら開く falseなら閉じる)
     val isSaveDialogOpen by viewModel.isSaveDialogOpen.observeAsState(false)
     val systemBarsPadding =  WindowInsets.systemBars.asPaddingValues()
+
+    //画面のtopのパディングを設定するためシステムバーの高さを検証する
     val isSystemBarsPaddingZero = systemBarsPadding.run {
             calculateTopPadding() == 0.dp &&
             calculateBottomPadding() == 0.dp &&
@@ -119,6 +121,7 @@ fun ColorChoiceScreen(
             calculateStartPadding(LayoutDirection.Ltr) == 0.dp &&
             calculateEndPadding(LayoutDirection.Ltr) == 0.dp
     }
+    //システムバーの高さが0より大きい場合topPaddingを設定
     val topPadding = if (isSystemBarsPaddingZero)Dimensions.screenVerticalPadding else 0.dp
 
     if (isSaveDialogOpen) {
@@ -152,7 +155,7 @@ fun ColorChoiceScreen(
             //処理を行わない
         } else {
             // 必要な処理
-            //receiveSquareIndexを宣言する(selectedSquareのルールに従い左のSquareに1、右に2)
+            //receiveSquareIndexを宣言する(currentSquareIndexのルールに従い左のSquareに1、右に2)
             val receiveSquareIndex = if (receiveDirection == "left") 1 else 2
             //選択Squareを変更する
             viewModel.changeCurrentSquareIndex(receiveSquareIndex)
