@@ -89,6 +89,7 @@ fun ColorUpdateDialog(
                         //KeyBoardを離した時かつそのキーボードがエンターキーの時にキーボードを閉じる
                         if (keyEvent.type == KeyEventType.KeyUp && keyEvent.key == Key.Enter) {
                             focusManager.clearFocus()
+                            keyboardController?.hide()
                             true
                         } else {
                             false
