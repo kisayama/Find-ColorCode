@@ -163,7 +163,7 @@ fun ColorChoiceScreen(
             viewModel.updateBackgroundColorCode(receiveSquareIndex, receiveColorCode)
             //ColorCodeを表示しているTextFieldの文字を変更する
             viewModel.updateColorCode(receiveSquareIndex, receiveColorCode)
-            //シークバーの値を変更する
+            //スライダーの値を変更する
             viewModel.convertToRGB(currentSquareIndex)
         }
     }
@@ -536,8 +536,6 @@ fun ColorCodeText(
             //再コンポーネントのされた時に現在のRGB値を初期化しないようにフラグを設定する
             val isInitialLoad = remember { mutableStateOf(true) }
 
-            //初回の255は無視する
-            //valueが255より大きい場合は無視して競合を防ぐ
             LaunchedEffect(value) {
                 if (isInitialLoad.value){
                     if (value == "255") {
