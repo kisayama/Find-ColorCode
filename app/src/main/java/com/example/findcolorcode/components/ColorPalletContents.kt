@@ -97,7 +97,7 @@ fun ColorPalletContents(
                     onButtonClicked = {
                         //現在背景色に使用されている色をAPIに引き渡す
                         //念の為正しいHEXが入力されているか検証する
-                        //パースできない値が入力されていない場合はトーストを表示する
+                        //パースできない値が入力されている場合はトーストを表示する
                         //API通信を行う　ViewModel自身の動作でcolorPalletListを更新するのでここでは操作を行わない
                         val currentColorCode = currentColorData.backgroundColorCode
                         val colorCode = viewModel.convertToHexColorCode(currentColorCode)
