@@ -61,10 +61,10 @@ fun AdjustValueChangeMenu(
             value = value?.toString() ?: "",
             onValueChange = { newValue: String ->
                 //空白の場合はnullでupdateValueを更新する
-                if (newValue.isEmpty()) {
+                if (newValue.isEmpty()|| !newValue.all { it.isDigit() }) {
                     updateValue(null)
                 }
-                // プロパティlimit分だけのも字数制限をつける
+                // プロパティlimit分だけ字数制限をつける
                 // newValueは初期値文字列なのでIntに変換し1以上ならupdateValueに引き渡す
                 else if (newValue.length <= limit) {
                     newValue.toInt().takeIf { it > 0 }?.let { updateValue(it) }
