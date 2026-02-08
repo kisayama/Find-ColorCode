@@ -76,6 +76,13 @@ class ColorChoiceViewModel(
     private val _palletMode = MutableLiveData("analogic")
     val palletMode:LiveData<String> get() = _palletMode
 
+    //======
+
+    //===お気に入りの色リスト===
+    private val _favoriteColors = MutableLiveData<List<FavoriteColorDataClass>>(emptyList())
+    val favoriteColors: LiveData<List<FavoriteColorDataClass>> get() = _favoriteColors
+    //======
+
     //===トーストメッセージ===
     private val _toastMessage = MutableLiveData<String>()
     val toastMessage: LiveData<String> get() = _toastMessage
@@ -84,6 +91,21 @@ class ColorChoiceViewModel(
     //===ColorSveDialogの表示状態を表すフラグ===
     private val _isSaveDialogOpen = MutableLiveData(false)
     val isSaveDialogOpen: LiveData<Boolean> get() = _isSaveDialogOpen
+
+    //初期化処理
+    init {
+        getAllFavoriteColors()
+    }
+
+    //保存済みのお気に入りの色を全て取得する
+    private fun getAllFavoriteColors() {
+        viewModelScope.launch {
+            favoriteColorRepository.getAllColors().collect { colorList ->
+                //新しく保存された順に並び替える
+                _favoriteColors.value = colorList.sortedByDescending { it.editDateTime }
+            }
+        }
+    }
 
     //変更メソッド
     fun updateDialogOpen(newDialogOpen: Boolean) {

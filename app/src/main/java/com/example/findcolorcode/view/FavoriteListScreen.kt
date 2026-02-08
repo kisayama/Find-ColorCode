@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -110,6 +112,7 @@ fun FavoriteColorList(
     LaunchedEffect(toastMessage) {
         if (toastMessage.isNotEmpty()) {
             Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
+            viewModel.resetToast()
         }
     }
 
@@ -227,44 +230,55 @@ fun FavoriteColorList(
                             .pointerInput(Unit) {
                                 detectTapGestures(
                                     //長押ししたらクリップボードにカラーコードをコピーする
-                                    onLongPress = {//クリップボードにカラーコードをコピー
+                                    onLongPress = { //クリップボードにカラーコードをコピー
                                         viewModel.copyToClipBoard(context, color.colorCode)
                                     }
                                 )
-                            },
-                        verticalArrangement = Arrangement.spacedBy(4.dp) // Box等のRowとカラーコード、日付Rowの間にスペース
+                            }
                     ) {
-                        /*TODO 本当はROW内に２Column　カラーボックスとカラーコード　名前、メモ、日付　のに列を１Rowとして表示したかったけど
-                                日付のCard下辺右寄せができなかったから２Row　カラーボックス、名前、メモ　カラーコード、日付としている
-                                Cardないの2つ目のColumnのサイズに下限がいてしまうことが原因なので解決方法が見つかれば上記配置に修正する*/
-
-                        // 1行目: カラー表示ボックス、色の名前、色のメモ
+                        /* 左右分割レイアウト: 左側にカラーボックスとコード、右側に詳細情報を配置 */
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.Top
                         ) {
-                            // カラー表示ボックス
-                            Box(
-                                modifier = Modifier
-                                    .size(100.dp)
-                                    .aspectRatio(1f)
-                                    .border(1.dp, AppColors.mutedGray)
-                                    .background(
-                                        Color(
-                                            android.graphics.Color.parseColor(
-                                                color.colorCode
+                            // 左カラム: カラー表示ボックスとカラーコード
+                            Column(
+                                modifier = Modifier.width(100.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                // カラー表示ボックス
+                                Box(
+                                    modifier = Modifier
+                                        .size(100.dp)
+                                        .aspectRatio(1f)
+                                        .border(1.dp, AppColors.mutedGray)
+                                        .background(
+                                            Color(
+                                                android.graphics.Color.parseColor(
+                                                    color.colorCode
+                                                )
                                             )
-                                        )
-                                    ),
-                            )
-                            // 色の名前とメモを縦に並べる
+                                        ),
+                                )
+                                // カラーコード
+                                Text(
+                                    text = color.colorCode,
+                                    fontSize = getDynamicTypography().bodyLarge.fontSize
+                                )
+                            }
+
+                            // 右カラム: 色の名前、メモ、日付 (可変幅)
                             Column(
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(start = 15.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)// 名前とメモの間にスペースを追加
+                                    .weight(1f)
+                                    .padding(start = 15.dp)
+                                    .height(125.dp), // 左側の高さ(100dp + 24dp程度)に合わせるか、最小高さを確保
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Row {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
                                     Text(
                                         // 色の名前
                                         modifier = Modifier.weight(1f),
@@ -280,8 +294,7 @@ fun FavoriteColorList(
                                         modifier = Modifier
                                             .padding(0.dp)
                                             .size(24.dp)
-                                    )
-                                    {
+                                    ) {
                                         Icon(
                                             painter = painterResource(id = R.drawable.ic_more),
                                             contentDescription = "その他のメニュー",
@@ -297,33 +310,29 @@ fun FavoriteColorList(
                                             )
                                         }
                                     }
-
                                 }
                                 // 色のメモ
                                 Text(
                                     text = color.colorMemo,
-                                    fontSize = getDynamicTypography().bodyLarge.fontSize
+                                    fontSize = getDynamicTypography().bodyLarge.fontSize,
+                                    modifier = Modifier.weight(1f, fill = false)
                                 )
-                            }
-                        }
 
-                        // 2行目: カラーコードと日付
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween // 左右に配置
-                        ) {
-                            // カラーコード
-                            Text(
-                                modifier = Modifier.padding(start = 15.dp),
-                                text = color.colorCode,
-                                fontSize = getDynamicTypography().bodyLarge.fontSize
-                            )
-                            // 日付
-                            Text(
-                                text = viewModel.convertCurrentTimeMillisToYYYYMMDD(color.editDateTime),
-                                fontSize = getDynamicTypography().bodyLarge.fontSize,
-                                textAlign = TextAlign.End
-                            )
+                                // 下段に日付を右寄せで配置
+                                Spacer(modifier = Modifier.weight(1f))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.End
+                                ) {
+                                    Text(
+                                        text = viewModel.convertCurrentTimeMillisToYYYYMMDD(color.editDateTime),
+                                        fontSize = getDynamicTypography().bodySmall.fontSize,
+                                        textAlign = TextAlign.End,
+                                        color = Color.Gray
+                                    )
+                                }
+                            }
                         }
                     }
                 }

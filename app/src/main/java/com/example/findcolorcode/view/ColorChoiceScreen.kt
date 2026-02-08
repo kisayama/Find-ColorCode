@@ -139,6 +139,7 @@ fun ColorChoiceScreen(
     LaunchedEffect(toastMessage) {
         if (toastMessage.isNotEmpty()) {
             Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
+            viewModel.resetToast()
         }
     }
 

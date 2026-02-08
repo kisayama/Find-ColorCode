@@ -55,7 +55,16 @@ fun ColorPickerTabs(
                             isContentsOpen = true
                         },
                         text = {
-                            Text(text = "カラーパレットを作る")
+                            Text(text = "保存した色")
+                        }
+                    )
+                    Tab(selected = selectedTabIndex == 2,
+                        onClick = {
+                            selectedTabIndex = 2
+                            isContentsOpen = true
+                        },
+                        text = {
+                            Text(text = "パレットを作る")
                         }
                     )
                 }
@@ -73,7 +82,16 @@ fun ColorPickerTabs(
                     allBasicColorList
                 )
 
-                1 -> ColorPalletContents(
+                1 -> FavoriteColorContents(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                        .padding(top = 10.dp),
+                    viewModel = viewModel,
+                    currentSquareIndex = currentSquareIndex
+                )
+
+                2 -> ColorPalletContents(
                     modifier = Modifier
                         .padding(paddingValues)
                         .fillMaxSize()
